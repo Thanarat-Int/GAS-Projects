@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Smart Bill Dashboard - Mockup</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Prompt', sans-serif; }
+  .tab-active { background: #0ea5e9; color: white; }
+  .sub-active { background: #e0f2fe; color: #0369a1; }
+  #daily-table { width: 100%; font-size: 13px; table-layout: fixed; border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }
+  #daily-table th, #daily-table td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
+  #daily-table thead th {
+    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+    color: #64748b; background: #f8fafc; text-align: right;
+    border-bottom: 2px solid #e2e8f0; padding: 12px;
+  }
+  #daily-table thead th:first-child { text-align: center; }
+  #daily-table tbody td { text-align: right; color: #334155; }
+  #daily-table tbody td:first-child { text-align: center; font-weight: 600; color: #0f172a; background: #fafbfc; }
+  #daily-table tbody tr:hover td { background: #f0f9ff; }
+  #daily-table tbody tr:hover td:first-child { background: #e0f2fe; color: #0369a1; }
+  #daily-table tfoot td {
+    padding: 14px 12px; background: #0f172a; color: white; font-weight: 700;
+    text-align: right; font-size: 13px; letter-spacing: 0.02em;
+    border-top: 2px solid #1e293b;
+  }
+  #daily-table tfoot td:first-child { text-align: center; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; }
+  .daily-active { background: white; color: #0369a1; box-shadow: 0 1px 3px rgba(0,0,0,0.08); font-weight: 600; }
+  .dash { color: #cbd5e1; font-weight: 400; }
+  @media (max-width: 640px) { #daily-table { font-size: 11px; } #daily-table th, #daily-table td { padding: 6px 4px; } }
+  .spark-wrap { height: 28px; position: relative; }
+  .hero-wrap { height: 100px; position: relative; }
+  .chart-wrap { height: 220px; position: relative; }
+  .kpi-card { transition: transform 0.15s; }
+  .kpi-card:hover { transform: translateY(-2px); }
+  .fade-in { animation: fade 0.25s ease-in; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+</style>
+</head>
+<body class="bg-slate-100 min-h-screen">
+
+<!-- ============ HEADER ============ -->
+<header class="bg-white shadow-sm sticky top-0 z-10">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="w-9 h-9 bg-sky-500 rounded-lg flex items-center justify-center text-white text-lg">🏝️</div>
+      <div>
+        <h1 class="font-semibold text-slate-800">Smart Bill Dashboard</h1>
+        <p class="text-xs text-slate-500">ระบบจัดการยอดขายร้าน</p>
+      </div>
+    </div>
+    <div class="text-xs text-slate-500 hidden sm:block">📅 <span id="today"></span></div>
+  </div>
+  <nav class="max-w-6xl mx-auto px-4 pb-2 flex gap-2">
+    <button data-tab="entry" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100">📝 กรอกบิล</button>
+    <button data-tab="dashboard" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 tab-active">📊 Dashboard</button>
+    <button data-tab="menu" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100">⚙️ จัดการเมนู</button>
+  </nav>
+</header>
+
+<main class="max-w-6xl mx-auto p-4">
+
+<!-- ============ VIEW: ENTRY ============ -->
+<section id="view-entry" class="view hidden fade-in">
+  <div class="bg-white rounded-xl shadow-sm p-5">
+    <h2 class="text-lg font-semibold mb-4 text-slate-800">📝 กรอกบิลใหม่</h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+      <div>
+        <label class="text-sm text-slate-600">วันที่</label>
+        <input type="date" id="bill-date" class="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-sky-400 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-sm text-slate-600">ช่องทางการขาย</label>
+        <select id="bill-channel" class="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-sky-400 focus:outline-none">
+          <option>Walk-In</option>
+          <option>By Boats</option>
+          <option>Korean Tour</option>
+          <option>Korean Speedboat</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="border-t border-slate-200 pt-4">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-medium text-slate-700">รายการในบิล</h3>
+        <button onclick="addItem()" class="bg-sky-500 hover:bg-sky-600 text-white text-sm px-3 py-1.5 rounded-lg">+ เพิ่มรายการ</button>
+      </div>
+
+      <div id="items-list" class="space-y-2"></div>
+
+      <div class="mt-4 bg-slate-50 rounded-lg p-4 flex justify-between items-center">
+        <span class="text-slate-600">ยอดรวม</span>
+        <span id="bill-total" class="text-2xl font-bold text-sky-600">฿0</span>
+      </div>
+
+      <button class="w-full mt-4 bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-lg font-medium">💾 บันทึกบิล</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VIEW: DASHBOARD ============ -->
+<section id="view-dashboard" class="view fade-in">
+  <!-- Filters -->
+  <div class="bg-white rounded-xl shadow-sm p-4 mb-4 flex flex-wrap gap-3 items-center">
+    <span class="text-sm text-slate-600">📅 เดือน:</span>
+    <select class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm">
+      <option>เมษายน 2026</option>
+      <option>มีนาคม 2026</option>
+      <option>กุมภาพันธ์ 2026</option>
+    </select>
+    <span class="text-sm text-slate-600 ml-2">🏷️ Channel:</span>
+    <select class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm">
+      <option>ทั้งหมด</option>
+      <option>Walk-In</option>
+      <option>By Boats</option>
+      <option>Korean Tour</option>
+      <option>Korean Speedboat</option>
+    </select>
+  </div>
+
+  <!-- Sub-tabs -->
+  <div class="bg-white rounded-xl shadow-sm p-1 mb-4 flex gap-1">
+    <button data-sub="overview" class="sub-btn flex-1 px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 sub-active">📈 Overview</button>
+    <button data-sub="daily" class="sub-btn flex-1 px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50">📅 รายวัน</button>
+    <button data-sub="matrix" class="sub-btn flex-1 px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50">📋 ตารางสรุป</button>
+  </div>
+
+  <!-- ========== SUB: OVERVIEW ========== -->
+  <div id="sub-overview" class="sub-view">
+
+  <!-- HERO SECTION -->
+  <div class="bg-gradient-to-br from-slate-900 via-sky-900 to-sky-700 text-white rounded-2xl p-6 mb-4 shadow-lg relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-64 h-64 bg-sky-400 opacity-10 rounded-full -mr-20 -mt-20"></div>
+    <div class="absolute bottom-0 right-20 w-40 h-40 bg-emerald-400 opacity-10 rounded-full"></div>
+    <div class="relative grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+      <div class="lg:col-span-1">
+        <div class="text-xs text-sky-200 uppercase tracking-wider">ยอดขายเดือนนี้</div>
+        <div class="text-5xl font-bold mt-2">฿1.84M</div>
+        <div class="text-sm text-sky-100 mt-1">฿1,841,140</div>
+        <div class="mt-4 flex items-center gap-2">
+          <span class="bg-emerald-400/20 text-emerald-300 text-xs px-2 py-1 rounded-full border border-emerald-400/30">▲ 12.4%</span>
+          <span class="text-xs text-sky-200">vs. เดือนที่แล้ว (฿1.64M)</span>
+        </div>
+      </div>
+      <div class="lg:col-span-2">
+        <div class="hero-wrap"><canvas id="chart-hero"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+    <div class="kpi-card bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+      <div class="flex items-center justify-between">
+        <div class="text-xs text-slate-500 uppercase">จำนวนบิล</div>
+        <span class="text-lg">🧾</span>
+      </div>
+      <div class="text-2xl font-bold mt-2 text-slate-800">156</div>
+      <div class="flex items-center gap-1 mt-1">
+        <span class="text-xs text-emerald-600 font-medium">▲ 8.2%</span>
+        <span class="text-xs text-slate-400">vs. เดือนก่อน</span>
+      </div>
+      <div class="spark-wrap mt-2"><canvas data-spark="156,142,160,155,168,172,180" height="24"></canvas></div>
+    </div>
+
+    <div class="kpi-card bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+      <div class="flex items-center justify-between">
+        <div class="text-xs text-slate-500 uppercase">เฉลี่ย/บิล</div>
+        <span class="text-lg">💵</span>
+      </div>
+      <div class="text-2xl font-bold mt-2 text-slate-800">฿11,802</div>
+      <div class="flex items-center gap-1 mt-1">
+        <span class="text-xs text-emerald-600 font-medium">▲ 4.1%</span>
+        <span class="text-xs text-slate-400">vs. เดือนก่อน</span>
+      </div>
+      <div class="spark-wrap mt-2"><canvas data-spark="10500,11200,10800,11500,11802,11650,11900" height="24"></canvas></div>
+    </div>
+
+    <div class="kpi-card bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+      <div class="flex items-center justify-between">
+        <div class="text-xs text-slate-500 uppercase">วันที่ขายดีสุด</div>
+        <span class="text-lg">🔥</span>
+      </div>
+      <div class="text-2xl font-bold mt-2 text-slate-800">28 เม.ย.</div>
+      <div class="flex items-center gap-1 mt-1">
+        <span class="text-xs text-slate-600 font-medium">฿95,000</span>
+        <span class="text-xs text-slate-400">· วันเสาร์</span>
+      </div>
+      <div class="spark-wrap mt-2"><canvas data-spark="45,52,48,61,55,67,72,58,63,70,75,68,71,80,85,78,82,90,88,76,81,79,84,92,87,83,89,95,91,86" height="24"></canvas></div>
+    </div>
+
+    <div class="kpi-card bg-white rounded-xl p-4 shadow-sm border border-slate-100">
+      <div class="flex items-center justify-between">
+        <div class="text-xs text-slate-500 uppercase">เมนูขายดีสุด</div>
+        <span class="text-lg">🏆</span>
+      </div>
+      <div class="text-lg font-bold mt-2 text-slate-800 truncate">ตัมยำกุ้ง</div>
+      <div class="flex items-center gap-1 mt-1">
+        <span class="text-xs text-slate-600 font-medium">200 ถ้วย</span>
+        <span class="text-xs text-slate-400">· ฿56,000</span>
+      </div>
+      <div class="mt-2 w-full bg-slate-100 rounded-full h-1.5">
+        <div class="bg-gradient-to-r from-amber-400 to-rose-500 h-1.5 rounded-full" style="width: 85%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHANNEL PERFORMANCE CARDS -->
+  <div class="bg-white rounded-xl shadow-sm p-5 mb-4">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-semibold text-slate-800">🏷️ ผลงานตามช่องทาง</h3>
+      <span class="text-xs text-slate-400">เทียบกับเดือนที่แล้ว</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div class="border border-rose-200 bg-rose-50/50 rounded-xl p-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-semibold text-rose-700">🚶 Walk-In</span>
+          <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">▲ 15%</span>
+        </div>
+        <div class="text-2xl font-bold text-slate-800">฿1.26M</div>
+        <div class="text-xs text-slate-500 mt-1">68% ของยอดรวม</div>
+        <div class="mt-3 w-full bg-rose-100 rounded-full h-2">
+          <div class="bg-rose-500 h-2 rounded-full" style="width: 68%"></div>
+        </div>
+      </div>
+
+      <div class="border border-emerald-200 bg-emerald-50/50 rounded-xl p-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-semibold text-emerald-700">🚤 By Boats</span>
+          <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">▲ 8%</span>
+        </div>
+        <div class="text-2xl font-bold text-slate-800">฿582k</div>
+        <div class="text-xs text-slate-500 mt-1">32% ของยอดรวม</div>
+        <div class="mt-3 w-full bg-emerald-100 rounded-full h-2">
+          <div class="bg-emerald-500 h-2 rounded-full" style="width: 32%"></div>
+        </div>
+      </div>
+
+      <div class="border border-purple-200 bg-purple-50/50 rounded-xl p-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-semibold text-purple-700">🇰🇷 Korean Tour</span>
+          <span class="text-xs bg-rose-100 text-rose-700 px-2 py-0.5 rounded">▼ 5%</span>
+        </div>
+        <div class="text-2xl font-bold text-slate-800">฿154k</div>
+        <div class="text-xs text-slate-500 mt-1">8% ของยอดรวม</div>
+        <div class="mt-3 w-full bg-purple-100 rounded-full h-2">
+          <div class="bg-purple-500 h-2 rounded-full" style="width: 8%"></div>
+        </div>
+      </div>
+
+      <div class="border border-amber-200 bg-amber-50/50 rounded-xl p-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-semibold text-amber-700">⚡ K. Speedboat</span>
+          <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">—</span>
+        </div>
+        <div class="text-2xl font-bold text-slate-800">฿960</div>
+        <div class="text-xs text-slate-500 mt-1">&lt; 1% ของยอดรวม</div>
+        <div class="mt-3 w-full bg-amber-100 rounded-full h-2">
+          <div class="bg-amber-500 h-2 rounded-full" style="width: 1%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAILY TREND + DONUT -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-semibold text-slate-800">📈 ยอดขายรายวัน</h3>
+        <div class="flex gap-2 text-xs">
+          <span class="flex items-center gap-1"><span class="w-3 h-3 bg-sky-500 rounded"></span>เดือนนี้</span>
+          <span class="flex items-center gap-1"><span class="w-3 h-3 bg-slate-300 rounded"></span>เดือนก่อน</span>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-daily"></canvas></div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-5">
+      <h3 class="font-semibold text-slate-800 mb-3">🎯 สัดส่วนช่องทาง</h3>
+      <div class="chart-wrap"><canvas id="chart-channel"></canvas></div>
+    </div>
+  </div>
+
+  <!-- CATEGORY BREAKDOWN + TOP ITEMS -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+    <div class="bg-white rounded-xl shadow-sm p-5">
+      <h3 class="font-semibold text-slate-800 mb-4">🍽️ ยอดตามหมวดสินค้า</h3>
+      <div class="space-y-3">
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="font-medium text-slate-700">🍜 Food</span>
+            <span class="text-slate-600">฿1,411,840 <span class="text-xs text-slate-400">(77%)</span></span>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2.5">
+            <div class="bg-rose-500 h-2.5 rounded-full" style="width: 77%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="font-medium text-slate-700">🥤 Drinks</span>
+            <span class="text-slate-600">฿205,110 <span class="text-xs text-slate-400">(11%)</span></span>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2.5">
+            <div class="bg-blue-500 h-2.5 rounded-full" style="width: 11%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="font-medium text-slate-700">🍹 Cocktails</span>
+            <span class="text-slate-600">฿132,930 <span class="text-xs text-slate-400">(7%)</span></span>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2.5">
+            <div class="bg-purple-500 h-2.5 rounded-full" style="width: 7%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="font-medium text-slate-700">🏖️ Sunbeds</span>
+            <span class="text-slate-600">฿51,200 <span class="text-xs text-slate-400">(3%)</span></span>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2.5">
+            <div class="bg-emerald-500 h-2.5 rounded-full" style="width: 3%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="font-medium text-slate-700">☕ Coffee</span>
+            <span class="text-slate-600">฿40,060 <span class="text-xs text-slate-400">(2%)</span></span>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2.5">
+            <div class="bg-amber-600 h-2.5 rounded-full" style="width: 2%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="font-medium text-slate-700">🚤 Jet-Banana</span>
+            <span class="text-slate-600">฿26,550 <span class="text-xs text-slate-400">(1%)</span></span>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2.5">
+            <div class="bg-cyan-500 h-2.5 rounded-full" style="width: 1%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-semibold text-slate-800">🏆 Top 10 เมนูขายดี</h3>
+        <span class="text-xs text-slate-400">เดือนนี้</span>
+      </div>
+      <div class="space-y-2.5">
+        <div class="flex items-center gap-3">
+          <span class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 text-sm font-bold flex items-center justify-center">1</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between text-sm"><span class="font-medium truncate">ตัมยำกุ้ง</span><span class="text-slate-600">฿56,000</span></div>
+            <div class="w-full bg-slate-100 rounded-full h-1 mt-1"><div class="bg-amber-400 h-1 rounded-full" style="width:100%"></div></div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 text-sm font-bold flex items-center justify-center">2</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between text-sm"><span class="font-medium truncate">Sunbed (วัน)</span><span class="text-slate-600">฿36,000</span></div>
+            <div class="w-full bg-slate-100 rounded-full h-1 mt-1"><div class="bg-slate-400 h-1 rounded-full" style="width:64%"></div></div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="w-7 h-7 rounded-lg bg-orange-100 text-orange-700 text-sm font-bold flex items-center justify-center">3</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between text-sm"><span class="font-medium truncate">ผัดไทยกุ้ง</span><span class="text-slate-600">฿21,250</span></div>
+            <div class="w-full bg-slate-100 rounded-full h-1 mt-1"><div class="bg-orange-400 h-1 rounded-full" style="width:38%"></div></div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="w-7 h-7 rounded-lg bg-slate-50 text-slate-500 text-sm font-bold flex items-center justify-center">4</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between text-sm"><span class="font-medium truncate">ลาเต้</span><span class="text-slate-600">฿15,000</span></div>
+            <div class="w-full bg-slate-100 rounded-full h-1 mt-1"><div class="bg-slate-300 h-1 rounded-full" style="width:27%"></div></div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="w-7 h-7 rounded-lg bg-slate-50 text-slate-500 text-sm font-bold flex items-center justify-center">5</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between text-sm"><span class="font-medium truncate">ข้าวผัดปู</span><span class="text-slate-600">฿12,400</span></div>
+            <div class="w-full bg-slate-100 rounded-full h-1 mt-1"><div class="bg-slate-300 h-1 rounded-full" style="width:22%"></div></div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="w-7 h-7 rounded-lg bg-slate-50 text-slate-500 text-sm font-bold flex items-center justify-center">6</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between text-sm"><span class="font-medium truncate">Mojito</span><span class="text-slate-600">฿9,800</span></div>
+            <div class="w-full bg-slate-100 rounded-full h-1 mt-1"><div class="bg-slate-300 h-1 rounded-full" style="width:17%"></div></div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="w-7 h-7 rounded-lg bg-slate-50 text-slate-500 text-sm font-bold flex items-center justify-center">7</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between text-sm"><span class="font-medium truncate">เบียร์สิงห์</span><span class="text-slate-600">฿5,880</span></div>
+            <div class="w-full bg-slate-100 rounded-full h-1 mt-1"><div class="bg-slate-300 h-1 rounded-full" style="width:10%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSIGHTS PANEL -->
+  <div class="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 rounded-xl p-5 mb-4">
+    <h3 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">💡 Insights อัตโนมัติ</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div class="bg-white rounded-lg p-3 border border-slate-100">
+        <div class="text-xs text-emerald-600 font-semibold mb-1">📈 แนวโน้มดี</div>
+        <div class="text-sm text-slate-700">ยอดขาย Walk-In เพิ่มขึ้น <span class="font-bold text-emerald-600">15%</span> จากเดือนที่แล้ว — เป็นช่องทางที่โตเร็วสุด</div>
+      </div>
+      <div class="bg-white rounded-lg p-3 border border-slate-100">
+        <div class="text-xs text-rose-600 font-semibold mb-1">⚠️ ควรระวัง</div>
+        <div class="text-sm text-slate-700">Korean Tour ลดลง <span class="font-bold text-rose-600">5%</span> — อาจต้องเช็คโปรโมชั่นหรือความถี่ทัวร์</div>
+      </div>
+      <div class="bg-white rounded-lg p-3 border border-slate-100">
+        <div class="text-xs text-sky-600 font-semibold mb-1">🎯 โอกาส</div>
+        <div class="text-sm text-slate-700">วันเสาร์ยอดขายสูงกว่าวันธรรมดา <span class="font-bold text-sky-600">2.3 เท่า</span> — พิจารณาเพิ่มสต็อก/ทีม</div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /sub-overview -->
+
+  <!-- ========== SUB: MATRIX ========== -->
+  <div id="sub-matrix" class="sub-view hidden">
+    <!-- Regular Group -->
+    <div class="bg-white rounded-xl shadow-sm p-5 mb-4">
+      <h3 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">
+        <span class="w-2 h-6 bg-rose-500 rounded"></span> Regular (Walk-In + By Boats)
+      </h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="bg-rose-50">
+              <th class="text-left px-3 py-2 border border-rose-100">Channel</th>
+              <th class="text-right px-3 py-2 border border-rose-100">Food</th>
+              <th class="text-right px-3 py-2 border border-rose-100">Drinks</th>
+              <th class="text-right px-3 py-2 border border-rose-100">Cocktails</th>
+              <th class="text-right px-3 py-2 border border-rose-100">Coffee</th>
+              <th class="text-right px-3 py-2 border border-rose-100">Sunbed</th>
+              <th class="text-right px-3 py-2 border border-rose-100 bg-rose-100 font-bold">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="hover:bg-slate-50">
+              <td class="px-3 py-2 border border-slate-200 font-medium">Walk-In</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">1,011,740</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">117,220</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">72,050</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">26,190</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">31,600</td>
+              <td class="px-3 py-2 border border-slate-200 text-right font-semibold bg-rose-50">1,258,800</td>
+            </tr>
+            <tr class="hover:bg-slate-50">
+              <td class="px-3 py-2 border border-slate-200 font-medium">By Boats</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">400,100</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">87,890</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">60,880</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">13,870</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">19,600</td>
+              <td class="px-3 py-2 border border-slate-200 text-right font-semibold bg-rose-50">582,340</td>
+            </tr>
+            <tr class="bg-slate-100 font-bold">
+              <td class="px-3 py-2 border border-slate-200">Total</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">1,411,840</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">205,110</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">132,930</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">40,060</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">51,200</td>
+              <td class="px-3 py-2 border border-slate-200 text-right bg-rose-200">1,841,140</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-xs text-slate-400 mt-2">💡 คลิกตัวเลขเพื่อดูรายการเมนูในกลุ่มนั้น</p>
+    </div>
+
+    <!-- Korean Tour -->
+    <div class="bg-white rounded-xl shadow-sm p-5 mb-4">
+      <h3 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">
+        <span class="w-2 h-6 bg-purple-500 rounded"></span> Korean Tour
+      </h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="bg-purple-50">
+              <th class="text-left px-3 py-2 border border-purple-100">Channel</th>
+              <th class="text-right px-3 py-2 border border-purple-100">Sunbed</th>
+              <th class="text-right px-3 py-2 border border-purple-100">Waters</th>
+              <th class="text-right px-3 py-2 border border-purple-100">Services</th>
+              <th class="text-right px-3 py-2 border border-purple-100">Jet-Banana</th>
+              <th class="text-right px-3 py-2 border border-purple-100 bg-purple-100 font-bold">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="hover:bg-slate-50">
+              <td class="px-3 py-2 border border-slate-200 font-medium">Korean Tour</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">95,600</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">23,540</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">8,100</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">26,550</td>
+              <td class="px-3 py-2 border border-slate-200 text-right font-semibold bg-purple-50">153,790</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Korean Speedboat -->
+    <div class="bg-white rounded-xl shadow-sm p-5 mb-4">
+      <h3 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">
+        <span class="w-2 h-6 bg-amber-500 rounded"></span> Korean Speedboat
+      </h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="bg-amber-50">
+              <th class="text-left px-3 py-2 border border-amber-100">Channel</th>
+              <th class="text-right px-3 py-2 border border-amber-100">Sunbed</th>
+              <th class="text-right px-3 py-2 border border-amber-100">Drinks</th>
+              <th class="text-right px-3 py-2 border border-amber-100">Jet-Banana</th>
+              <th class="text-right px-3 py-2 border border-amber-100">Snorkling+LJ</th>
+              <th class="text-right px-3 py-2 border border-amber-100 bg-amber-100 font-bold">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="hover:bg-slate-50">
+              <td class="px-3 py-2 border border-slate-200 font-medium">Korean Speedboat</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">800</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">160</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">0</td>
+              <td class="px-3 py-2 border border-slate-200 text-right">0</td>
+              <td class="px-3 py-2 border border-slate-200 text-right font-semibold bg-amber-50">960</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Grand Total -->
+    <div class="bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-xl p-5 shadow flex justify-between items-center">
+      <span class="text-lg">🎯 ยอดรวมทั้งหมด</span>
+      <span class="text-3xl font-bold">฿1,995,890</span>
+    </div>
+  </div><!-- /sub-matrix -->
+
+  <!-- ========== SUB: DAILY ========== -->
+  <div id="sub-daily" class="sub-view hidden">
+    <div class="bg-white rounded-xl shadow-sm p-5">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h3 class="font-semibold text-slate-800">📅 ยอดขายรายวัน — เมษายน 2026</h3>
+        <div class="flex flex-wrap gap-1 bg-slate-100 p-1 rounded-lg">
+          <button data-daily="summary" class="daily-btn px-3 py-1.5 text-xs font-medium rounded-md daily-active">📊 สรุปรวม</button>
+          <button data-daily="walkin" class="daily-btn px-3 py-1.5 text-xs font-medium rounded-md text-slate-600">🚶 Walk-In</button>
+          <button data-daily="boats" class="daily-btn px-3 py-1.5 text-xs font-medium rounded-md text-slate-600">🚤 By Boats</button>
+          <button data-daily="ktour" class="daily-btn px-3 py-1.5 text-xs font-medium rounded-md text-slate-600">🇰🇷 Korean Tour</button>
+          <button data-daily="kspeed" class="daily-btn px-3 py-1.5 text-xs font-medium rounded-md text-slate-600">⚡ Korean Speedboat</button>
+        </div>
+      </div>
+      <div id="daily-wrap">
+        <table class="border-collapse" id="daily-table">
+          <thead id="daily-thead"></thead>
+          <tbody id="daily-tbody"></tbody>
+          <tfoot id="daily-tfoot"></tfoot>
+        </table>
+      </div>
+      <p class="text-xs text-slate-400 mt-3">💡 คลิกแท็บเพื่อดูทีละช่องทาง · คลิกแถววันที่เพื่อดูรายการบิลของวันนั้น</p>
+    </div>
+  </div><!-- /sub-daily -->
+</section>
+
+<!-- ============ VIEW: MENU ============ -->
+<section id="view-menu" class="view hidden fade-in">
+  <div class="bg-white rounded-xl shadow-sm p-5">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold text-slate-800">⚙️ จัดการเมนู</h2>
+      <button class="bg-sky-500 hover:bg-sky-600 text-white text-sm px-4 py-2 rounded-lg">+ เพิ่มเมนูใหม่</button>
+    </div>
+
+    <input type="text" placeholder="🔍 ค้นหาเมนู..." class="w-full mb-3 px-3 py-2 border border-slate-300 rounded-lg text-sm">
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-slate-600">
+          <tr>
+            <th class="text-left px-3 py-2">ชื่อเมนู</th>
+            <th class="text-left px-3 py-2">หมวด</th>
+            <th class="text-right px-3 py-2">ราคา</th>
+            <th class="text-center px-3 py-2">สถานะ</th>
+            <th class="px-3 py-2"></th>
+          </tr>
+        </thead>
+        <tbody id="menu-table" class="divide-y divide-slate-200"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+// ============ SAMPLE DATA ============
+const SAMPLE_MENU = [
+  { id: 'M001', name: 'ตัมยำกุ้ง', cat: 'Food', price: 280 },
+  { id: 'M002', name: 'ผัดไทยกุ้ง', cat: 'Food', price: 250 },
+  { id: 'M003', name: 'ข้าวผัดปู', cat: 'Food', price: 220 },
+  { id: 'M004', name: 'ลาเต้', cat: 'Coffees', price: 100 },
+  { id: 'M005', name: 'อเมริกาโน่', cat: 'Coffees', price: 80 },
+  { id: 'M006', name: 'น้ำส้ม', cat: 'Drinks', price: 60 },
+  { id: 'M007', name: 'เบียร์สิงห์', cat: 'Drinks', price: 60 },
+  { id: 'M008', name: 'Mojito', cat: 'Cocktails', price: 180 },
+  { id: 'M009', name: 'Sunbed (วัน)', cat: 'Sunbeds', price: 300 },
+  { id: 'M010', name: 'Jet Ski 30 นาที', cat: 'Jet-Banana', price: 1500 },
+];
+
+const CAT_COLORS = {
+  'Food': 'bg-rose-100 text-rose-700',
+  'Drinks': 'bg-blue-100 text-blue-700',
+  'Coffees': 'bg-amber-100 text-amber-700',
+  'Cocktails': 'bg-purple-100 text-purple-700',
+  'Sunbeds': 'bg-emerald-100 text-emerald-700',
+  'Jet-Banana': 'bg-cyan-100 text-cyan-700',
+};
+
+// ============ TABS ============
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
+    btn.classList.add('tab-active');
+    document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+    const view = document.getElementById('view-' + btn.dataset.tab);
+    view.classList.remove('hidden');
+    view.classList.remove('fade-in'); void view.offsetWidth; view.classList.add('fade-in');
+  });
+});
+
+// ============ SUB TABS ============
+document.querySelectorAll('.sub-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('sub-active'));
+    btn.classList.add('sub-active');
+    document.querySelectorAll('.sub-view').forEach(v => v.classList.add('hidden'));
+    document.getElementById('sub-' + btn.dataset.sub).classList.remove('hidden');
+  });
+});
+
+// ============ DAILY TABLE DATA ============
+const DAILY_DATA = [
+  [1,276130,33075,22430,6410,9000,156660,28295,32510,5570,12100,0,0,0,0,0,0,0,0],
+  [2,34600,3595,2720,770,500,16460,4630,1540,100,1000,0,0,0,0,0,0,0,0],
+  [3,30810,4605,2130,1520,1000,22430,3475,1240,460,0,0,0,0,0,0,0,0,0],
+  [4,20130,3600,1500,800,2100,85800,10490,6570,770,1300,0,0,0,0,0,0,0,0],
+  [5,23560,3600,1500,500,600,15000,3900,1200,600,1300,0,0,0,0,0,0,0,0],
+  [6,23560,3600,1500,600,900,15000,3900,1100,600,1300,0,0,0,0,0,0,0,0],
+  [7,23560,3600,1500,300,800,15000,3900,1600,600,1300,0,0,0,0,0,0,0,0],
+  [8,23560,3600,1500,250,300,15000,3900,2100,600,1300,0,0,0,0,0,0,0,0],
+  [9,23560,3600,1500,400,700,15000,3900,2100,600,0,0,0,0,0,0,0,0,0],
+  [10,23560,3600,1500,620,1000,3060,17100,9420,0,0,0,0,0,0,0,0,0,0],
+  [11,23560,3600,1500,900,900,40690,4400,1500,2000,0,0,0,0,0,0,0,0,0],
+  [12,23560,3600,1500,1100,500,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [13,23560,3600,1500,1400,400,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [14,45030,5045,3270,1420,1700,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [15,45000,4800,3300,1500,1200,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [16,45000,4800,3300,1300,1700,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [17,45000,4800,3300,900,1100,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [18,45000,4800,1800,1200,1600,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [19,45000,4800,1800,1200,1600,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [20,45000,4800,1800,1200,1600,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [21,35000,3200,1500,900,900,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [22,43000,1400,1200,400,600,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [23,45000,1500,8500,600,900,0,0,0,0,0,0,0,0,0,0,0,0,0],
+];
+// Daily index map: [date, W-Food, W-Drinks, W-Cock, W-Coffee, W-Sunbed, B-Food, B-Drinks, B-Cock, B-Coffee, B-Sunbed, K-Sunbed, K-Waters, K-Serv, K-JetB, S-Sunbed, S-Drinks, S-JetB, S-Snork]
+const DAILY_VIEWS = {
+  summary: {
+    headers: ['Date', '🚶 Walk-In', '🚤 By Boats', '🇰🇷 Korean Tour', '⚡ Korean Speedboat'],
+    cols: [[1,2,3,4,5], [6,7,8,9,10], [11,12,13,14], [15,16,17,18]],
+  },
+  walkin: {
+    headers: ['Date', 'Food', 'Drinks', 'Cocktails', 'Coffee', 'Sunbed'],
+    cols: [[1],[2],[3],[4],[5]],
+  },
+  boats: {
+    headers: ['Date', 'Food', 'Drinks', 'Cocktails', 'Coffee', 'Sunbed'],
+    cols: [[6],[7],[8],[9],[10]],
+  },
+  ktour: {
+    headers: ['Date', 'Sunbed', 'Waters', 'Services', 'Jet-Banana'],
+    cols: [[11],[12],[13],[14]],
+  },
+  kspeed: {
+    headers: ['Date', 'Sunbed', 'Drinks', 'Jet-Banana', 'Snorkling+LJ'],
+    cols: [[15],[16],[17],[18]],
+  },
+};
+
+const fmt = n => n === 0 ? '<span class="dash">—</span>' : n.toLocaleString();
+const MONTH_NAMES = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const DAY_NAMES = ['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
+
+function renderDaily(view) {
+  const v = DAILY_VIEWS[view];
+  const thead = document.getElementById('daily-thead');
+  const tbody = document.getElementById('daily-tbody');
+  const tfoot = document.getElementById('daily-tfoot');
+
+  thead.innerHTML = '<tr>' + v.headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+
+  const totals = v.cols.map(() => 0);
+  const month = 3; // April (0-indexed)
+  const year = 2026;
+
+  tbody.innerHTML = Array.from({length: 31}, (_, i) => {
+    const day = i + 1;
+    const row = DAILY_DATA.find(r => r[0] === day) || [day, ...Array(18).fill(0)];
+    const cells = v.cols.map((colGroup, ci) => {
+      const sum = colGroup.reduce((a, c) => a + (row[c] || 0), 0);
+      totals[ci] += sum;
+      return `<td>${fmt(sum)}</td>`;
+    }).join('');
+    return `<tr><td>${day}</td>${cells}</tr>`;
+  }).join('');
+
+  tfoot.innerHTML = `<tr>
+    <td>TOTAL</td>
+    ${totals.map(t => `<td>${t ? t.toLocaleString() : '—'}</td>`).join('')}
+  </tr>`;
+}
+
+renderDaily('summary');
+
+document.querySelectorAll('.daily-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.daily-btn').forEach(b => { b.classList.remove('daily-active'); b.classList.add('text-slate-600'); });
+    btn.classList.add('daily-active');
+    btn.classList.remove('text-slate-600');
+    renderDaily(btn.dataset.daily);
+  });
+});
+
+// ============ HEADER DATE ============
+document.getElementById('today').textContent = new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+document.getElementById('bill-date').valueAsDate = new Date();
+
+// ============ ENTRY: ITEMS ============
+let items = [];
+function addItem() {
+  items.push({ menu: SAMPLE_MENU[0].id, qty: 1 });
+  renderItems();
+}
+function removeItem(i) { items.splice(i, 1); renderItems(); }
+function updateItem(i, field, val) {
+  items[i][field] = field === 'qty' ? parseInt(val) || 1 : val;
+  renderItems();
+}
+function renderItems() {
+  const list = document.getElementById('items-list');
+  if (items.length === 0) {
+    list.innerHTML = '<div class="text-center text-slate-400 text-sm py-6 border-2 border-dashed border-slate-200 rounded-lg">ยังไม่มีรายการ · กด "เพิ่มรายการ"</div>';
+    document.getElementById('bill-total').textContent = '฿0';
+    return;
+  }
+  let total = 0;
+  list.innerHTML = items.map((it, i) => {
+    const menu = SAMPLE_MENU.find(m => m.id === it.menu);
+    const subtotal = menu.price * it.qty;
+    total += subtotal;
+    return `
+      <div class="flex gap-2 items-center bg-slate-50 rounded-lg p-2">
+        <select onchange="updateItem(${i}, 'menu', this.value)" class="flex-1 px-2 py-1.5 border border-slate-300 rounded text-sm bg-white">
+          ${SAMPLE_MENU.map(m => `<option value="${m.id}" ${m.id===it.menu?'selected':''}>${m.name} · ฿${m.price}</option>`).join('')}
+        </select>
+        <input type="number" value="${it.qty}" min="1" onchange="updateItem(${i}, 'qty', this.value)" class="w-16 px-2 py-1.5 border border-slate-300 rounded text-sm text-center">
+        <span class="w-20 text-right text-sm font-medium text-slate-700">฿${subtotal.toLocaleString()}</span>
+        <button onclick="removeItem(${i})" class="text-red-500 hover:bg-red-50 w-8 h-8 rounded">✕</button>
+      </div>`;
+  }).join('');
+  document.getElementById('bill-total').textContent = '฿' + total.toLocaleString();
+}
+renderItems();
+
+// ============ MENU TABLE ============
+document.getElementById('menu-table').innerHTML = SAMPLE_MENU.map(m => `
+  <tr class="hover:bg-slate-50">
+    <td class="px-3 py-2">${m.name}</td>
+    <td class="px-3 py-2"><span class="px-2 py-0.5 rounded text-xs ${CAT_COLORS[m.cat] || 'bg-slate-100'}">${m.cat}</span></td>
+    <td class="px-3 py-2 text-right font-medium">฿${m.price}</td>
+    <td class="px-3 py-2 text-center"><span class="text-emerald-600 text-xs">● ใช้งาน</span></td>
+    <td class="px-3 py-2 text-right">
+      <button class="text-sky-600 hover:underline text-xs">แก้ไข</button>
+      <button class="text-red-500 hover:underline text-xs ml-2">ลบ</button>
+    </td>
+  </tr>
+`).join('');
+
+// ============ CHARTS ============
+// Hero chart
+const heroData = [45000, 52000, 48000, 61000, 55000, 67000, 72000, 58000, 63000, 70000, 75000, 68000, 71000, 80000, 85000, 78000, 82000, 90000, 88000, 76000, 81000, 79000, 84000, 92000, 87000, 83000, 89000, 95000, 91000, 86000];
+new Chart(document.getElementById('chart-hero'), {
+  type: 'line',
+  data: {
+    labels: heroData.map((_, i) => i+1),
+    datasets: [{
+      data: heroData,
+      borderColor: '#ffffff',
+      backgroundColor: 'rgba(255,255,255,0.15)',
+      fill: true,
+      tension: 0.4,
+      pointRadius: 0,
+      borderWidth: 2,
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+    scales: { x: { display: false }, y: { display: false } },
+    maintainAspectRatio: false,
+  }
+});
+
+// Sparklines
+document.querySelectorAll('[data-spark]').forEach(canvas => {
+  const data = canvas.dataset.spark.split(',').map(Number);
+  new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: data.map((_, i) => i),
+      datasets: [{ data, borderColor: '#0ea5e9', backgroundColor: 'rgba(14,165,233,0.15)', fill: true, tension: 0.4, pointRadius: 0, borderWidth: 1.5 }]
+    },
+    options: { plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false } }, maintainAspectRatio: false }
+  });
+});
+
+// Daily comparison
+new Chart(document.getElementById('chart-daily'), {
+  type: 'line',
+  data: {
+    labels: Array.from({length: 30}, (_, i) => i+1),
+    datasets: [
+      {
+        label: 'เดือนก่อน',
+        data: [40000, 45000, 42000, 55000, 48000, 60000, 65000, 52000, 58000, 63000, 68000, 61000, 64000, 72000, 76000, 70000, 73000, 80000, 78000, 68000, 72000, 70000, 75000, 82000, 78000, 74000, 79000, 84000, 80000, 76000],
+        borderColor: '#cbd5e1',
+        backgroundColor: 'transparent',
+        tension: 0.3,
+        borderDash: [4, 4],
+        pointRadius: 0,
+      },
+      {
+        label: 'เดือนนี้',
+        data: heroData,
+        borderColor: '#0ea5e9',
+        backgroundColor: 'rgba(14,165,233,0.1)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 0,
+        borderWidth: 2.5,
+      }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => '฿' + (v/1000) + 'k' } } } }
+});
+
+new Chart(document.getElementById('chart-channel'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Walk-In', 'By Boats', 'Korean Tour', 'Korean Speedboat'],
+    datasets: [{
+      data: [1258800, 582340, 153790, 960],
+      backgroundColor: ['#0ea5e9', '#10b981', '#f59e0b', '#a855f7'],
+    }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } }
+});
+
+</script>
+</body>
+</html>
