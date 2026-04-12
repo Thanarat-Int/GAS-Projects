@@ -1,0 +1,1940 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <?!= include('css'); ?>
+</head>
+
+<body>
+    <div id="app-container">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <div class="brand">
+                <div>
+                    <i class="fa-solid fa-droplet"></i>
+                    <span>PWA Analytics</span>
+                </div>
+                <small class="brand-subtitle">สาขาชลบุรี (ชั้นพิเศษ)</small>
+            </div>
+
+            <div class="nav-menu">
+                <div class="nav-item active" onclick="navigate('dashboard')">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </div>
+
+                <!-- NEW: Consolidated Record Menu -->
+                <div class="nav-item" onclick="navigate('record')">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>บันทึกข้อมูล</span>
+                </div>
+
+                <div class="nav-item" onclick="navigate('history')">
+                    <i class="fa-solid fa-table-list"></i>
+                    <span>ประวัติข้อมูล</span>
+                </div>
+
+                <!-- Report Views Group -->
+                <div class="nav-title"
+                    style="color: var(--text-muted); font-size: 0.8rem; margin: 16px 24px 8px; text-transform: uppercase; letter-spacing: 1px;">
+                    Reports</div>
+
+                <div class="nav-item" onclick="navigate('consumers')">
+                    <i class="fa-solid fa-users"></i>
+                    <span>ผู้ใช้น้ำ</span>
+                </div>
+                <div class="nav-item" onclick="navigate('production')">
+                    <i class="fa-solid fa-faucet"></i>
+                    <span>ผลิต-จ่าย-สูญเสีย</span>
+                </div>
+                <div class="nav-item" onclick="navigate('revenue')">
+                    <i class="fa-solid fa-money-bill-trend-up"></i>
+                    <span>รายได้</span>
+                </div>
+                <div class="nav-item" onclick="navigate('expenses')">
+                    <i class="fa-solid fa-money-bill-transfer"></i>
+                    <span>รายจ่าย</span>
+                </div>
+                <div class="nav-item" onclick="navigate('debt')">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span>หนี้ค้าง</span>
+                </div>
+
+                <div class="nav-title"
+                    style="color: var(--text-muted); font-size: 0.8rem; margin: 16px 24px 8px; text-transform: uppercase; letter-spacing: 1px;">
+                    Settings</div>
+
+                <div class="nav-item" onclick="navigate('targets')">
+                    <i class="fa-solid fa-bullseye"></i>
+                    <span>เป้าหมายประจำปี</span>
+                </div>
+                <div class="nav-item" onclick="navigate('ai-analysis')">
+                    <i class="fa-solid fa-robot"></i>
+                    <span>AI Analysis</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main id="main-content">
+            <!-- Single Unified Header -->
+            <div id="dashboard-header"
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; background: white; padding: 12px 24px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+
+                <!-- Left: Title & Target -->
+                <div>
+                    <h2 id="page-title" style="margin: 0; color: var(--text-main); font-size: 1.5rem;">Dashboard</h2>
+                    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                        <p id="period-subtitle"
+                            style="margin: 4px 0 0 0; color: #64748B; font-size: 0.9rem; font-weight: 500;">
+                            ข้อมูลประจำเดือน ต.ค. | ปีงบประมาณ 2569
+                        </p>
+                        <span id="target-display"
+                            style="display: none; align-items: center; gap: 6px; background: #EEF2FF; color: #1E40AF; padding: 4px 12px; border-radius: 20px; font-size: 0.82rem; font-weight: 600; border: 1px solid #DBEAFE; margin-left: 8px;">
+                            <i class="fa-regular fa-circle-dot" style="color: #3B82F6; font-size: 0.8rem;"></i>
+                            <span id="target-text"></span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Right: Filters & Actions -->
+                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+
+                    <!-- Date Filter Group -->
+                    <div
+                        style="display: flex; align-items: center; gap: 8px; border: 1px solid #E2E8F0; padding: 4px 8px; border-radius: 8px; background: #F8FAFC;">
+                        <i class="fa-regular fa-calendar" style="color: #64748B;"></i>
+                        <select id="filter-scope" class="form-select"
+                            style="border: none; background: transparent; color: #1E293B; font-weight: 600; cursor: pointer; outline: none; font-family: 'Sarabun'; font-size: 0.9rem;">
+                            <option value="custom">ช่วงเวลา (กำหนดเอง)</option>
+                            <option value="fiscal_year" selected>ปีงบประมาณ</option>
+                            <option value="quarter">รายไตรมาส</option>
+                            <option value="monthly">รายเดือน</option>
+                        </select>
+                    </div>
+
+                    <div id="filter-separator" style="height: 24px; border-right: 1px solid #E2E8F0;"></div>
+
+                    <!-- From -->
+                    <div id="filter-group-from" style="display: flex; align-items: center; gap: 4px;">
+                        <span id="from-label" style="color: #64748B; font-size: 0.85rem;">จาก:</span>
+                        <select id="filter-from-month" class="form-select"
+                            style="padding: 4px 8px; border-radius: 6px; border: 1px solid #E2E8F0; font-family: 'Sarabun'; background: white; cursor: pointer; font-size: 0.9rem;"></select>
+                        <select id="filter-from-year" class="form-select"
+                            style="padding: 4px 8px; border-radius: 6px; border: 1px solid #E2E8F0; font-family: 'Sarabun'; background: white; cursor: pointer; font-size: 0.9rem;"></select>
+                    </div>
+
+                    <!-- To -->
+                    <div id="filter-group-to" style="display: flex; align-items: center; gap: 4px;">
+                        <span id="to-label" style="color: #64748B; font-size: 0.85rem;">ถึง:</span>
+                        <select id="filter-to-month" class="form-select"
+                            style="padding: 4px 8px; border-radius: 6px; border: 1px solid #E2E8F0; font-family: 'Sarabun'; background: white; cursor: pointer; font-size: 0.9rem;"></select>
+                        <select id="filter-to-year" class="form-select"
+                            style="padding: 4px 8px; border-radius: 6px; border: 1px solid #E2E8F0; font-family: 'Sarabun'; background: white; cursor: pointer; font-size: 0.9rem;"></select>
+                    </div>
+
+                    <div style="width: 16px;"></div> <!-- Spacer -->
+
+                    <!-- Search -->
+                    <div style="position: relative;">
+                        <i class="fa-solid fa-magnifying-glass"
+                            style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94A3B8; font-size: 0.8rem;"></i>
+                        <input type="text" placeholder="Search..."
+                            style="padding: 6px 12px 6px 32px; border-radius: 20px; border: 1px solid #E2E8F0; background: #F8FAFC; width: 180px; outline: none; font-family: 'Sarabun'; font-size: 0.9rem;">
+                    </div>
+
+                    <!-- Refresh Button -->
+                    <div id="refresh-btn" onclick="refreshDashboardData()" title="รีเฟรชข้อมูลล่าสุด"
+                        style="cursor: pointer; width: 32px; height: 32px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; border: 1px solid #E2E8F0; margin-right: 8px;">
+                        <i class="fa-solid fa-arrows-rotate" style="color: #64748B; font-size: 1rem;"></i>
+                    </div>
+
+                    <!-- Notif with Dropdown -->
+                    <div id="notif-container" style="position: relative;">
+                        <div id="notif-bell" onclick="toggleNotificationDropdown(event)"
+                            style="cursor: pointer; width: 32px; height: 32px; border-radius: 50%; background: white; display: flex; align-items: center; justify-content: center; border: 1px solid #E2E8F0;">
+                            <i class="fa-regular fa-bell" style="color: #64748B; font-size: 1rem;"></i>
+                            <span id="notif-badge"
+                                style="display: none; position: absolute; top: 6px; right: 8px; width: 6px; height: 6px; background: #EF4444; border-radius: 50%; border: 1px solid white;"></span>
+                        </div>
+
+                        <!-- Dropdown Menu -->
+                        <div id="notif-dropdown"
+                            style="display: none; position: absolute; top: 40px; right: 0; width: 280px; background: white; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #F1F5F9; z-index: 50; overflow: hidden;">
+                            <div style="padding: 12px; border-bottom: 1px solid #F1F5F9;">
+                                <h4 style="margin: 0; font-size: 0.9rem; color: #1E293B;">Notifications</h4>
+                            </div>
+                            <div id="notif-list" style="max-height: 300px; overflow-y: auto;">
+                                <!-- Items will be injected here -->
+                                <div style="padding: 12px; text-align: center; color: #64748B; font-size: 0.85rem;">
+                                    No new notifications
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile -->
+                    <div
+                        style="display: flex; align-items: center; gap: 8px; cursor: pointer; background: white; padding: 3px 10px 3px 3px; border-radius: 20px; border: 1px solid #E2E8F0;">
+                        <div
+                            style="width: 28px; height: 28px; background: #0EA5E9; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.8rem;">
+                            A</div>
+                        <span style="font-weight: 500; color: #334155; font-size: 0.85rem;">Admin</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="content-area">
+                <!-- Dashboard View -->
+                <!-- Dashboard View -->
+                <section id="view-dashboard" class="view-section active">
+                    <!-- KPI Row 1: Efficiency Ratios -->
+                    <div class="kpi-grid"
+                        style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin-bottom: 20px;">
+                        <!-- NRW -->
+                        <div class="glass-panel kpi-card" style="padding: 20px; position: relative;">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <h4 style="color: #64748B; font-size: 0.85rem; margin-bottom: 5px;">อัตราน้ำสูญเสีย
+                                        (NRW)</h4>
+                                    <h2 id="kpi-nrw" style="font-size: 1.8rem; font-weight: 700; color: #1E293B;">0.00%
+                                    </h2>
+                                </div>
+                                <div
+                                    style="background: #FEE2E2; color: #EF4444; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-droplet-slash"></i>
+                                </div>
+                            </div>
+                            <div id="ind-nrw" style="font-size: 0.75rem; margin-top: 10px; color: #EF4444;"><i
+                                    class="fa-solid fa-arrow-up"></i> 0% vs avg</div>
+                        </div>
+                        <!-- Collection Efficiency -->
+                        <div class="glass-panel kpi-card" style="padding: 20px; position: relative;">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <h4 style="color: #64748B; font-size: 0.85rem; margin-bottom: 5px;">
+                                        ประสิทธิภาพการจัดเก็บ</h4>
+                                    <h2 id="kpi-collection"
+                                        style="font-size: 1.8rem; font-weight: 700; color: #1E293B;">0.00%</h2>
+                                </div>
+                                <div
+                                    style="background: #FEF3C7; color: #D97706; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                                </div>
+                            </div>
+                            <div id="ind-collection" style="font-size: 0.75rem; margin-top: 10px; color: #10B981;"><i
+                                    class="fa-solid fa-arrow-up"></i> 0% vs avg</div>
+                        </div>
+                        <!-- Net Profit Margin -->
+                        <div class="glass-panel kpi-card" style="padding: 20px; position: relative;">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <h4 style="color: #64748B; font-size: 0.85rem; margin-bottom: 5px;">อัตรากำไรสุทธิ
+                                    </h4>
+                                    <h2 id="kpi-margin" style="font-size: 1.8rem; font-weight: 700; color: #1E293B;">
+                                        0.00%</h2>
+                                </div>
+                                <div
+                                    style="background: #F3E8FF; color: #8B5CF6; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-chart-line"></i>
+                                </div>
+                            </div>
+                            <div id="ind-margin" style="font-size: 0.75rem; margin-top: 10px; color: #10B981;"><i
+                                    class="fa-solid fa-arrow-up"></i> 0% vs avg</div>
+                        </div>
+                        <!-- Op Ex Ratio -->
+                        <div class="glass-panel kpi-card" style="padding: 20px; position: relative;">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <h4 style="color: #64748B; font-size: 0.85rem; margin-bottom: 5px;">
+                                        อัตราค่าใช้จ่ายดำเนินงาน</h4>
+                                    <h2 id="kpi-opex" style="font-size: 1.8rem; font-weight: 700; color: #1E293B;">0.00%
+                                    </h2>
+                                </div>
+                                <div
+                                    style="background: #FFEDD5; color: #F97316; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-wallet"></i>
+                                </div>
+                            </div>
+                            <div id="ind-opex" style="font-size: 0.75rem; margin-top: 10px; color: #EF4444;"><i
+                                    class="fa-solid fa-arrow-up"></i> 0% vs avg</div>
+                        </div>
+                        <!-- New Customer Growth (Row 1 Col 5) -->
+                        <div class="glass-panel kpi-card" style="padding: 20px; position: relative;">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <h4 style="color: #64748B; font-size: 0.85rem; margin-bottom: 5px;">
+                                        อัตราการเติบโตของผู้ใช้น้ำใหม่</h4>
+                                    <h2 id="kpi-growth" style="font-size: 1.8rem; font-weight: 700; color: #1E293B;">
+                                        0.00%</h2>
+                                </div>
+                                <div
+                                    style="background: #CCFBF1; color: #0D9488; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-arrow-trend-up"></i>
+                                </div>
+                            </div>
+                            <div id="ind-growth" style="font-size: 0.75rem; margin-top: 10px; color: #10B981;"><i
+                                    class="fa-solid fa-arrow-up"></i> 0% vs prev month</div>
+                        </div>
+                    </div>
+
+                    <!-- KPI Row 2: Financial Values -->
+                    <div class="kpi-grid"
+                        style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin-bottom: 32px;">
+                        <!-- EBITDA -->
+                        <div class="glass-panel kpi-card" style="padding: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4 style="color: #64748B; font-size: 0.85rem;">กำไร (EBITDA)</h4>
+                                    <h2 id="kpi-ebitda" style="font-size: 1.4rem; font-weight: 700; color: #8B5CF6;">
+                                        ฿0.00</h2>
+                                </div>
+                                <div
+                                    style="background: #F3E8FF; color: #8B5CF6; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem;">
+                                    <i class="fa-solid fa-arrow-trend-up"></i>
+                                </div>
+                            </div>
+                            <div id="ind-ebitda" style="font-size: 0.75rem; margin-top: 10px; color: #64748B;">-- vs
+                                prev year</div>
+                        </div>
+                        <!-- Revenue -->
+                        <div class="glass-panel kpi-card" style="padding: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4 style="color: #64748B; font-size: 0.85rem;">รายได้รวม (Revenue)</h4>
+                                    <h2 id="kpi-revenue" style="font-size: 1.4rem; font-weight: 700; color: #10B981;">
+                                        ฿0.00</h2>
+                                </div>
+                                <div
+                                    style="background: #D1FAE5; color: #10B981; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem;">
+                                    <i class="fa-solid fa-money-bill-wave"></i>
+                                </div>
+                            </div>
+                            <div id="ind-revenue" style="font-size: 0.75rem; margin-top: 10px; color: #64748B;">-- vs
+                                prev year</div>
+                        </div>
+                        <!-- Expenses -->
+                        <div class="glass-panel kpi-card" style="padding: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4 style="color: #64748B; font-size: 0.85rem;">รายจ่ายรวม (Expenses)</h4>
+                                    <h2 id="kpi-expenses" style="font-size: 1.4rem; font-weight: 700; color: #EF4444;">
+                                        ฿0.00</h2>
+                                </div>
+                                <div
+                                    style="background: #FEE2E2; color: #EF4444; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem;">
+                                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                                </div>
+                            </div>
+                            <div id="ind-expenses" style="font-size: 0.75rem; margin-top: 10px; color: #64748B;">-- vs
+                                prev year</div>
+                        </div>
+                        <!-- Water Sales Volume (Row 2 Col 4) -->
+                        <div class="glass-panel kpi-card" style="padding: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4 style="color: #64748B; font-size: 0.85rem;">ปริมาณน้ำจำหน่าย</h4>
+                                    <h2 id="kpi-sales" style="font-size: 1.4rem; font-weight: 700; color: #1E293B;">0
+                                    </h2>
+                                </div>
+                                <div
+                                    style="background: #DCFCE7; color: #16A34A; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem;">
+                                    <i class="fa-solid fa-droplet"></i>
+                                </div>
+                            </div>
+                            <div id="ind-sales" style="font-size: 0.75rem; margin-top: 10px; color: #64748B;">-- vs prev
+                                month</div>
+                        </div>
+                        <!-- New Users -->
+                        <div class="glass-panel kpi-card" style="padding: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4 style="color: #64748B; font-size: 0.85rem;">ผู้ใช้น้ำรายใหม่</h4>
+                                    <h2 id="kpi-newusers" style="font-size: 1.4rem; font-weight: 700; color: #10B981;">
+                                        +0</h2>
+                                </div>
+                                <div
+                                    style="background: #D1FAE5; color: #10B981; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem;">
+                                    <i class="fa-solid fa-user-plus"></i>
+                                </div>
+                            </div>
+                            <div id="ind-newusers" style="font-size: 0.75rem; margin-top: 10px; color: #64748B;">-- vs
+                                prev year</div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel" style="padding: 24px; margin-bottom: 32px; height: 550px;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <div>
+                                <h3 style="margin: 0;">ผลการดำเนินงาน (Executive Performance)</h3>
+                                <span style="font-size: 0.8rem; color: #64748B;">เปรียบเทียบ รายได้ (Revenue) vs รายจ่าย
+                                    (Expenses) vs กำไร (Profit)</span>
+                            </div>
+                        </div>
+                        <canvas id="mainChart"></canvas>
+                    </div>
+
+                    <!-- Comparison Charts Row -->
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin-bottom: 32px;">
+                        <!-- Chart 1: Revenue vs Target -->
+                        <div class="glass-panel" style="padding: 24px; height: 450px;">
+                            <h3 style="margin: 0 0 16px 0; font-size: 1.1rem;">ผลการดำเนินงานเทียบเป้าหมาย (Revenue vs
+                                Target)</h3>
+                            <canvas id="revTargetChart"></canvas>
+                        </div>
+                        <!-- Chart 2: Revenue vs Expenses -->
+                        <div class="glass-panel" style="padding: 24px; height: 450px;">
+                            <h3 style="margin: 0 0 16px 0; font-size: 1.1rem;">ประสิทธิภาพการเงิน (รายได้ vs รายจ่าย)
+                            </h3>
+                            <canvas id="revExpChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Forecasting Section -->
+                    <div class="glass-panel" style="padding: 24px; margin-bottom: 32px;">
+                        <style>
+                            .btn-fore {
+                                display: flex;
+                                align-items: center;
+                                gap: 8px;
+                                padding: 8px 16px;
+                                border-radius: 50px;
+                                border: 1px solid #E2E8F0;
+                                background: white;
+                                color: #64748B;
+                                cursor: pointer;
+                                white-space: nowrap;
+                                font-size: 0.9rem;
+                                transition: all 0.2s;
+                                font-family: 'Sarabun', sans-serif;
+                            }
+
+                            .btn-fore:hover {
+                                background: #F1F5F9;
+                            }
+
+                            .btn-fore.active {
+                                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                                font-weight: 600;
+                            }
+
+                            .forecast-scrollbar {
+                                -webkit-overflow-scrolling: touch;
+                                scrollbar-width: thin;
+                            }
+
+                            .forecast-scrollbar::-webkit-scrollbar {
+                                height: 4px;
+                            }
+
+                            .forecast-scrollbar::-webkit-scrollbar-thumb {
+                                background: #CBD5E1;
+                                border-radius: 4px;
+                            }
+                        </style>
+
+                        <div style="margin-bottom: 20px;">
+                            <h3
+                                style="margin: 0; display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: #1E293B;">
+                                <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent);"></i>
+                                Statistical Trend Forecast (ระบบพยากรณ์แนวโน้ม)
+                            </h3>
+                            <p style="color: #64748B; font-size: 0.85rem; margin-top: 5px; margin-left: 28px;">
+                                วิเคราะห์และพยากรณ์แนวโน้มล่วงหน้า 3 เดือน ด้วยหลักการทางสถิติ (Linear Regression)</p>
+                        </div>
+
+                        <!-- Interactive Tabs -->
+                        <div class="forecast-scrollbar"
+                            style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px;">
+                            <button class="btn-fore active" onclick="switchForecast('revenue', this)"
+                                style="background: #10B981; color: white; border-color: #10B981;">
+                                <i class="fa-solid fa-money-bill-wave"></i> รายได้ (Revenue)
+                            </button>
+                            <button class="btn-fore" onclick="switchForecast('expenses', this)">
+                                <i class="fa-solid fa-file-invoice-dollar"></i> ค่าใช้จ่าย (Expenses)
+                            </button>
+                            <button class="btn-fore" onclick="switchForecast('profit', this)">
+                                <i class="fa-solid fa-arrow-trend-up"></i> กำไร (EBITDA Margin)
+                            </button>
+                            <button class="btn-fore" onclick="switchForecast('production', this)">
+                                <i class="fa-solid fa-droplet"></i> ปริมาณน้ำผลิต (Production)
+                            </button>
+                            <button class="btn-fore" onclick="switchForecast('sales', this)">
+                                <i class="fa-solid fa-faucet"></i> น้ำจำหน่าย (Water Sales)
+                            </button>
+                            <button class="btn-fore" onclick="switchForecast('loss', this)">
+                                <i class="fa-solid fa-droplet-slash"></i> น้ำสูญเสีย (Water Loss)
+                            </button>
+                        </div>
+
+                        <div style="height: 350px;">
+                            <canvas id="forecastChart"></canvas>
+                        </div>
+
+                        <div
+                            style="margin-top: 15px; padding: 15px; background: #F8FAFC; border-radius: 8px; border: 1px solid #E2E8F0;">
+                            <p id="forecast-summary" style="margin: 0; font-size: 0.9rem; color: #475569;">
+                                <i class="fa-solid fa-circle-info"></i> สรุปแนวโน้ม: เลือกข้อมูลเพื่อดูการพยากรณ์
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- SWOT Analysis -->
+                    <div class="glass-panel" style="padding: 24px;">
+                        <h3 style="margin-bottom: 20px;">Data-Driven SWOT Analysis (ระบบวิเคราะห์จุดแข็ง-จุดอ่อน)</h3>
+                        <p style="color: #64748B; font-size: 0.85rem; margin-top: -15px; margin-bottom: 20px;">
+                            การวิเคราะห์ปัจจัยจากผลการดำเนินงานจริง (Performance Based)</p>
+
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                            <!-- Strengths -->
+                            <div
+                                style="background: #F0FDF4; border: 1px solid #BBF7D0; padding: 15px; border-radius: 8px;">
+                                <h4
+                                    style="color: #15803D; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-circle-check"></i> Strengths (จุดแข็ง)
+                                </h4>
+                                <div id="swot-s" style="font-size: 0.9rem; color: #14532D; line-height: 1.6;">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> กำลังวิเคราะห์ข้อมูล...
+                                </div>
+                            </div>
+
+                            <!-- Weaknesses -->
+                            <div
+                                style="background: #FEF2F2; border: 1px solid #FECACA; padding: 15px; border-radius: 8px;">
+                                <h4
+                                    style="color: #B91C1C; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-circle-exclamation"></i> Weaknesses (จุดอ่อน)
+                                </h4>
+                                <div id="swot-w" style="font-size: 0.9rem; color: #7F1D1D; line-height: 1.6;">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> กำลังวิเคราะห์ข้อมูล...
+                                </div>
+                            </div>
+
+                            <!-- Opportunities -->
+                            <div
+                                style="background: #F3E8FF; border: 1px solid #E9D5FF; padding: 15px; border-radius: 8px;">
+                                <h4
+                                    style="color: #7E22CE; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-lightbulb"></i> Opportunities (โอกาส)
+                                </h4>
+                                <div id="swot-o" style="font-size: 0.9rem; color: #581C87; line-height: 1.6;">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> กำลังวิเคราะห์ข้อมูล...
+                                </div>
+                            </div>
+
+                            <!-- Threats -->
+                            <div
+                                style="background: #FFF7ED; border: 1px solid #FFEDD5; padding: 15px; border-radius: 8px;">
+                                <h4
+                                    style="color: #C2410C; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-shield-halved"></i> Threats (อุปสรรค)
+                                </h4>
+                                <div id="swot-t" style="font-size: 0.9rem; color: #7C2D12; line-height: 1.6;">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> กำลังวิเคราะห์ข้อมูล...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CONSOLIDATED RECORD FORM (Full Width Optimized) -->
+                <!-- CONSOLIDATED RECORD FORM (Logical Flow & Button at Bottom) -->
+                <section id="view-record" class="view-section">
+                    <div style="width: 100%; height: 100%;">
+
+                        <form id="form-monthly" style="height: 100%; display: flex; flex-direction: column;">
+                            <!-- Main Scrollable Content -->
+                            <div class="glass-panel"
+                                style="background: white; padding: 32px; border: 1px solid #E2E8F0; box-shadow: 0 4px 20px rgba(0,0,0,0.03); flex-grow: 1; overflow-y: auto; margin-bottom: 20px;">
+
+                                <!-- Top Section: Date -->
+                                <div
+                                    style="margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid #F1F5F9;">
+                                    <label
+                                        style="font-weight: 600; color: var(--sidebar-bg); display: block; margin-bottom: 8px;">วันที่บันทึก
+                                        (Date) <span style="color:red">*</span></label>
+                                    <input type="date" id="record-date" name="date" required
+                                        style="background: #F8FAFC; border: 1px solid #CBD5E1; padding: 10px; border-radius: 6px; width: 100%; max-width: 300px; font-family: 'Sarabun';">
+                                </div>
+
+                                <!-- 2-Column Grid -->
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 40px;">
+
+                                    <!-- LEFT COLUMN: Production & Users -->
+                                    <div style="display: flex; flex-direction: column; gap: 32px;">
+
+                                        <!-- Production -->
+                                        <div>
+                                            <h4
+                                                style="font-size: 1rem; color: var(--sidebar-bg); font-weight: 600; margin-bottom: 16px; border-left: 4px solid var(--primary); padding-left: 12px;">
+                                                การผลิตและจ่ายน้ำ (Water Flow)
+                                            </h4>
+                                            <div class="form-grid"
+                                                style="grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
+                                                <div class="form-group">
+                                                    <label>น้ำผลิต (ลบ.ม.)</label>
+                                                    <input type="number" name="water_produced" placeholder="0.00"
+                                                        step="0.01" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>จ่าย (ลบ.ม.)</label>
+                                                    <input type="number" name="water_distributed" placeholder="0.00"
+                                                        step="0.01" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-grid"
+                                                style="grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 0;">
+                                                <div class="form-group">
+                                                    <label>น้ำจ่ายฟรี (ลบ.ม.)</label>
+                                                    <input type="number" name="water_free" placeholder="0.00"
+                                                        step="0.01">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>สูญเสีย (%)</label>
+                                                    <input type="number" name="water_loss_pct" placeholder="0.00"
+                                                        step="0.01">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Consumers -->
+                                        <div>
+                                            <h4
+                                                style="font-size: 1rem; color: var(--sidebar-bg); font-weight: 600; margin-bottom: 16px; border-left: 4px solid var(--accent); padding-left: 12px;">
+                                                ข้อมูลผู้ใช้น้ำ (Consumers)
+                                            </h4>
+                                            <div class="form-grid"
+                                                style="grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 0;">
+                                                <div class="form-group">
+                                                    <label>ผู้ใช้น้ำ (ราย)</label>
+                                                    <input type="number" name="consumers_total" placeholder="0"
+                                                        required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>ผู้ใช้น้ำเพิ่ม (ราย)</label>
+                                                    <input type="number" name="consumers_new" placeholder="0" required>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <!-- RIGHT COLUMN: Financials & Debt -->
+                                    <div style="display: flex; flex-direction: column; gap: 32px;">
+
+                                        <!-- Financials -->
+                                        <div>
+                                            <h4
+                                                style="font-size: 1rem; color: var(--sidebar-bg); font-weight: 600; margin-bottom: 16px; border-left: 4px solid #F59E0B; padding-left: 12px;">
+                                                ข้อมูลการเงิน (Financials)
+                                            </h4>
+                                            <div class="form-group" style="margin-bottom: 16px;">
+                                                <label>รายได้ (บาท)</label>
+                                                <input type="number" name="revenue_total" placeholder="0.00" step="0.01"
+                                                    style="font-weight: 600; color: #059669; border-color: #10B981;">
+                                            </div>
+                                            <div class="form-grid"
+                                                style="grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 0;">
+                                                <div class="form-group">
+                                                    <label>รายจ่าย (บาท)</label>
+                                                    <input type="number" name="expense_total" placeholder="0.00"
+                                                        step="0.01">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>ค่าไฟ (บาท)</label>
+                                                    <input type="number" name="expense_electric" placeholder="0.00"
+                                                        step="0.01">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Debt -->
+                                        <div>
+                                            <h4
+                                                style="font-size: 1rem; color: var(--sidebar-bg); font-weight: 600; margin-bottom: 16px; border-left: 4px solid var(--danger); padding-left: 12px;">
+                                                หนี้ค้างชำระ (Debt)
+                                            </h4>
+                                            <div class="form-grid"
+                                                style="grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 0;">
+                                                <div class="form-group">
+                                                    <label>หนี้ค้าง-ราชการ (บาท)</label>
+                                                    <input type="number" name="debt_gov" placeholder="0.00" step="0.01">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>หนี้ค้าง-เอกชน (บาท)</label>
+                                                    <div style="position: relative;">
+                                                        <input type="number" name="debt_private" placeholder="0.00"
+                                                            step="0.01">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Footer: Save Button -->
+                            <div style="padding: 0 0 20px 0; text-align: center;">
+                                <button type="submit" class="btn btn-primary"
+                                    style="display: inline-flex; align-items: center; justify-content: center; padding: 12px 60px; font-size: 1rem; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); border-radius: 50px; width: auto; min-width: 200px;">
+                                    <i class="fa-solid fa-save" style="margin-right: 8px;"></i> บันทึกข้อมูล (Save)
+                                </button>
+                                <p
+                                    style="text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-top: 12px;">
+                                    กรุณาตรวจสอบความถูกต้องก่อนบันทึก | Please verify data before saving.
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- REPORT VIEWS (Graphs Only) -->
+
+                <section id="view-history" class="view-section">
+                    <!-- Header with Search -->
+                    <div
+                        style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                        <div>
+                            <h2 style="font-size: 1.5rem; font-weight: 700; color: #1E293B; margin: 0;">ประวัติข้อมูล
+                                (Data History)</h2>
+                            <p style="color: #64748B; margin: 4px 0 0 0; font-size: 0.9rem;">
+                                จัดการและตรวจสอบข้อมูลย้อนหลัง</p>
+                        </div>
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <button onclick="requestReset()"
+                                style="padding: 10px 16px; border-radius: 8px; border: 1px solid #EF4444; background: #FEF2F2; color: #EF4444; font-weight: 600; cursor: pointer; font-family: 'Sarabun'; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Data
+                            </button>
+                            <button onclick="exportToExcel()"
+                                style="padding: 10px 16px; border-radius: 8px; border: 1px solid #10B981; background: #ECFDF5; color: #10B981; font-weight: 600; cursor: pointer; font-family: 'Sarabun'; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                                <i class="fa-solid fa-file-excel"></i> Export Excel
+                            </button>
+                            <div style="position: relative;">
+                                <i class="fa-solid fa-magnifying-glass"
+                                    style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94A3B8;"></i>
+                                <input type="text" id="history-search" placeholder="ค้นหา... (ปี, เดือน)"
+                                    style="padding: 10px 12px 10px 36px; border-radius: 8px; border: 1px solid #E2E8F0; background: white; width: 260px; outline: none; font-family: 'Sarabun';"
+                                    onkeyup="filterHistory()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table Container -->
+                    <div class="glass-panel"
+                        style="padding: 0; background: white; overflow: hidden; display: flex; flex-direction: column; height: calc(100vh - 200px);">
+                        <div style="overflow: auto; flex: 1;">
+                            <table style="width: 100%; border-collapse: collapse; min-width: 1200px;">
+                                <thead style="background: #F8FAFC; position: sticky; top: 0; z-index: 10;">
+                                    <tr>
+                                        <th
+                                            style="padding: 14px 12px; text-align: left; min-width: 100px; color: #475569; font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid #E2E8F0;">
+                                            วันที่<br><small style="font-weight:400; color:#94A3B8;">(Date)</small></th>
+                                        <th
+                                            style="padding: 14px 10px; text-align: right; min-width: 70px; color: #475569; font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid #E2E8F0;">
+                                            ผู้ใช้น้ำ<br><small style="font-weight:400; color:#94A3B8;">(Users)</small>
+                                        </th>
+                                        <th
+                                            style="padding: 14px 10px; text-align: right; min-width: 70px; color: #475569; font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid #E2E8F0;">
+                                            ผู้ใช้น้ำเพิ่ม<br><small
+                                                style="font-weight:400; color:#94A3B8;">(New)</small></th>
+                                        <th
+                                            style="padding: 14px 10px; text-align: right; min-width: 80px; color: #475569; font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid #E2E8F0;">
+                                            น้ำผลิต<br><small style="font-weight:400; color:#94A3B8;">(Prod)</small>
+                                        </th>
+                                        <th
+                                            style="padding: 14px 10px; text-align: right; min-width: 80px; color: #475569; font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid #E2E8F0;">
+                                            น้ำจำหน่าย<br><small style="font-weight:400; color:#94A3B8;">(Dist)</small>
+                                        </th>
+                                        <th
+                                            style="padding: 14px 10px; text-align: right; min-width: 70px; color: #475569; font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid #E2E8F0;">
+                                            น้ำฟรี<br><small style="font-weight:400; color:#94A3B8;">(Free)</small></th>
+                                        <th
+                                            style="padding: 14px 10px; text-align: right; min-width: 70px; color: #475569; font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid #E2E8F0;">
+                                            สูญเสีย<br><small style="font-weight:400; color:#94A3B8;">(Loss %)</small>
+                                        </th>
+                                        <th
+                                            style="padding: 14px 10px; text-align: right; min-width: 90px; color: #475569; font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid #E2E8F0;">
+                                            รายได้<br><small style="font-weight:400; color:#94A3B8;">(Rev)</small></th>
+                                        <th
+                                            style="padding: 14px 10px; text-align: right; min-width: 90px; color: #475569; font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid #E2E8F0;">
+                                            รายจ่าย<br><small style="font-weight:400; color:#94A3B8;">(Exp)</small></th>
+                                        <th
+                                            style="padding: 14px 10px; text-align: right; min-width: 80px; color: #475569; font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid #E2E8F0;">
+                                            ค่าไฟ<br><small style="font-weight:400; color:#94A3B8;">(Elec)</small></th>
+                                        <th
+                                            style="padding: 14px 10px; text-align: right; min-width: 80px; color: #475569; font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid #E2E8F0;">
+                                            หนี้-ราชการ<br><small style="font-weight:400; color:#94A3B8;">(Gov)</small>
+                                        </th>
+                                        <th
+                                            style="padding: 14px 10px; text-align: right; min-width: 80px; color: #475569; font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid #E2E8F0;">
+                                            หนี้-เอกชน<br><small style="font-weight:400; color:#94A3B8;">(Pvt)</small>
+                                        </th>
+                                        <th
+                                            style="padding: 14px 10px; text-align: center; width: 130px; position: sticky; right: 0; background: #F8FAFC; z-index: 20; color: #475569; font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid #E2E8F0;">
+                                            จัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-table-body">
+                                    <!-- Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Pagination -->
+                        <div
+                            style="padding: 12px 24px; border-top: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center; background: white;">
+                            <span id="history-info" style="font-size: 0.85rem; color: #64748B;">Showing 0-0 of 0</span>
+                            <div style="display: flex; gap: 8px;">
+                                <button id="btn-prev" onclick="prevPage()" class="btn"
+                                    style="padding: 6px 12px; background: #F1F5F9; color: #334155; font-size: 0.85rem;"
+                                    disabled><i class="fa-solid fa-chevron-left"></i></button>
+                                <button id="btn-next" onclick="nextPage()" class="btn"
+                                    style="padding: 6px 12px; background: #F1F5F9; color: #334155; font-size: 0.85rem;"
+                                    disabled><i class="fa-solid fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- EDIT MODAL -->
+                <div id="modal-edit"
+                    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(2px);">
+                    <div class="glass-panel"
+                        style="background: white; width: 90%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; padding: 0; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+
+                        <!-- Header -->
+                        <div
+                            style="padding: 20px 24px; border-bottom: 1px solid #E2E8F0; display: flex; justify-content: space-between; align-items: center;">
+                            <h3 style="margin: 0; font-size: 1.25rem; color: #1E293B;">แก้ไขข้อมูล (Edit Record)</h3>
+                            <div onclick="closeEditModal()" style="cursor: pointer; padding: 8px; color: #64748B;"><i
+                                    class="fa-solid fa-xmark fa-lg"></i></div>
+                        </div>
+
+                        <!-- Scrollable Form -->
+                        <div style="overflow-y: auto; padding: 24px; flex: 1;">
+                            <form id="form-edit">
+                                <input type="hidden" id="edit-index">
+
+                                <!-- Date -->
+                                <div style="margin-bottom: 24px;">
+                                    <label
+                                        style="display: block; font-weight: 600; color: #334155; margin-bottom: 8px;">วันที่
+                                        (Date)</label>
+                                    <input type="date" id="edit-date" required class="form-control"
+                                        style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 8px; background: #F8FAFC;">
+                                </div>
+
+                                <!-- 3 Col Grid -->
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px;">
+
+                                    <!-- Group 1: Water -->
+                                    <div>
+                                        <h4
+                                            style="color: #2563EB; font-size: 0.9rem; margin-bottom: 16px; border-bottom: 2px solid #2563EB; padding-bottom: 4px; display: inline-block;">
+                                            การผลิต (Production)</h4>
+                                        <div class="form-group" style="margin-bottom: 12px;"><label>น้ำผลิต
+                                                (ลบ.ม.)</label><input type="number" id="edit-prod" step="0.01"></div>
+                                        <div class="form-group" style="margin-bottom: 12px;"><label>น้ำจำหน่าย
+                                                (ลบ.ม.)</label><input type="number" id="edit-dist" step="0.01"></div>
+                                        <div class="form-group" style="margin-bottom: 12px;">
+                                            <label>น้ำจ่ายฟรี</label><input type="number" id="edit-free" step="0.01">
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 12px;"><label>สูญเสีย
+                                                (%)</label><input type="number" id="edit-loss" step="0.01"></div>
+                                    </div>
+
+                                    <!-- Group 2: Consumers & Financials -->
+                                    <div>
+                                        <h4
+                                            style="color: #059669; font-size: 0.9rem; margin-bottom: 16px; border-bottom: 2px solid #059669; padding-bottom: 4px; display: inline-block;">
+                                            ลูกค้า & การเงิน</h4>
+                                        <div class="form-group" style="margin-bottom: 12px;"><label>ผู้ใช้น้ำ
+                                                (ราย)</label><input type="number" id="edit-users"></div>
+                                        <div class="form-group" style="margin-bottom: 12px;">
+                                            <label>ผู้ใช้น้ำใหม่</label><input type="number" id="edit-new-users">
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 12px;"><label>รายได้รวม
+                                                (บาท)</label><input type="number" id="edit-rev" step="0.01"
+                                                style="font-weight: 600; color: #059669;"></div>
+                                    </div>
+
+                                    <!-- Group 3: Expenses & Debt -->
+                                    <div>
+                                        <h4
+                                            style="color: #DC2626; font-size: 0.9rem; margin-bottom: 16px; border-bottom: 2px solid #DC2626; padding-bottom: 4px; display: inline-block;">
+                                            รายจ่าย & หนี้</h4>
+                                        <div class="form-group" style="margin-bottom: 12px;"><label>รายจ่ายรวม
+                                                (บาท)</label><input type="number" id="edit-exp" step="0.01"></div>
+                                        <div class="form-group" style="margin-bottom: 12px;">
+                                            <label>ค่าไฟฟ้า</label><input type="number" id="edit-elec" step="0.01">
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 12px;">
+                                            <label>หนี้ค้าง-ราชการ</label><input type="number" id="edit-debt-gov"
+                                                step="0.01">
+                                        </div>
+                                        <div class="form-group" style="margin-bottom: 12px;">
+                                            <label>หนี้ค้าง-เอกชน</label><input type="number" id="edit-debt-pvt"
+                                                step="0.01">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Footer -->
+                        <div
+                            style="padding: 16px 24px; border-top: 1px solid #E2E8F0; background: #F8FAFC; text-align: right;">
+                            <button onclick="closeEditModal()" class="btn"
+                                style="background: white; border: 1px solid #CBD5E1; color: #475569; margin-right: 12px;">ยกเลิก</button>
+                            <button onclick="saveEdit()" class="btn btn-primary"><i class="fa-solid fa-save"
+                                    style="margin-right: 8px;"></i>บันทึกการแก้ไข</button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <section id="view-consumers" class="view-section">
+                    <!-- Header -->
+                    <div style="margin-bottom: 24px;">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: #1E293B; margin: 0;">ผู้ใช้น้ำ
+                            (Customers)</h2>
+                        <p style="color: #64748B; margin: 4px 0 0 0; font-size: 0.9rem;">ข้อมูลประจำเดือน <span
+                                id="cons-month-label">--</span></p>
+                    </div>
+
+                    <!-- Row 1: Key Metrics (4 Cards) -->
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px;">
+                        <!-- Current Users -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">ผู้ใช้น้ำปัจจุบัน (ราย)</h4>
+                                <div
+                                    style="background: #eff6ff; color: #3b82f6; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-users"></i>
+                                </div>
+                            </div>
+                            <h2 id="cons-total" style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">
+                                0</h2>
+                            <div id="ind-cons-total" style="font-size: 0.75rem; margin-top: 8px; color: #10B981;">-- vs
+                                prev month</div>
+                        </div>
+                        <!-- New Users -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">ผู้ใช้น้ำรายใหม่ (ราย)</h4>
+                                <div
+                                    style="background: #ecfdf5; color: #10b981; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-user-plus"></i>
+                                </div>
+                            </div>
+                            <h2 id="cons-new" style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">+0
+                            </h2>
+                            <div id="ind-cons-new" style="font-size: 0.75rem; margin-top: 8px; color: #10B981;">-- vs
+                                prev month</div>
+                        </div>
+                        <!-- Decreased Users (Churn) -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">ผู้ใช้น้ำลดลง (ราย)</h4>
+                                <div
+                                    style="background: #fef2f2; color: #ef4444; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-user-minus"></i>
+                                </div>
+                            </div>
+                            <h2 id="cons-churn" style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">
+                                -0</h2>
+                            <div id="ind-cons-churn" style="font-size: 0.75rem; margin-top: 8px; color: #EF4444;">-- vs
+                                prev month</div>
+                        </div>
+                        <!-- Net Increase -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">เพิ่มขึ้นสุทธิ (ราย)</h4>
+                                <div
+                                    style="background: #f3e8ff; color: #a855f7; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-chart-line"></i>
+                                </div>
+                            </div>
+                            <h2 id="cons-net" style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">+0
+                            </h2>
+                            <div id="ind-cons-net" style="font-size: 0.75rem; margin-top: 8px; color: #10B981;">-- vs
+                                prev month</div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Secondary Metrics (3 Cards) -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 32px;">
+                        <!-- Growth Rate MoM -->
+                        <div class="glass-panel kpi-card" style="padding: 20px;">
+                            <h4 style="color: #64748B; font-size: 0.85rem; margin: 0 0 8px 0;">อัตราการเติบโต (เดือน)
+                                (%)</h4>
+                            <h2 id="cons-growth-mom" style="font-size: 1.5rem; font-weight: 700; color: #1E293B;">0.00%
+                            </h2>
+                            <div style="font-size: 0.75rem; color: #64748B; margin-top: 4px;">เทียบกับเดือนก่อนหน้า
+                            </div>
+                        </div>
+                        <!-- Growth Rate YTD -->
+                        <div class="glass-panel kpi-card" style="padding: 20px;">
+                            <h4 style="color: #64748B; font-size: 0.85rem; margin: 0 0 8px 0;">อัตราการเติบโต YTD (%)
+                            </h4>
+                            <h2 id="cons-growth-ytd" style="font-size: 1.5rem; font-weight: 700; color: #1E293B;">0.00%
+                            </h2>
+                            <div style="font-size: 0.75rem; color: #64748B; margin-top: 4px;">เทียบกับต้นปีงบประมาณ
+                            </div>
+                        </div>
+                        <!-- Avg Net Increase -->
+                        <div class="glass-panel kpi-card" style="padding: 20px;">
+                            <h4 style="color: #64748B; font-size: 0.85rem; margin: 0 0 8px 0;">เฉลี่ยเพิ่ม/เดือน (ราย)
+                            </h4>
+                            <h2 id="cons-avg-inc" style="font-size: 1.5rem; font-weight: 700; color: #1E293B;">+0</h2>
+                            <div style="font-size: 0.75rem; color: #64748B; margin-top: 4px;">เฉลี่ยต่อเดือน (YTD)</div>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Charts (2 Columns) -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <!-- Chart: New Users Multi-Year -->
+                        <div class="glass-panel" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
+                                <div>
+                                    <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">ผู้ใช้น้ำรายปี
+                                        (ปีงบประมาณ)
+                                    </h3>
+                                    <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                        จำนวนผู้ใช้น้ำสะสมเปรียบเทียบแต่ละปี (ปีงบประมาณ)</p>
+                                </div>
+                            </div>
+                            <div style="height: 300px;">
+                                <canvas id="chart-cons-year"></canvas>
+                            </div>
+                        </div>
+                        <!-- Chart: Quarterly Comparison -->
+                        <div class="glass-panel" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
+                                <div>
+                                    <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">
+                                        เปรียบเทียบผู้ใช้น้ำรายไตรมาส</h3>
+                                    <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                        เปรียบเทียบผู้ใช้น้ำรายใหม่แบบรายไตรมาสกับเป้าหมาย</p>
+                                </div>
+                            </div>
+                            <div style="height: 300px;">
+                                <canvas id="chart-cons-quarter"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 4: Charts (Monthly Trend + Type Distribution) -->
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+                        <!-- Chart: Monthly New vs Churn -->
+                        <div class="glass-panel" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
+                                <div>
+                                    <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">เปรียบเทียบผู้ใช้น้ำ
+                                        เพิ่มใหม่ vs ลดลง</h3>
+                                    <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                        แสดงแนวโน้มการเปลี่ยนแปลงของฐานลูกค้า</p>
+                                </div>
+                            </div>
+                            <div style="height: 300px;">
+                                <canvas id="chart-cons-trend"></canvas>
+                            </div>
+                        </div>
+                        <!-- Chart: User Types -->
+                        <div class="glass-panel" style="padding: 24px;">
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">สัดส่วนผู้ใช้น้ำ (ใหม่ vs
+                                    เดิม)</h3>
+                                <p style="margin: 4px 0 20px 0; color: #64748B; font-size: 0.85rem;">
+                                    แสดงสัดส่วนผู้ใช้น้ำใหม่เทียบกับผู้ใช้เดิม</p>
+                            </div>
+                            <div style="height: 260px; position: relative;">
+                                <canvas id="chart-cons-type"></canvas>
+                            </div>
+                            <div id="cons-type-legend" style="margin-top: 10px; font-size: 0.8rem; color: #64748B;">
+                                <!-- Detailed legend will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="view-production" class="view-section">
+                    <!-- Header -->
+                    <div style="margin-bottom: 24px;">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: #1E293B; margin: 0;">
+                            สถิติการผลิตและจ่ายน้ำ
+                            (Production & Loss)</h2>
+                        <p style="color: #64748B; margin: 4px 0 0 0; font-size: 0.9rem;">ข้อมูลประจำเดือน <span
+                                id="prod-month-label">--</span></p>
+                    </div>
+
+                    <!-- KPI Cards (Top Row) -->
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 24px;">
+                        <!-- Card 1: Water Produced -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">น้ำผลิต (ลบ.ม.)</h4>
+                                <div
+                                    style="background: #eff6ff; color: #3b82f6; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-droplet"></i>
+                                </div>
+                            </div>
+                            <h2 id="kpi-prod-total"
+                                style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">
+                                0</h2>
+                            <div id="ind-prod-total" style="font-size: 0.75rem; margin-top: 8px; color: #10B981;">-- vs
+                                prev month</div>
+                        </div>
+
+                        <!-- Card 2: Water Distributed -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">น้ำจ่าย (ลบ.ม.)</h4>
+                                <div
+                                    style="background: #ecfdf5; color: #10b981; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-faucet"></i>
+                                </div>
+                            </div>
+                            <h2 id="kpi-prod-dist"
+                                style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">
+                                0</h2>
+                            <div id="ind-prod-dist" style="font-size: 0.75rem; margin-top: 8px; color: #10B981;">-- vs
+                                prev month</div>
+                        </div>
+
+                        <!-- Card 3: Water Loss % -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">% น้ำสูญเสีย</h4>
+                                <div
+                                    style="background: #fef2f2; color: #ef4444; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                </div>
+                            </div>
+                            <h2 id="kpi-prod-loss"
+                                style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">
+                                0%</h2>
+                            <div id="ind-prod-loss" style="font-size: 0.75rem; margin-top: 8px; color: #10B981;">-- vs
+                                prev month</div>
+                        </div>
+
+                        <!-- Card 4: Distribution Efficiency -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">ประสิทธิภาพการจ่าย (%)</h4>
+                                <div
+                                    style="background: #f5f3ff; color: #8b5cf6; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-chart-line"></i>
+                                </div>
+                            </div>
+                            <h2 id="kpi-prod-efficiency"
+                                style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">0%</h2>
+                            <div style="font-size: 0.75rem; margin-top: 8px; color: #64748B;">เป้าหมาย ≥ 85%</div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid (2 Columns) -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <!-- Chart 1: Production vs Distribution vs Loss -->
+                        <div class="glass-panel" style="padding: 24px; min-height: 400px;">
+                            <div class="chart-header" style="margin-bottom: 16px;">
+                                <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">ปริมาณน้ำผลิต vs น้ำจ่าย vs
+                                    สูญเสีย
+                                </h3>
+                                <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                    เปรียบเทียบปริมาณน้ำและการสูญเสียรายเดือน</p>
+                            </div>
+                            <div style="height: 320px;">
+                                <canvas id="chart-prod-main"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Chart 2: Non-Revenue Water Breakdown -->
+                        <div class="glass-panel" style="padding: 24px; min-height: 400px;">
+                            <div class="chart-header" style="margin-bottom: 16px;">
+                                <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">องค์ประกอบน้ำสูญเสีย &
+                                    น้ำจ่ายฟรี
+                                </h3>
+                                <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                    วิเคราะห์องค์ประกอบของน้ำที่ไม่ได้รายได้ (NRW)</p>
+                            </div>
+                            <div style="height: 320px;">
+                                <canvas id="chart-prod-nrw"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Chart 3: Distribution Efficiency Trend -->
+                        <div class="glass-panel" style="padding: 24px; min-height: 400px;">
+                            <div class="chart-header" style="margin-bottom: 16px;">
+                                <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">แนวโน้มประสิทธิภาพการจ่ายน้ำ
+                                    (%)</h3>
+                                <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                    ติดตามประสิทธิภาพการจ่ายน้ำเทียบกับเป้าหมาย</p>
+                            </div>
+                            <div style="height: 320px;">
+                                <canvas id="chart-prod-efficiency-trend"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Chart 4: Water Loss Volume Trend -->
+                        <div class="glass-panel" style="padding: 24px; min-height: 400px;">
+                            <div class="chart-header" style="margin-bottom: 16px;">
+                                <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">แนวโน้มปริมาณน้ำสูญเสีย
+                                    (ลบ.ม.)</h3>
+                                <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                    ปริมาณน้ำที่สูญเสียไปในแต่ละเดือน</p>
+                            </div>
+                            <div style="height: 320px;">
+                                <canvas id="chart-prod-loss-volume"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Row: Distributed vs Electricity (Full Width) -->
+                    <div class="glass-panel" style="padding: 24px; margin-top: 20px; min-height: 400px;">
+                        <div class="chart-header" style="margin-bottom: 16px;">
+                            <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">เปรียบเทียบน้ำจำหน่าย vs ค่าไฟฟ้า
+                            </h3>
+                            <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                ความสัมพันธ์ระหว่างปริมาณน้ำที่จ่ายได้กับค่ากระแสไฟฟ้าที่ใช้</p>
+                        </div>
+                        <div style="height: 350px;">
+                            <canvas id="chart-prod-dist-elec"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="view-revenue" class="view-section">
+                    <!-- Header -->
+                    <div style="margin-bottom: 24px;">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: #1E293B; margin: 0;">
+                            สถิติรายได้
+                            (Revenue Statistics)</h2>
+                        <p style="color: #64748B; margin: 4px 0 0 0; font-size: 0.9rem;">ข้อมูลทางการเงินประจำเดือน
+                            <span id="rev-month-label">--</span>
+                        </p>
+                    </div>
+
+                    <!-- KPI Cards (Top Row) -->
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 24px;">
+                        <!-- Card 1: Total Revenue -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">รายได้เดือนล่าสุด (บาท)</h4>
+                                <div
+                                    style="background: #eff6ff; color: #3b82f6; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                                </div>
+                            </div>
+                            <h2 id="kpi-rev-total"
+                                style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">0</h2>
+                            <div id="ind-rev-total" style="font-size: 0.75rem; margin-top: 8px; color: #10B981;">-- vs
+                                prev month</div>
+                        </div>
+
+                        <!-- Card 2: Total Expenses -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">รายจ่ายเดือนล่าสุด (บาท)</h4>
+                                <div
+                                    style="background: #fef2f2; color: #ef4444; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                                </div>
+                            </div>
+                            <h2 id="kpi-rev-exp"
+                                style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">
+                                0</h2>
+                            <div id="ind-rev-exp" style="font-size: 0.75rem; margin-top: 8px; color: #EF4444;">-- vs
+                                prev month</div>
+                        </div>
+
+                        <!-- Card 3: EBITDA (Profit) -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">กำไรสุทธิเดือนล่าสุด (EBITDA)
+                                </h4>
+                                <div
+                                    style="background: #f5f3ff; color: #8b5cf6; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-chart-line"></i>
+                                </div>
+                            </div>
+                            <h2 id="kpi-rev-profit"
+                                style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">0</h2>
+                            <div id="ind-rev-profit" style="font-size: 0.75rem; margin-top: 8px; color: #10B981;">-- vs
+                                prev month</div>
+                        </div>
+
+                        <!-- Card 4: Net Margin -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">อัตรากำไรสุทธิ (%)</h4>
+                                <div
+                                    style="background: #ecfdf5; color: #10b981; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-percent"></i>
+                                </div>
+                            </div>
+                            <h2 id="kpi-rev-margin"
+                                style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">0%</h2>
+                            <div style="font-size: 0.75rem; margin-top: 8px; color: #64748B;">เป้าหมาย > 20%</div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid (2 Columns) -->
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <!-- Chart 1: Revenue vs Expenses Trend -->
+                        <div class="glass-panel" style="padding: 24px; min-height: 400px;">
+                            <div class="chart-header" style="margin-bottom: 16px;">
+                                <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">แนวโน้มรายได้ vs รายจ่าย</h3>
+                                <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                    เปรียบเทียบผลการดำเนินงานทางการเงินตลอดปีงบประมาณ</p>
+                            </div>
+                            <div style="height: 320px;">
+                                <canvas id="chart-rev-main"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Chart 2: Cumulative Revenue vs Target -->
+                        <div class="glass-panel" style="padding: 24px; min-height: 400px;">
+                            <div class="chart-header" style="margin-bottom: 16px;">
+                                <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">รายได้สะสม vs เป้าหมาย</h3>
+                                <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                    ความคืบหน้าเทียบกับเป้าหมายรายปี</p>
+                            </div>
+                            <div style="height: 320px;">
+                                <canvas id="chart-rev-target-progress"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Secondary Charts Row -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <!-- Chart 3: Expense Structure -->
+                        <div class="glass-panel" style="padding: 24px; min-height: 400px;">
+                            <div class="chart-header" style="margin-bottom: 16px;">
+                                <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">โครงสร้างค่าใช้จ่าย</h3>
+                                <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                    สัดส่วนค่าไฟฟ้า vs ค่าใช้จ่ายอื่นๆ</p>
+                            </div>
+                            <div style="height: 320px;">
+                                <canvas id="chart-rev-exp-struct"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Chart 4: Operating Ratio Trend -->
+                        <div class="glass-panel" style="padding: 24px; min-height: 400px;">
+                            <div class="chart-header" style="margin-bottom: 16px;">
+                                <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">ประสิทธิภาพการดำเนินงาน
+                                    (Operating Ratio)</h3>
+                                <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                    สัดส่วนค่าใช้จ่ายต่อรายได้ (ยิ่งต่ำยิ่งดี)</p>
+                            </div>
+                            <div style="height: 320px;">
+                                <canvas id="chart-rev-op-ratio"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="view-expenses" class="view-section">
+                    <!-- Header -->
+                    <div style="margin-bottom: 24px;">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: #1E293B; margin: 0;">
+                            สถิติรายจ่าย
+                            (Expenses Statistics)</h2>
+                        <p style="color: #64748B; margin: 4px 0 0 0; font-size: 0.9rem;">
+                            ข้อมูลค่าใช้จ่ายและต้นทุนประจำเดือน
+                            <span id="exp-month-label">--</span>
+                        </p>
+                    </div>
+
+                    <!-- KPI Cards (Top Row) -->
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 24px;">
+                        <!-- Card 1: Total Expenses -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">รายจ่ายเดือนล่าสุด (บาท)</h4>
+                                <div
+                                    style="background: #fef2f2; color: #ef4444; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                                </div>
+                            </div>
+                            <h2 id="kpi-exp-total"
+                                style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">0</h2>
+                            <div id="ind-exp-total" style="font-size: 0.75rem; margin-top: 8px; color: #EF4444;">-- vs
+                                prev month</div>
+                        </div>
+
+                        <!-- Card 2: Electricity Cost -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">ค่าไฟฟ้าเดือนล่าสุด (บาท)
+                                </h4>
+                                <div
+                                    style="background: #fffbeb; color: #f59e0b; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-bolt"></i>
+                                </div>
+                            </div>
+                            <h2 id="kpi-exp-elec"
+                                style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">0</h2>
+                            <div id="ind-exp-elec" style="font-size: 0.75rem; margin-top: 8px; color: #EF4444;">-- vs
+                                prev month</div>
+                        </div>
+
+                        <!-- Card 3: Other Expenses -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">ค่าใช้จ่ายอื่นๆ (บาท)</h4>
+                                <div
+                                    style="background: #f1f5f9; color: #64748b; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-coins"></i>
+                                </div>
+                            </div>
+                            <h2 id="kpi-exp-other"
+                                style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">0</h2>
+                            <div id="ind-exp-other" style="font-size: 0.75rem; margin-top: 8px; color: #EF4444;">-- vs
+                                prev month</div>
+                        </div>
+
+                        <!-- Card 4: Expenses / Revenue % -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">สัดส่วนรายจ่าย/รายได้ (%)
+                                </h4>
+                                <div
+                                    style="background: #f5f3ff; color: #8b5cf6; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-scale-balanced"></i>
+                                </div>
+                            </div>
+                            <h2 id="kpi-exp-ratio"
+                                style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">0%</h2>
+                            <div style="font-size: 0.75rem; margin-top: 8px; color: #64748B;">เป้าหมาย < 80%</div>
+                            </div>
+                        </div>
+
+                        <!-- Charts Grid (2 Columns) -->
+                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <!-- Chart 1: Expenses Trend (Stacked) -->
+                            <div class="glass-panel" style="padding: 24px; min-height: 400px;">
+                                <div class="chart-header" style="margin-bottom: 16px;">
+                                    <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">แนวโน้มค่าใช้จ่ายรายเดือน
+                                    </h3>
+                                    <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                        แยกตามประเภท: ค่าไฟฟ้า vs ค่าใช้จ่ายอื่นๆ</p>
+                                </div>
+                                <div style="height: 320px;">
+                                    <canvas id="chart-exp-main"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Chart 2: Electricity vs Production Efficiency -->
+                            <div class="glass-panel" style="padding: 24px; min-height: 400px;">
+                                <div class="chart-header" style="margin-bottom: 16px;">
+                                    <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">ประสิทธิภาพการใช้พลังงาน
+                                    </h3>
+                                    <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                        เปรียบเทียบค่าไฟฟ้า (บาท) กับปริมาณน้ำผลิต (ลบ.ม.)</p>
+                                </div>
+                                <div style="height: 320px;">
+                                    <canvas id="chart-exp-efficiency"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Secondary Charts Row -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <!-- Chart 3: Expense Structure (Donut) -->
+                            <div class="glass-panel" style="padding: 24px; min-height: 400px;">
+                                <div class="chart-header" style="margin-bottom: 16px;">
+                                    <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">สัดส่วนโครงสร้างต้นทุน
+                                    </h3>
+                                    <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                        วิเคราะห์สัดส่วนค่าใช้จ่ายหลัก</p>
+                                </div>
+                                <div style="height: 320px;">
+                                    <canvas id="chart-exp-structure"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Chart 4: Cumulative Expenses -->
+                            <div class="glass-panel" style="padding: 24px; min-height: 400px;">
+                                <div class="chart-header" style="margin-bottom: 16px;">
+                                    <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">รายจ่ายสะสม (Cumulative
+                                        Expenses)</h3>
+                                    <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                        ติดตามยอดรายจ่ายสะสมตลอดปีงบประมาณ</p>
+                                </div>
+                                <div style="height: 320px;">
+                                    <canvas id="chart-exp-cumulative"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                </section>
+
+                <section id="view-debt" class="view-section">
+                    <!-- Header -->
+                    <div style="margin-bottom: 24px;">
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: #1E293B; margin: 0;">
+                            สถานะหนี้ค้างชำระ
+                            (Outstanding Debt)</h2>
+                        <p style="color: #64748B; margin: 4px 0 0 0; font-size: 0.9rem;">
+                            ติดตามยอดหนี้ค้างชำระแยกตามประเภทลูกค้า
+                            <span id="debt-month-label">--</span>
+                        </p>
+                    </div>
+
+                    <!-- KPI Cards (Top Row) -->
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 24px;">
+                        <!-- Card 1: Total Debt -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">หนี้ค้างเดือนล่าสุดรวม (บาท)
+                                </h4>
+                                <div
+                                    style="background: #fef2f2; color: #ef4444; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-circle-exclamation"></i>
+                                </div>
+                            </div>
+                            <h2 id="kpi-debt-total"
+                                style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">0</h2>
+                            <div id="ind-debt-total" style="font-size: 0.75rem; margin-top: 8px; color: #EF4444;">-- vs
+                                prev month</div>
+                        </div>
+
+                        <!-- Card 2: Government Debt -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">หนี้ส่วนราชการ (บาท)</h4>
+                                <div
+                                    style="background: #f5f3ff; color: #8b5cf6; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-building-columns"></i>
+                                </div>
+                            </div>
+                            <h2 id="kpi-debt-gov"
+                                style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">0</h2>
+                            <div id="ind-debt-gov" style="font-size: 0.75rem; margin-top: 8px; color: #EF4444;">-- vs
+                                prev month</div>
+                        </div>
+
+                        <!-- Card 3: Private Debt -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">หนี้เอกชน/บ้านพัก (บาท)</h4>
+                                <div
+                                    style="background: #fffbeb; color: #f59e0b; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-house-user"></i>
+                                </div>
+                            </div>
+                            <h2 id="kpi-debt-pvt"
+                                style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">0</h2>
+                            <div id="ind-debt-pvt" style="font-size: 0.75rem; margin-top: 8px; color: #EF4444;">-- vs
+                                prev month</div>
+                        </div>
+
+                        <!-- Card 4: Debt Ratio -->
+                        <div class="glass-panel kpi-card" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <h4 style="color: #64748B; font-size: 0.85rem; margin: 0;">สัดส่วนหนี้/รายได้ (%)</h4>
+                                <div
+                                    style="background: #ecfdf5; color: #10b981; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-percent"></i>
+                                </div>
+                            </div>
+                            <h2 id="kpi-debt-ratio"
+                                style="font-size: 1.8rem; font-weight: 700; color: #1E293B; margin: 0;">0%</h2>
+                            <div style="font-size: 0.75rem; margin-top: 8px; color: #64748B;">เป้าหมาย < 5%</div>
+                            </div>
+                        </div>
+
+                        <!-- Charts Grid (2 Columns) -->
+                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <!-- Chart 1: Debt Trend (Stacked) -->
+                            <div class="glass-panel" style="padding: 24px; min-height: 400px;">
+                                <div class="chart-header" style="margin-bottom: 16px;">
+                                    <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">แนวโน้มหนี้ค้างชำระ</h3>
+                                    <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                        แยกตามประเภทลูกหนี้: ราชการ vs เอกชน</p>
+                                </div>
+                                <div style="height: 320px;">
+                                    <canvas id="chart-debt-main"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Chart 2: Debt vs Revenue -->
+                            <div class="glass-panel" style="padding: 24px; min-height: 400px;">
+                                <div class="chart-header" style="margin-bottom: 16px;">
+                                    <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">หนี้เทียบรายได้ (Debt vs
+                                        Rev)
+                                    </h3>
+                                    <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                        ความสามารถในการจัดเก็บรายได้</p>
+                                </div>
+                                <div style="height: 320px;">
+                                    <canvas id="chart-debt-vs-revenue"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Secondary Charts Row -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <!-- Chart 3: Debt Composition (Donut) -->
+                            <div class="glass-panel" style="padding: 24px; min-height: 400px;">
+                                <div class="chart-header" style="margin-bottom: 16px;">
+                                    <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">โครงสร้างลูกหนี้</h3>
+                                    <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                        สัดส่วนหนี้ค้างชำระตามประเภท</p>
+                                </div>
+                                <div style="height: 320px;">
+                                    <canvas id="chart-debt-composition"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Chart 4: Debt Ratio Trend -->
+                            <div class="glass-panel" style="padding: 24px; min-height: 400px;">
+                                <div class="chart-header" style="margin-bottom: 16px;">
+                                    <h3 style="margin: 0; font-size: 1.1rem; color: #1E293B;">แนวโน้มสัดส่วนหนี้ (%)
+                                    </h3>
+                                    <p style="margin: 4px 0 0 0; color: #64748B; font-size: 0.85rem;">
+                                        เทียบกับเกณฑ์ความเสี่ยง (Threshold 5%)</p>
+                                </div>
+                                <div style="height: 320px;">
+                                    <canvas id="chart-debt-ratio"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                </section>
+
+                <!-- Targets View -->
+                <section id="view-targets" class="view-section">
+                    <div class="glass-panel" style="padding: 32px;">
+                        <div class="form-header">
+                            <h3><i class="fa-solid fa-bullseye"></i> บันทึกเป้าหมายประจำปี</h3>
+                            <p style="color: var(--text-muted);">กำหนดเป้าหมายสำหรับปีงบประมาณ</p>
+                        </div>
+                        <form id="form-targets">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>ปีงบประมาณ (พ.ศ.)</label>
+                                    <input type="number" name="fiscal_year" placeholder="ระบุปี (เช่น 2569)" required
+                                        style="font-family: 'Sarabun';">
+                                </div>
+                                <div class="form-group">
+                                    <label>เป้าหมายรายได้ (บาท)</label>
+                                    <input type="number" name="target_revenue" placeholder="0.00" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label>เป้ากำไร EBITDA (บาท)</label>
+                                    <input type="number" name="target_ebitda" placeholder="0.00" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label>เป้าผู้ใช้น้ำเพิ่ม (ราย)</label>
+                                    <input type="number" name="target_new_consumers" placeholder="0">
+                                </div>
+                                <div class="form-group">
+                                    <label>เป้าอัตราน้ำสูญเสีย (%)</label>
+                                    <input type="number" name="target_loss_pct" placeholder="0.00" step="0.01">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i>
+                                บันทึกเป้าหมาย</button>
+                        </form>
+                    </div>
+
+                    <!-- Target History Table -->
+                    <div class="glass-panel" style="padding: 32px; margin-top: 24px;">
+                        <div class="form-header">
+                            <h3><i class="fa-solid fa-list-check"></i> ประวัติเป้าหมาย (Target History)</h3>
+                            <p style="color: var(--text-muted);">รายการเป้าหมายที่บันทึกไว้</p>
+                        </div>
+                        <div class="table-container">
+                            <table style="width: 100%; border-collapse: collapse; margin-top: 16px;">
+                                <thead>
+                                    <tr style="border-bottom: 2px solid #F1F5F9; text-align: left;">
+                                        <th style="padding: 12px; color: #64748B;">ปีงบประมาณ</th>
+                                        <th style="padding: 12px; color: #64748B;">รายได้ (บาท)</th>
+                                        <th style="padding: 12px; color: #64748B;">EBITDA (บาท)</th>
+                                        <th style="padding: 12px; color: #64748B;">ผู้ใช้น้ำเพิ่ม</th>
+                                        <th style="padding: 12px; color: #64748B;">น้ำสูญเสีย %</th>
+                                        <th style="padding: 12px; color: #64748B; text-align: center;">จัดการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="targets-table-body">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 24px; color: #94A3B8;">
+                                            กำลังโหลดข้อมูล...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- AI Analysis View -->
+                <!-- AI Analysis View -->
+                <section id="view-ai-analysis" class="view-section">
+                    <div class="glass-panel" style="padding: 32px;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                            <h3
+                                style="margin: 0; font-size: 1.25rem; color: #1E293B; display: flex; align-items: center; gap: 10px;">
+                                <i class="fa-solid fa-wand-magic-sparkles" style="color: #3B82F6;"></i>
+                                AI Insight Analysis
+                            </h3>
+                            <button id="btn-ai-generate"
+                                style="background: #3B82F6; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                Generate Report
+                            </button>
+                        </div>
+
+                        <div
+                            style="padding: 24px; background: #F8FAFC; border-radius: 12px; border-left: 4px solid #3B82F6;">
+                            <!-- Headers removed for cleaner UI -->
+
+                            <div id="ai-analysis-content" style="font-size: 0.95rem; color: #475569; line-height: 1.8;">
+                                <div style="display: flex; align-items: center; gap: 10px; color: #64748B;">
+                                    <i class="fa-solid fa-robot"></i>
+                                    <span>ระบบพร้อมวิเคราะห์ข้อมูล... กรุณากดปุ่ม "Generate Report" ด้านบน</span>
+                                </div>
+                            </div>
+
+                            <div
+                                style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #E2E8F0; font-size: 0.8rem; color: #94A3B8; display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-microchip"></i> วิเคราะห์ด้วยระบบ Rule Based Logic จากข้อมูลจริง
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+
+    <!-- Delete Confirmation Modal -->
+    <div id="modal-delete" class="modal-overlay"
+        style="display: none; align-items: center; justify-content: center; z-index: 60;">
+        <div class="glass-panel"
+            style="background: white; padding: 32px; width: 400px; border-radius: 16px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+            <div
+                style="width: 80px; height: 80px; background: #FEF2F2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                <i class="fa-solid fa-triangle-exclamation" style="font-size: 40px; color: #EF4444;"></i>
+            </div>
+            <h3 style="margin: 0 0 12px; color: #1E293B; font-size: 1.25rem; font-weight: 600;">ยืนยันการลบข้อมูล?</h3>
+            <p style="margin: 0 0 24px; color: #64748B; font-size: 0.95rem; line-height: 1.5;">
+                คุณแน่ใจหรือไม่ที่จะลบรายการนี้?<br>
+                <span style="font-size: 0.85rem; color: #94A3B8;">(Are you sure you want to delete this
+                    record?)</span><br>
+                การกระทำนี้ไม่สามารถย้อนกลับได้
+            </p>
+            <input type="hidden" id="delete-index">
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button onclick="closeDeleteModal()"
+                    style="padding: 12px 24px; border-radius: 12px; border: 1px solid #E2E8F0; background: white; color: #64748B; font-weight: 500; cursor: pointer; flex: 1; transition: all 0.2s;">
+                    ยกเลิก (Cancel)
+                </button>
+                <button onclick="confirmDelete()"
+                    style="padding: 12px 24px; border-radius: 12px; border: none; background: #EF4444; color: white; font-weight: 500; cursor: pointer; flex: 1; box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2); transition: all 0.2s;">
+                    ยืนยัน (Delete)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="modal-success" class="modal-overlay"
+        style="display: none; align-items: center; justify-content: center; z-index: 70;">
+        <div class="glass-panel"
+            style="background: white; padding: 32px; width: 400px; border-radius: 16px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+            <div
+                style="width: 80px; height: 80px; background: #DCFCE7; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                <i class="fa-solid fa-check" style="font-size: 40px; color: #166534;"></i>
+            </div>
+            <h3 style="margin: 0 0 12px; color: #1E293B; font-size: 1.25rem; font-weight: 600;"
+                id="modal-success-title">สำเร็จ!</h3>
+            <p style="margin: 0 0 24px; color: #64748B; font-size: 0.95rem; line-height: 1.5;" id="modal-success-msg">
+                ทำรายการเรียบร้อยแล้ว
+            </p>
+            <button onclick="document.getElementById('modal-success').style.display='none'"
+                style="padding: 12px 24px; border-radius: 12px; border: none; background: #10B981; color: white; font-weight: 600; cursor: pointer; width: 100%; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3); transition: all 0.2s;">
+                ตกลง (OK)
+            </button>
+        </div>
+    </div>
+
+    <!-- Export Confirmation Modal -->
+    <div id="modal-export" class="modal-overlay"
+        style="display: none; align-items: center; justify-content: center; z-index: 70;">
+        <div class="glass-panel"
+            style="background: white; padding: 32px; width: 420px; border-radius: 16px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+            <div
+                style="width: 70px; height: 70px; background: #ECFDF5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <i class="fa-solid fa-file-excel" style="font-size: 32px; color: #10B981;"></i>
+            </div>
+            <h3 style="margin: 0 0 8px; color: #1E293B; font-size: 1.25rem; font-weight: 600;">ยืนยันการดาวน์โหลด?</h3>
+            <p style="margin: 0 0 20px; color: #64748B; font-size: 0.95rem; line-height: 1.6;" id="modal-export-msg">
+                กำลังเตรียมไฟล์ CSV สำหรับ Excel...
+            </p>
+            <div style="display: flex; gap: 12px;">
+                <button onclick="document.getElementById('modal-export').style.display='none'"
+                    style="padding: 12px; border-radius: 10px; border: 1px solid #E2E8F0; background: white; color: #64748B; font-weight: 500; cursor: pointer; flex: 1; transition: all 0.2s;">
+                    ยกเลิก
+                </button>
+                <button onclick="confirmExport()"
+                    style="padding: 12px; border-radius: 10px; border: none; background: #10B981; color: white; font-weight: 500; cursor: pointer; flex: 1; box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3); transition: all 0.2s;">
+                    ดาวน์โหลดเลย
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Confirmation Modal -->
+    <div id="modal-reset" class="modal-overlay"
+        style="display: none; align-items: center; justify-content: center; z-index: 70;">
+        <div class="glass-panel"
+            style="background: white; padding: 32px; width: 420px; border-radius: 16px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+            <div
+                style="width: 70px; height: 70px; background: #FEF2F2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <i class="fa-solid fa-triangle-exclamation" style="font-size: 32px; color: #EF4444;"></i>
+            </div>
+            <h3 style="margin: 0 0 8px; color: #1E293B; font-size: 1.25rem; font-weight: 600;">ล้างข้อมูลทั้งหมด?</h3>
+            <p style="margin: 0 0 20px; color: #64748B; font-size: 0.95rem; line-height: 1.6;">
+                คุณต้องการลบข้อมูล <b>ทั้งหมด</b> ในระบบหรือไม่?<br>
+                <span style="color: #EF4444; font-size: 0.85rem;">(การกระทำนี้ไม่สามารถย้อนกลับได้)</span>
+            </p>
+            <div style="display: flex; gap: 12px;">
+                <button onclick="document.getElementById('modal-reset').style.display='none'"
+                    style="padding: 12px; border-radius: 10px; border: 1px solid #E2E8F0; background: white; color: #64748B; font-weight: 500; cursor: pointer; flex: 1; transition: all 0.2s;">
+                    ยกเลิก
+                </button>
+                <button onclick="confirmReset()"
+                    style="padding: 12px; border-radius: 10px; border: none; background: #EF4444; color: white; font-weight: 500; cursor: pointer; flex: 1; box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3); transition: all 0.2s;">
+                    ยืนยันการลบ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Target Edit Modal -->
+    <div id="modal-target-edit" class="modal-overlay"
+        style="display: none; align-items: center; justify-content: center; z-index: 70;">
+        <div class="glass-panel"
+            style="background: white; padding: 32px; width: 600px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+            <div style="margin-bottom: 24px; text-align: center;">
+                <div
+                    style="width: 60px; height: 60px; background: #EFF6FF; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                    <i class="fa-solid fa-pen-to-square" style="font-size: 24px; color: #3B82F6;"></i>
+                </div>
+                <h3 style="margin: 0; color: #1E293B; font-size: 1.25rem; font-weight: 600;">แก้ไขเป้าหมาย (Edit Target)
+                </h3>
+                <p style="margin: 4px 0 0; color: #64748B; font-size: 0.9rem;">ปรับปรุงข้อมูลเป้าหมายรายปี</p>
+            </div>
+
+            <form id="form-target-edit">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; text-align: left;">
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>ปีงบประมาณ (พ.ศ.)</label>
+                        <input type="number" name="fiscal_year" required readonly
+                            style="background: #F1F5F9; cursor: not-allowed;">
+                    </div>
+                    <div class="form-group">
+                        <label>เป้าหมายรายได้ (บาท)</label>
+                        <input type="number" name="target_revenue" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>เป้ากำไร EBITDA (บาท)</label>
+                        <input type="number" name="target_ebitda" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>เป้าผู้ใช้น้ำเพิ่ม (ราย)</label>
+                        <input type="number" name="target_new_consumers" required>
+                    </div>
+                    <div class="form-group">
+                        <label>เป้าอัตราน้ำสูญเสีย (%)</label>
+                        <input type="number" name="target_loss_pct" step="0.01" required>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button type="button" onclick="document.getElementById('modal-target-edit').style.display='none'"
+                        style="padding: 12px; border-radius: 10px; border: 1px solid #E2E8F0; background: white; color: #64748B; font-weight: 500; cursor: pointer; flex: 1; transition: all 0.2s;">
+                        ยกเลิก
+                    </button>
+                    <button type="submit"
+                        style="padding: 12px; border-radius: 10px; border: none; background: #3B82F6; color: white; font-weight: 500; cursor: pointer; flex: 1; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3); transition: all 0.2s;">
+                        บันทึกการแก้ไข
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Target Delete Confirmation Modal -->
+    <div id="modal-target-delete" class="modal-overlay"
+        style="display: none; align-items: center; justify-content: center; z-index: 70;">
+        <div class="glass-panel"
+            style="background: white; padding: 32px; width: 420px; border-radius: 16px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+            <div
+                style="width: 70px; height: 70px; background: #FEF2F2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <i class="fa-solid fa-trash-can" style="font-size: 32px; color: #EF4444;"></i>
+            </div>
+            <h3 style="margin: 0 0 8px; color: #1E293B; font-size: 1.25rem; font-weight: 600;">ลบเป้าหมายปี <span
+                    id="delete-target-year"></span>?</h3>
+            <p style="margin: 0 0 20px; color: #64748B; font-size: 0.95rem; line-height: 1.6;">
+                คุณต้องการลบข้อมูลเป้าหมายนี้หรือไม่?<br>
+                <span style="color: #EF4444; font-size: 0.85rem;">(การกระทำนี้ไม่สามารถย้อนกลับได้)</span>
+            </p>
+            <div style="display: flex; gap: 12px;">
+                <button onclick="document.getElementById('modal-target-delete').style.display='none'"
+                    style="padding: 12px; border-radius: 10px; border: 1px solid #E2E8F0; background: white; color: #64748B; font-weight: 500; cursor: pointer; flex: 1; transition: all 0.2s;">
+                    ยกเลิก
+                </button>
+                <button id="btn-confirm-delete-target" onclick="confirmDeleteTarget()"
+                    style="padding: 12px; border-radius: 10px; border: none; background: #EF4444; color: white; font-weight: 500; cursor: pointer; flex: 1; box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3); transition: all 0.2s;">
+                    ยืนยันการลบ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Server-Side Data Injection for Instant Load
+        var INJECTED_PAYLOAD = <?!= jsonPayload ?>;
+    </script>
+
+    <?!= include('js'); ?>
+</body>
+
+</html>
