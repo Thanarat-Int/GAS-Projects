@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Smart BP Tracker</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Phosphor Icons (Professional Icon Set) -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- Fonts: Inter & Kanit -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kanit:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Kanit', 'sans-serif'],
+            mono: ['Inter', 'monospace'],
+          },
+          colors: {
+            primary: {
+              50: '#f0fdfa',
+              100: '#ccfbf1',
+              500: '#14b8a6', // Teal-500
+              600: '#0d9488', // Teal-600 (Main)
+              700: '#0f766e', // Teal-700
+              900: '#134e4a',
+            },
+            secondary: '#64748b', // Slate-500
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior-y: none;
+      /* Prevent pull-to-refresh on mobile */
+    }
+
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Safe Area for Mobile Notch */
+    .safe-top {
+      padding-top: env(safe-area-inset-top);
+    }
+
+    .safe-bottom {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* Input formatting */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Scanning Animation */
+    @keyframes scan-line {
+      0% {
+        top: 0;
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      90% {
+        opacity: 1;
+      }
+
+      100% {
+        top: 100%;
+        opacity: 0;
+      }
+    }
+
+    .scan-overlay {
+      background: linear-gradient(to bottom, transparent, rgba(20, 184, 166, 0.2), transparent);
+      animation: scan-line 2s linear infinite;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-slate-800 h-screen flex flex-col font-sans overflow-hidden">
+
+  <!-- Header -->
+  <header class="bg-white shadow-sm z-30 safe-top">
+    <div class="px-5 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div
+          class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center text-white shadow-md">
+          <i class="ph ph-heartbeat text-2xl"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-slate-900 leading-tight">BP Tracker</h1>
+          <p class="text-xs text-slate-500 font-medium">Professional Health Log</p>
+        </div>
+      </div>
+      <button onclick="resetApp()" class="p-2 text-slate-400 hover:text-primary-600 transition-colors">
+        <i class="ph ph-arrows-clockwise text-xl"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Area (Scrollable) -->
+  <main class="flex-1 overflow-y-auto overflow-x-hidden hide-scrollbar pb-24 relative">
+
+    <!-- Tab 1: Measure (Active) -->
+    <div id="view-measure" class="view-section px-5 py-6 space-y-6 max-w-lg mx-auto transition-opacity duration-300">
+
+      <!-- Camera Section -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden relative group">
+        <!-- Live Feed -->
+        <div id="camera-container"
+          class="relative bg-slate-900 aspect-[4/3] flex items-center justify-center cursor-pointer overflow-hidden">
+          <video id="video-feed" autoplay playsinline class="absolute w-full h-full object-cover hidden"></video>
+          <img id="preview-image" class="absolute w-full h-full object-contain hidden z-10 bg-black" />
+
+          <!-- Scan Guide Overlay (Only visible when camera active) -->
+          <div id="scan-guide"
+            class="absolute inset-0 z-20 hidden pointer-events-none border-2 border-primary-500/50 m-6 rounded-lg">
+            <div class="absolute inset-x-0 h-1 bg-primary-400 shadow-[0_0_15px_rgba(20,184,166,0.8)] scan-overlay">
+            </div>
+            <div class="absolute bottom-4 left-0 right-0 text-center">
+              <span
+                class="bg-black/50 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm">วางตัวเลขในกรอบ</span>
+            </div>
+          </div>
+
+          <!-- Close Camera Button -->
+          <button id="btn-stop-camera"
+            class="absolute top-3 right-3 z-30 bg-black/40 text-white w-8 h-8 rounded-full hidden items-center justify-center hover:bg-black/60 transition-colors backdrop-blur-sm">
+            <i class="ph ph-x text-lg"></i>
+          </button>
+
+          <!-- Empty State -->
+          <div id="camera-placeholder"
+            class="text-center p-8 transition-transform transform group-hover:scale-105 duration-300">
+            <div
+              class="w-16 h-16 bg-slate-50 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-dashed border-primary-300">
+              <i class="ph ph-camera text-3xl"></i>
+            </div>
+            <p class="text-slate-600 font-medium text-sm">แตะเพื่อเปิดกล้อง</p>
+            <p class="text-slate-400 text-xs mt-1">หรือเลือกจากอัลบั้ม</p>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="grid grid-cols-2 divide-x divide-slate-100 border-t border-slate-100">
+          <button id="btn-camera"
+            class="py-3.5 flex items-center justify-center gap-2 text-primary-700 font-semibold bg-white hover:bg-slate-50 transition-colors">
+            <i class="ph ph-camera"></i>
+            <span>ถ่ายภาพ</span>
+          </button>
+          <button id="btn-upload"
+            class="py-3.5 flex items-center justify-center gap-2 text-slate-600 font-medium bg-white hover:bg-slate-50 transition-colors">
+            <i class="ph ph-image"></i>
+            <span>อัพโหลด</span>
+          </button>
+        </div>
+        <input type="file" id="file-input" accept="image/*" class="hidden">
+        <input type="file" id="camera-input" accept="image/*" capture="environment" class="hidden">
+      </div>
+
+      <!-- Manual Input / Result Area -->
+      <div id="result-form"
+        class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 transition-all duration-500 opacity-50 blur-[2px] pointer-events-none select-none">
+
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+            <i class="ph ph-faders text-primary-600"></i> ผลการตรวจวัด
+          </h2>
+          <span id="date-display" class="text-xs text-slate-400 font-mono">--/-- --:--</span>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+          <!-- SYS -->
+          <div class="flex flex-col items-center">
+            <label class="text-xs font-semibold text-slate-400 mb-2">SYS (บน)</label>
+            <div class="relative w-full">
+              <input type="number" id="input-sys" placeholder="0"
+                class="w-full text-center text-3xl font-bold font-mono text-slate-900 bg-slate-50 border-b-2 border-slate-200 focus:border-primary-500 focus:outline-none focus:bg-white transition-all pb-1 placeholder-slate-200 rounded-t-lg">
+              <span class="absolute right-0 top-0 text-[10px] text-slate-400 mt-2 mr-1">mmHg</span>
+            </div>
+          </div>
+          <!-- DIA -->
+          <div class="flex flex-col items-center">
+            <label class="text-xs font-semibold text-slate-400 mb-2">DIA (ล่าง)</label>
+            <div class="relative w-full">
+              <input type="number" id="input-dia" placeholder="0"
+                class="w-full text-center text-3xl font-bold font-mono text-slate-900 bg-slate-50 border-b-2 border-slate-200 focus:border-primary-500 focus:outline-none focus:bg-white transition-all pb-1 placeholder-slate-200 rounded-t-lg">
+              <span class="absolute right-0 top-0 text-[10px] text-slate-400 mt-2 mr-1">mmHg</span>
+            </div>
+          </div>
+          <!-- PUL -->
+          <div class="flex flex-col items-center">
+            <label class="text-xs font-semibold text-slate-400 mb-2">PUL (หัวใจ)</label>
+            <div class="relative w-full">
+              <input type="number" id="input-pul" placeholder="0"
+                class="w-full text-center text-3xl font-bold font-mono text-slate-900 bg-slate-50 border-b-2 border-slate-200 focus:border-primary-500 focus:outline-none focus:bg-white transition-all pb-1 placeholder-slate-200 rounded-t-lg">
+              <span class="absolute right-0 top-0 text-[10px] text-slate-400 mt-2 mr-1">bpm</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Health Status Card -->
+        <div id="status-card"
+          class="mt-6 p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-3 transition-colors duration-300">
+          <div id="status-icon"
+            class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 flex-shrink-0">
+            <i class="ph ph-info font-bold"></i>
+          </div>
+          <div>
+            <h4 id="status-title" class="text-sm font-bold text-slate-700">รอข้อมูล</h4>
+            <p id="status-desc" class="text-xs text-slate-500 mt-1 leading-relaxed">กรุณาถ่ายภาพหน้าจอเครื่องวัด
+              หรือกรอกตัวเลขด้วยตนเอง</p>
+          </div>
+        </div>
+
+        <!-- Confirm Button -->
+        <button id="btn-save"
+          class="w-full mt-6 bg-slate-900 text-white py-4 rounded-xl font-bold text-sm shadow-lg shadow-slate-200 active:scale-95 transition-all flex items-center justify-center gap-2 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed">
+          <span>บันทึกผลการวัด</span>
+          <i class="ph ph-arrow-right"></i>
+        </button>
+
+      </div>
+    </div>
+
+
+    <!-- Tab 2: History (Hidden) -->
+    <div id="view-history" class="view-section hidden px-5 py-6 space-y-6 max-w-lg mx-auto">
+
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wide">สถิติความดันโลหิต</h3>
+          <button onclick="loadHistory()"
+            class="text-primary-600 text-xs font-medium bg-primary-50 px-2 py-1 rounded-md hover:bg-primary-100 transition-colors">
+            <i class="ph ph-arrow-counter-clockwise mr-1"></i> รีเฟรช
+          </button>
+        </div>
+        <div class="h-64 w-full relative">
+          <canvas id="bpChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Placeholder List (In real implementation, could list recent rows) -->
+      <div class="text-center text-sm text-slate-400 py-4">
+        <p>แสดงข้อมูล 10 รายการล่าสุดจากฐานข้อมูล</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav
+    class="bg-white border-t border-slate-200 safe-bottom z-30 fixed bottom-0 w-full shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+    <div class="flex justify-around items-stretch h-16 max-w-md mx-auto">
+
+      <button onclick="switchView('measure')" id="nav-measure"
+        class="flex-1 flex flex-col items-center justify-center gap-1 text-primary-600 focus:outline-none group">
+        <div class="p-1 rounded-lg group-hover:bg-primary-50 transition-colors">
+          <i class="ph-fill ph-monitor-heart text-2xl mb-0.5"></i>
+        </div>
+        <span class="text-[10px] font-medium">ตรวจวัด</span>
+      </button>
+
+      <button onclick="switchView('history')" id="nav-history"
+        class="flex-1 flex flex-col items-center justify-center gap-1 text-slate-400 focus:outline-none group hover:text-primary-600 transition-colors">
+        <div class="p-1 rounded-lg group-hover:bg-slate-50 transition-colors">
+          <i class="ph ph-chart-line-up text-2xl mb-0.5"></i>
+        </div>
+        <span class="text-[10px] font-medium">ประวัติ</span>
+      </button>
+
+    </div>
+  </nav>
+
+  <!-- Full Screen Custom Modal -->
+  <div id="modal-backdrop"
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-200">
+    <div id="modal-panel"
+      class="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 transform scale-95 transition-transform duration-200">
+      <div id="modal-icon-wrapper"
+        class="w-12 h-12 rounded-full mx-auto flex items-center justify-center mb-4 transition-colors">
+        <i id="modal-icon" class="text-2xl"></i>
+      </div>
+      <h3 id="modal-title" class="text-center text-lg font-bold text-slate-900 mb-2"></h3>
+      <p id="modal-message" class="text-center text-sm text-slate-500 leading-relaxed mb-6"></p>
+      <button onclick="closeModal()"
+        class="w-full py-3 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-black transition-colors">ตกลง</button>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loading"
+    class="fixed inset-0 bg-white/90 backdrop-blur-sm z-[60] hidden flex flex-col items-center justify-center">
+    <div class="relative w-16 h-16">
+      <div class="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
+      <div class="absolute inset-0 border-4 border-primary-500 rounded-full border-t-transparent animate-spin"></div>
+    </div>
+    <p class="mt-4 text-slate-600 font-medium animate-pulse text-sm tracking-wide">Smart AI กำลังประมวลผล...</p>
+  </div>
+
+
+  <!-- --- LOGIC --- -->
+  <script>
+    // --- UI State Management ---
+    function switchView(viewName) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+      document.getElementById('view-' + viewName).classList.remove('hidden');
+
+      // Update Nav
+      const navMeasure = document.getElementById('nav-measure');
+      const navHistory = document.getElementById('nav-history');
+
+      const activeClass = ['text-primary-600'];
+      const inactiveClass = ['text-slate-400'];
+
+      if (viewName === 'measure') {
+        navMeasure.classList.add(...activeClass); navMeasure.classList.remove(...inactiveClass);
+        navMeasure.querySelector('i').classList.add('ph-fill'); navMeasure.querySelector('i').classList.remove('ph');
+
+        navHistory.classList.remove(...activeClass); navHistory.classList.add(...inactiveClass);
+        navHistory.querySelector('i').classList.remove('ph-fill'); navHistory.querySelector('i').classList.add('ph');
+      } else {
+        navHistory.classList.add(...activeClass); navHistory.classList.remove(...inactiveClass);
+        navHistory.querySelector('i').classList.add('ph-fill'); navHistory.querySelector('i').classList.remove('ph');
+
+        navMeasure.classList.remove(...activeClass); navMeasure.classList.add(...inactiveClass);
+        navMeasure.querySelector('i').classList.remove('ph-fill'); navMeasure.querySelector('i').classList.add('ph');
+
+        loadHistory(); // Auto load
+      }
+    }
+
+    // Enable form
+    function enableResultForm(enabled) {
+      const form = document.getElementById('result-form');
+      if (enabled) {
+        form.classList.remove('opacity-50', 'blur-[2px]', 'pointer-events-none');
+        document.getElementById('date-display').innerText = new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+      } else {
+        form.classList.add('opacity-50', 'blur-[2px]', 'pointer-events-none');
+      }
+    }
+
+
+    // --- Core Logic ---
+    const els = {
+      video: document.getElementById('video-feed'),
+      preview: document.getElementById('preview-image'),
+      cameraContainer: document.getElementById('camera-container'),
+      placeholder: document.getElementById('camera-placeholder'),
+      scanGuide: document.getElementById('scan-guide'),
+      btnStopCamera: document.getElementById('btn-stop-camera'),
+      btnCamera: document.getElementById('btn-camera'),
+      btnUpload: document.getElementById('btn-upload'),
+      fileInput: document.getElementById('file-input'),
+      cameraInput: document.getElementById('camera-input'),
+      inputs: {
+        sys: document.getElementById('input-sys'),
+        dia: document.getElementById('input-dia'),
+        pul: document.getElementById('input-pul')
+      },
+      status: {
+        card: document.getElementById('status-card'),
+        icon: document.querySelector('#status-icon i'),
+        iconBg: document.getElementById('status-icon'),
+        title: document.getElementById('status-title'),
+        desc: document.getElementById('status-desc')
+      },
+      btnSave: document.getElementById('btn-save'),
+      loading: document.getElementById('loading')
+    };
+
+    let chartInstance = null;
+
+    // Init
+    window.onload = function () {
+      enableResultForm(false); // Default disabled
+    };
+
+    // Camera Handlers - ใช้ file input capture แทน getUserMedia เพื่อหลีกเลี่ยง iframe permission ของ GAS
+    els.cameraContainer.addEventListener('click', (e) => {
+      if (e.target.closest('#btn-stop-camera')) return;
+      if (els.preview.classList.contains('hidden')) els.cameraInput.click();
+    });
+
+    els.btnCamera.addEventListener('click', () => {
+      els.cameraInput.click();
+    });
+
+    // เมื่อถ่ายรูปจากกล้องเสร็จ
+    els.cameraInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        showPreview(ev.target.result);
+        processImage(ev.target.result);
+      };
+      reader.readAsDataURL(file);
+      e.target.value = ''; // reset เพื่อให้เลือกไฟล์ซ้ำได้
+    });
+
+    // Upload Handlers
+    els.btnUpload.addEventListener('click', () => els.fileInput.click());
+    els.fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        showPreview(ev.target.result);
+        processImage(ev.target.result);
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    });
+
+    function showPreview(url) {
+      els.preview.src = url;
+      els.preview.classList.remove('hidden');
+      els.placeholder.classList.add('hidden');
+    }
+
+    // --- Processing ---
+    function processImage(base64) {
+      els.loading.classList.remove('hidden');
+
+      var img = new Image();
+      img.onload = function () {
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+
+        // TARGET: The user centers the BP Monitor. 
+        // We crop to the center 70% to remove desk background and focus on the screen.
+        var cropFactor = 0.7;
+        var srcW = img.width;
+        var srcH = img.height;
+        var cropW = srcW * cropFactor;
+        var cropH = srcH * cropFactor;
+        var startX = (srcW - cropW) / 2;
+        var startY = (srcH - cropH) / 2;
+
+        // SCALE: Resize the cropped area to ~1000px width for high detail
+        var finalW = 1000;
+        var finalH = (cropH / cropW) * finalW;
+
+        canvas.width = finalW;
+        canvas.height = finalH;
+
+        // Draw Cropped Image
+        ctx.drawImage(img, startX, startY, cropW, cropH, 0, 0, finalW, finalH);
+
+        // ENHANCE: Pixel Manipulation
+        var imageData = ctx.getImageData(0, 0, finalW, finalH);
+        var data = imageData.data;
+
+        // 1. Find Min/Max (Histogram Stretching)
+        var min = 255;
+        var max = 0;
+        for (var i = 0; i < data.length; i += 4) {
+          var avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+          if (avg < min) min = avg;
+          if (avg > max) max = avg;
+        }
+
+        // Avoid division by zero
+        if (max === min) { max = 255; min = 0; }
+
+        // 2. Apply Stretch + Gamma Correction
+        // Gamma > 1.0 makes darks darker (Good for LCD segments)
+        var gamma = 1.3;
+        var range = max - min;
+        var correctionFactor = 255 / Math.pow(255, gamma); // Scale factor
+
+        for (var i = 0; i < data.length; i += 4) {
+          var r = data[i];
+          var g = data[i + 1];
+          var b = data[i + 2];
+
+          // Stretch histogram
+          r = ((r - min) / range) * 255;
+          g = ((g - min) / range) * 255;
+          b = ((b - min) / range) * 255;
+
+          // Gamma Correct (Darken)
+          r = correctionFactor * Math.pow(r, gamma);
+          g = correctionFactor * Math.pow(g, gamma);
+          b = correctionFactor * Math.pow(b, gamma);
+
+          // Clamp
+          data[i] = r > 255 ? 255 : (r < 0 ? 0 : r);
+          data[i + 1] = g > 255 ? 255 : (g < 0 ? 0 : g);
+          data[i + 2] = b > 255 ? 255 : (b < 0 ? 0 : b);
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+
+        // Compress
+        var compressed = canvas.toDataURL('image/jpeg', 0.8);
+        var clean = compressed.split(',')[1];
+
+        // Send to OCR
+        google.script.run
+          .withSuccessHandler(onSuccess)
+          .withFailureHandler(onFailure)
+          .processImage(clean);
+      };
+      img.src = base64;
+    }
+
+    function onSuccess(res) {
+      els.loading.classList.add('hidden');
+      if (res.success) {
+        enableResultForm(true);
+
+        els.inputs.sys.value = res.data.systolic || '';
+        els.inputs.dia.value = res.data.diastolic || '';
+        els.inputs.pul.value = res.data.pulse || '';
+
+        updateStatus(res.data.advice);
+      } else {
+        showModal('อ่านค่าไม่สำเร็จ', 'ระบบไม่สามารถอ่านตัวเลขได้ กรุณาลองใหม่หรือกรอกด้วยตนเอง', true);
+        enableResultForm(true); // Allow manual entry anyway
+      }
+    }
+
+    function onFailure(err) {
+      els.loading.classList.add('hidden');
+      showModal('Connection Error', 'ไม่สามารถเชื่อมต่อ Server ได้', true);
+    }
+
+    // Status Logic - Supports Red, Orange, Yellow, Green, Blue
+    function updateStatus(advice) {
+      // Reset classes
+      els.status.card.className = 'mt-6 p-4 rounded-xl border flex items-start gap-3 transition-colors duration-300';
+      els.status.iconBg.className = 'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0';
+
+      if (!advice) { // Default/Empty
+        els.status.title.innerText = 'ระบุค่าความดัน';
+        els.status.desc.innerText = 'กรอกตัวเลขหรือสแกนเพื่อดูคำแนะนำ';
+        els.status.card.classList.add('bg-slate-50', 'border-slate-100');
+        els.status.iconBg.classList.add('bg-slate-200', 'text-slate-500');
+        els.status.icon.className = 'ph ph-info font-bold';
+        return;
+      }
+
+      els.status.title.innerText = advice.status;
+      els.status.desc.innerText = advice.message || '';
+      els.status.desc.classList.toggle('hidden', !advice.message);
+
+      const color = advice.color || 'gray';
+
+      if (color === 'red') {
+        els.status.card.classList.add('bg-red-50', 'border-red-100');
+        els.status.iconBg.classList.add('bg-red-100', 'text-red-600');
+        els.status.icon.className = 'ph ph-warning-circle font-bold';
+      } else if (color === 'orange') {
+        els.status.card.classList.add('bg-orange-50', 'border-orange-100');
+        els.status.iconBg.classList.add('bg-orange-100', 'text-orange-600');
+        els.status.icon.className = 'ph ph-warning font-bold';
+      } else if (color === 'yellow') {
+        els.status.card.classList.add('bg-yellow-50', 'border-yellow-100');
+        els.status.iconBg.classList.add('bg-yellow-100', 'text-yellow-600'); // Use Yellow-600 for visibility
+        els.status.icon.className = 'ph ph-warning font-bold';
+      } else if (color === 'blue') {
+        els.status.card.classList.add('bg-blue-50', 'border-blue-100');
+        els.status.iconBg.classList.add('bg-blue-100', 'text-blue-600');
+        els.status.icon.className = 'ph ph-info font-bold';
+      } else { // Green default
+        els.status.card.classList.add('bg-emerald-50', 'border-emerald-100');
+        els.status.iconBg.classList.add('bg-emerald-100', 'text-emerald-600');
+        els.status.icon.className = 'ph ph-check-circle font-bold';
+      }
+    }
+
+    // Inputs Listener for dynamic update (Manual Entry - Simple Mirror)
+    // We can't easily replicate the complex backend medicine logic here.
+    // Instead, we just hide the status card while typing to avoid confusion, 
+    // or we could implementing a simplified version.
+    // For consistency, let's CLEAR the status when manually typing to force user to hit "Save" (or we could add a "Check" button).
+    // BUT user expects real-time feedback. Let's just implement a SIMPLIFIED version that matches the colors roughly.
+    Object.values(els.inputs).forEach(input => {
+      input.addEventListener('input', () => {
+        const sys = parseInt(els.inputs.sys.value) || 0;
+        const dia = parseInt(els.inputs.dia.value) || 0;
+
+        if (sys === 0 || dia === 0) {
+          updateStatus(null);
+          return;
+        }
+
+        let status = 'Normal';
+        let color = 'green';
+
+        let message = 'ความดันปกติ';
+
+        if (sys >= 171 || dia >= 106) { status = 'Crisis'; message = 'ความดันสูงระดับวิกฤต'; color = 'red'; }
+        else if (sys >= 140 || dia >= 90) { status = 'High'; message = 'ความดันสูงกว่าเกณฑ์'; color = 'orange'; }
+        else if (sys <= 110 || dia <= 70) { status = 'Low'; message = 'ความดันต่ำกว่าเกณฑ์'; color = 'blue'; }
+        else { status = 'Normal'; message = 'ความดันปกติ'; color = 'green'; }
+
+        updateStatus({ status, message, color });
+      });
+    });
+
+
+    // Save Handler
+    els.btnSave.addEventListener('click', () => {
+      const data = {
+        systolic: els.inputs.sys.value,
+        diastolic: els.inputs.dia.value,
+        pulse: els.inputs.pul.value,
+        imageUrl: ''
+      };
+
+      // Validation
+      if (!data.systolic || !data.diastolic) {
+        showModal('ข้อมูลไม่ครบ', 'กรุณาระบุค่า SYS และ DIA ก่อนบันทึก', true);
+        return;
+      }
+
+      els.btnSave.innerHTML = '<i class="ph ph-spinner animate-spin"></i> กำลังบันทึก...';
+      els.btnSave.disabled = true;
+
+      google.script.run
+        .withSuccessHandler(() => {
+          showModal('บันทึกสำเร็จ', 'บันทึกข้อมูลลงฐานข้อมูลเรียบร้อยแล้ว', false);
+          els.btnSave.innerHTML = '<span>บันทึกผลการวัด</span><i class="ph ph-arrow-right"></i>';
+          els.btnSave.disabled = false;
+
+          enableResultForm(false);
+          els.preview.classList.add('hidden');
+          els.placeholder.classList.remove('hidden');
+
+          // Clear inputs
+          els.inputs.sys.value = '';
+          els.inputs.dia.value = '';
+          els.inputs.pul.value = '';
+          updateStatus(null);
+        })
+        .withFailureHandler(onFailure)
+        .logBPData(data);
+    });
+
+    // --- Chart Logic ---
+    function loadHistory() {
+      if (typeof Chart !== 'undefined') {
+        google.script.run.withSuccessHandler(drawChart).getHistoryData();
+      }
+    }
+
+    function drawChart(data) {
+      if (!data || data.length === 0) return;
+      const ctx = document.getElementById('bpChart').getContext('2d');
+      if (chartInstance) chartInstance.destroy();
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: data.map(d => d.date.split(' ')[0]), // Show date only
+          datasets: [
+            {
+              label: 'SYS',
+              data: data.map(d => d.sys),
+              borderColor: '#0d9488', // Teal-600
+              backgroundColor: 'rgba(13, 148, 136, 0.1)',
+              borderWidth: 2,
+              tension: 0.4,
+              pointBackgroundColor: '#fff',
+              pointBorderColor: '#0d9488',
+              fill: true
+            },
+            {
+              label: 'DIA',
+              data: data.map(d => d.dia),
+              borderColor: '#64748b', // Slate-500
+              borderWidth: 2,
+              borderDash: [5, 5],
+              tension: 0.4,
+              pointRadius: 0
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } }
+          },
+          scales: {
+            y: { beginAtZero: false, grid: { color: '#f1f5f9' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    // --- Modal System ---
+    const modal = {
+      backdrop: document.getElementById('modal-backdrop'),
+      panel: document.getElementById('modal-panel'),
+      iconWrapper: document.getElementById('modal-icon-wrapper'),
+      icon: document.getElementById('modal-icon'),
+      title: document.getElementById('modal-title'),
+      message: document.getElementById('modal-message')
+    };
+
+    function showModal(title, msg, isError) {
+      modal.title.innerText = title;
+      modal.message.innerText = msg;
+
+      modal.backdrop.classList.remove('hidden');
+      // Animation Frame
+      requestAnimationFrame(() => {
+        modal.backdrop.classList.remove('opacity-0');
+        modal.panel.classList.remove('scale-95');
+        modal.panel.classList.add('scale-100');
+      });
+
+      if (isError) {
+        modal.iconWrapper.classList.add('bg-red-100', 'text-red-600');
+        modal.iconWrapper.classList.remove('bg-emerald-100', 'text-emerald-600');
+        modal.icon.className = 'ph-fill ph-warning-circle';
+      } else {
+        modal.iconWrapper.classList.add('bg-emerald-100', 'text-emerald-600');
+        modal.iconWrapper.classList.remove('bg-red-100', 'text-red-600');
+        modal.icon.className = 'ph-fill ph-check-circle';
+      }
+    }
+
+    function closeModal() {
+      modal.backdrop.classList.add('opacity-0');
+      modal.panel.classList.add('scale-95');
+      modal.panel.classList.remove('scale-100');
+      setTimeout(() => {
+        modal.backdrop.classList.add('hidden');
+      }, 200);
+    }
+
+    // Refresh / Reset App
+    function resetApp() {
+      switchView('measure');
+      enableResultForm(false);
+
+      // Clear Inputs
+      els.inputs.sys.value = '';
+      els.inputs.dia.value = '';
+      els.inputs.pul.value = '';
+      updateStatus(null);
+
+      // Reset UI
+      els.preview.src = '';
+      els.preview.classList.add('hidden');
+      els.placeholder.classList.remove('hidden');
+      els.btnSave.disabled = false;
+      els.btnSave.innerHTML = '<span>บันทึกผลการวัด</span><i class="ph ph-arrow-right"></i>';
+
+      // Reload Chart
+      loadHistory();
+    }
+
+
+  </script>
+</body>
+
+</html>
