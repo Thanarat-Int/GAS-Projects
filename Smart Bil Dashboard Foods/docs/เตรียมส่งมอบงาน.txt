@@ -1,0 +1,57 @@
+═══════════════════════════════════════════
+  เตรียมส่งมอบงาน — Smart Bill Dashboard
+═══════════════════════════════════════════
+
+วิธีส่งมอบ: ให้ลูกค้า "Make a copy" Google Sheet
+ไปเป็นของตัวเอง (ลูกค้าได้ทั้ง sheet + script + custom menu)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PART 1 — สิ่งที่คุณ (ผู้พัฒนา) ต้องทำ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[ ล้างข้อมูลทดสอบ ]
+1. เปิด Google Sheet ของระบบ
+2. เมนูบาร์ → 🏝️ Smart Bill → 🧹 Clear Bills
+3. เมนูบาร์ → 🏝️ Smart Bill → 🗑️ Clear Menus
+4. เมนูบาร์ → 🏝️ Smart Bill → ℹ️ ตรวจสอบโครงสร้าง (เช็คว่าว่างเปล่า)
+
+[ ตั้งสิทธิ์ Sheet ให้ลูกค้า copy ได้ ]
+5. กดปุ่ม Share มุมขวาบนของ Sheet
+6. General access → Anyone with the link
+7. เลือกสิทธิ์ → Viewer (ให้ดู+copy ได้ แต่แก้ของคุณไม่ได้)
+8. Copy link → ได้ URL ของ Sheet (ไม่ใช่ URL Web App)
+
+[ ส่งให้ลูกค้า ]
+9. ส่ง URL ของ Google Sheet ที่ copy มาในข้อ 8
+10. ส่งคู่มือการใช้งาน (docs/คู่มือการใช้งาน_Smart_Bill_Dashboard.docx)
+11. ส่งคำสั่ง PART 2 ด้านล่างนี้ให้ลูกค้าทำตาม
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PART 2 — สิ่งที่ลูกค้าต้องทำ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[ Copy Sheet มาเป็นของตัวเอง ]
+1. เปิดลิงค์ Google Sheet ที่ได้รับ
+2. File → Make a copy → ตั้งชื่อ → Save to My Drive
+3. เปิดไฟล์ copy ที่ได้
+
+[ Setup Database ]
+4. Extensions → Apps Script
+5. เลือกฟังก์ชัน setupDatabase ด้านบน → กดปุ่ม ▶ Run
+6. หน้าต่างขออนุญาต → Review permissions → เลือก Google account → Allow
+
+[ Deploy Web App ]
+7. มุมขวาบน → Deploy → New deployment
+8. ไอคอนเฟือง ⚙️ ข้างคำว่า "Select type" → Web app
+9. กรอก:
+   - Description: Smart Bill v1
+   - Execute as: Me
+   - Who has access: Anyone
+10. กด Deploy → Authorize access → Allow
+11. Copy Web app URL ที่ได้
+
+[ เริ่มใช้งาน ]
+12. เปิด URL ที่ copy มา → ใช้งานได้เลย
+13. (ตัวเลือก) บันทึก URL ไว้ในมือถือ/คอมเป็น bookmark

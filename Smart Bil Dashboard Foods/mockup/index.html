@@ -11,24 +11,24 @@
   body { font-family: 'Prompt', sans-serif; }
   .tab-active { background: #0ea5e9; color: white; }
   .sub-active { background: #e0f2fe; color: #0369a1; }
-  #daily-table { width: 100%; font-size: 13px; table-layout: fixed; border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }
-  #daily-table th, #daily-table td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
+  #daily-table { width: 100%; font-size: 12px; table-layout: fixed; border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }
+  #daily-table th, #daily-table td { padding: 6px 10px; border-bottom: 1px solid #f1f5f9; }
   #daily-table thead th {
-    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
-    color: #64748b; background: #f8fafc; text-align: right;
-    border-bottom: 2px solid #e2e8f0; padding: 12px;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.01em;
+    color: #0f172a; background: #f1f5f9; text-align: right;
+    border-bottom: 2px solid #cbd5e1; padding: 9px 10px;
   }
-  #daily-table thead th:first-child { text-align: center; }
-  #daily-table tbody td { text-align: right; color: #334155; }
-  #daily-table tbody td:first-child { text-align: center; font-weight: 600; color: #0f172a; background: #fafbfc; }
-  #daily-table tbody tr:hover td { background: #f0f9ff; }
-  #daily-table tbody tr:hover td:first-child { background: #e0f2fe; color: #0369a1; }
+  #daily-table thead th:first-child { text-align: center; color: #475569; font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+  #daily-table tbody td { text-align: right; color: #1e293b; font-weight: 500; }
+  #daily-table tbody td:first-child { text-align: center; font-weight: 700; color: #0f172a; background: #f8fafc; width: 56px; }
+  #daily-table tbody tr:hover td { background: #eff6ff; }
+  #daily-table tbody tr:hover td:first-child { background: #dbeafe; color: #1d4ed8; }
   #daily-table tfoot td {
-    padding: 14px 12px; background: #0f172a; color: white; font-weight: 700;
-    text-align: right; font-size: 13px; letter-spacing: 0.02em;
-    border-top: 2px solid #1e293b;
+    padding: 10px; background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; font-weight: 800;
+    text-align: right; font-size: 12px; letter-spacing: 0.01em;
+    border-top: 2px solid #0369a1;
   }
-  #daily-table tfoot td:first-child { text-align: center; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; }
+  #daily-table tfoot td:first-child { text-align: center; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
   .daily-active { background: white; color: #0369a1; box-shadow: 0 1px 3px rgba(0,0,0,0.08); font-weight: 600; }
   .dash { color: #cbd5e1; font-weight: 400; }
   @media (max-width: 640px) { #daily-table { font-size: 11px; } #daily-table th, #daily-table td { padding: 6px 4px; } }
@@ -39,6 +39,100 @@
   .kpi-card:hover { transform: translateY(-2px); }
   .fade-in { animation: fade 0.25s ease-in; }
   @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .menu-scroll::-webkit-scrollbar { width: 8px; }
+  .menu-scroll::-webkit-scrollbar-track { background: transparent; }
+  .menu-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+  .menu-scroll::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+  .menu-card { position: relative; }
+  .menu-card:hover { box-shadow: 0 4px 12px -2px rgba(14,165,233,0.15); transform: translateY(-1px); }
+  .variant-pill { transition: all 0.15s; }
+  .variant-pill:hover { transform: scale(1.05); }
+  .cat-chip { transition: all 0.15s; }
+  .cat-chip:hover { transform: translateY(-1px); }
+  /* Toggle switch */
+  .toggle { position: relative; display: inline-block; width: 36px; height: 20px; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; cursor: pointer; inset: 0; background: #cbd5e1; border-radius: 20px; transition: 0.2s; }
+  .toggle-slider::before { content: ''; position: absolute; height: 14px; width: 14px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+  .toggle input:checked + .toggle-slider { background: #10b981; }
+  .toggle input:checked + .toggle-slider::before { transform: translateX(16px); }
+  /* Sort indicator */
+  th[data-sort] { transition: background 0.15s; }
+  th[data-sort]:hover { background: #f1f5f9; }
+  th[data-sort].sort-asc .sort-ind::after { content: ' ↑'; color: #0ea5e9; }
+  th[data-sort].sort-desc .sort-ind::after { content: ' ↓'; color: #0ea5e9; }
+  /* Modal */
+  #menu-modal.show, #confirm-modal.show, #loading-modal.show { display: flex; animation: fade 0.2s; }
+  #menu-modal.show > div:last-child, #confirm-modal.show > div:last-child, #loading-modal.show > div:last-child { animation: pop 0.25s cubic-bezier(0.22, 1, 0.36, 1); }
+  @keyframes pop { from { opacity: 0; transform: scale(0.95) translateY(8px); } to { opacity: 1; transform: none; } }
+  /* Toast */
+  .toast { background: #0f172a; color: white; padding: 10px 16px; border-radius: 10px; font-size: 13px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2); animation: toastIn 0.25s cubic-bezier(0.22, 1, 0.36, 1); display: flex; align-items: center; gap: 8px; }
+  .toast.success { background: #059669; }
+  .toast.error { background: #dc2626; }
+  @keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
+  /* Row hover and row style */
+  .mm-row:hover { background: #f8fafc; }
+  .mm-row.selected { background: #eff6ff; }
+  .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+  /* Flash animation เมื่อเพิ่มเข้าตะกร้า */
+  @keyframes flashGlow {
+    0%   { box-shadow: 0 0 0 0 rgba(14,165,233,0.6); background: #e0f2fe; }
+    50%  { box-shadow: 0 0 0 8px rgba(14,165,233,0.15); }
+    100% { box-shadow: 0 0 0 12px rgba(14,165,233,0); background: white; }
+  }
+  .menu-card.flash, .variant-pill.flash { animation: flashGlow 0.55s ease-out; }
+  /* Favorite card */
+  .fav-card { transition: all 0.15s; }
+  .fav-card:hover { transform: translateY(-2px); box-shadow: 0 4px 14px -2px rgba(251,146,60,0.3); border-color: #fb923c; }
+  /* Cart badge on menu card */
+  .cart-badge {
+    position: absolute; top: 6px; right: 6px;
+    min-width: 22px; height: 22px; padding: 0 6px;
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    color: white; font-size: 11px; font-weight: 700;
+    border-radius: 999px; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px -1px rgba(14,165,233,0.5);
+    animation: badgePop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes badgePop { from { transform: scale(0); } to { transform: scale(1); } }
+  /* Channel mode toggle */
+  .channel-btn { background: white; color: #64748b; border-color: #e2e8f0; }
+  .channel-btn:hover { border-color: #cbd5e1; background: #f8fafc; }
+  .channel-btn.active { color: white; box-shadow: 0 2px 8px -2px rgba(0,0,0,0.2); transform: translateY(-1px); }
+  .channel-btn.active.ch-walkin { background: #f43f5e; border-color: #f43f5e; }
+  .channel-btn.active.ch-byboats { background: #10b981; border-color: #10b981; }
+  .channel-btn.active.ch-ktour { background: #a855f7; border-color: #a855f7; }
+  .channel-btn.active.ch-kspeed { background: #f59e0b; border-color: #f59e0b; }
+  /* Dashboard channel filter pills */
+  .dash-ch-btn { background: white; color: #64748b; border-color: #e2e8f0; }
+  .dash-ch-btn:hover { border-color: #cbd5e1; background: #f8fafc; }
+  .dash-ch-btn.active { color: white; box-shadow: 0 2px 6px -2px rgba(0,0,0,0.2); }
+  .dash-ch-btn.active.ch-all { background: #0ea5e9; border-color: #0ea5e9; }
+  .dash-ch-btn.active.ch-walkin { background: #f43f5e; border-color: #f43f5e; }
+  .dash-ch-btn.active.ch-byboats { background: #10b981; border-color: #10b981; }
+  .dash-ch-btn.active.ch-ktour { background: #a855f7; border-color: #a855f7; }
+  .dash-ch-btn.active.ch-kspeed { background: #f59e0b; border-color: #f59e0b; }
+  /* Save button color by channel mode */
+  #view-entry.mode-walkin #btn-save-bill { background: #f43f5e; }
+  #view-entry.mode-walkin #btn-save-bill:hover { background: #e11d48; }
+  #view-entry.mode-byboats #btn-save-bill { background: #10b981; }
+  #view-entry.mode-byboats #btn-save-bill:hover { background: #059669; }
+  #view-entry.mode-ktour #btn-save-bill { background: #a855f7; }
+  #view-entry.mode-ktour #btn-save-bill:hover { background: #9333ea; }
+  #view-entry.mode-kspeed #btn-save-bill { background: #f59e0b; }
+  #view-entry.mode-kspeed #btn-save-bill:hover { background: #d97706; }
+  /* Cart header accent per mode */
+  #view-entry.mode-walkin #cart-count { background: #ffe4e6; color: #be123c; }
+  #view-entry.mode-byboats #cart-count { background: #d1fae5; color: #047857; }
+  #view-entry.mode-ktour #cart-count { background: #f3e8ff; color: #7e22ce; }
+  #view-entry.mode-kspeed #cart-count { background: #fef3c7; color: #b45309; }
+  /* Mobile bottom bar */
+  #mobile-bottom-bar { transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); transform: translateY(100%); }
+  #mobile-bottom-bar.show { transform: translateY(0); }
+  /* Main gets bottom padding when mobile bar shows */
+  @media (max-width: 1023px) {
+    main.has-mobile-bar { padding-bottom: 88px; }
+  }
 </style>
 </head>
 <body class="bg-slate-100 min-h-screen">
@@ -56,8 +150,8 @@
     <div class="text-xs text-slate-500 hidden sm:block">📅 <span id="today"></span></div>
   </div>
   <nav class="max-w-6xl mx-auto px-4 pb-2 flex gap-2">
-    <button data-tab="entry" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100">📝 กรอกบิล</button>
     <button data-tab="dashboard" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 tab-active">📊 Dashboard</button>
+    <button data-tab="entry" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100">📝 กรอกบิล</button>
     <button data-tab="menu" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100">⚙️ จัดการเมนู</button>
   </nav>
 </header>
@@ -66,39 +160,59 @@
 
 <!-- ============ VIEW: ENTRY ============ -->
 <section id="view-entry" class="view hidden fade-in">
-  <div class="bg-white rounded-xl shadow-sm p-5">
-    <h2 class="text-lg font-semibold mb-4 text-slate-800">📝 กรอกบิลใหม่</h2>
+  <!-- Channel mode selector (BIG + COLOR-CODED) -->
+  <div id="channel-bar" class="bg-white rounded-xl shadow-sm p-3 mb-4 border-l-4 border-rose-500 transition-colors">
+    <div class="flex flex-wrap items-center gap-2">
+      <div class="flex items-center gap-2 mr-2">
+        <span class="text-sm text-slate-600">📅</span>
+        <input type="date" id="bill-date" class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-sky-400 focus:outline-none">
+      </div>
+      <div class="text-xs text-slate-400 mr-1 hidden sm:block">ช่องทาง →</div>
+      <div class="flex flex-wrap gap-1.5">
+        <button data-channel="Walk-In" class="channel-btn px-3 py-2 rounded-lg text-sm font-semibold border-2 transition-all">🚶 Walk-In</button>
+        <button data-channel="By Boats" class="channel-btn px-3 py-2 rounded-lg text-sm font-semibold border-2 transition-all">🚤 By Boats</button>
+        <button data-channel="Korean Tour" class="channel-btn px-3 py-2 rounded-lg text-sm font-semibold border-2 transition-all">🇰🇷 Korean Tour</button>
+        <button data-channel="Korean Speedboat" class="channel-btn px-3 py-2 rounded-lg text-sm font-semibold border-2 transition-all">⚡ K. Speedboat</button>
+      </div>
+      <input type="hidden" id="bill-channel" value="Walk-In">
+      <div class="ml-auto text-xs text-slate-500 hidden md:block">💡 พิมพ์ค้นหาแล้วกด Enter</div>
+    </div>
+  </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-      <div>
-        <label class="text-sm text-slate-600">วันที่</label>
-        <input type="date" id="bill-date" class="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-sky-400 focus:outline-none">
+  <!-- Favorites strip -->
+  <div id="favorites-strip"></div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <!-- LEFT: Menu grid (2/3 width) -->
+    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm flex flex-col" style="max-height: calc(100vh - 180px);">
+      <div class="px-5 pt-5 pb-3 border-b border-slate-100">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-semibold text-slate-800 flex items-center gap-2">🍽️ เลือกเมนู <span id="menu-total" class="text-xs font-normal text-slate-400"></span></h3>
+          <div class="relative">
+            <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs">🔍</span>
+            <input type="text" id="menu-search" placeholder="ค้นหาเมนู..." class="pl-7 pr-3 py-1.5 border border-slate-200 rounded-lg text-xs w-40 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 focus:outline-none">
+          </div>
+        </div>
+        <div id="cat-chips" class="flex flex-wrap gap-1.5"></div>
       </div>
-      <div>
-        <label class="text-sm text-slate-600">ช่องทางการขาย</label>
-        <select id="bill-channel" class="w-full mt-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-sky-400 focus:outline-none">
-          <option>Walk-In</option>
-          <option>By Boats</option>
-          <option>Korean Tour</option>
-          <option>Korean Speedboat</option>
-        </select>
-      </div>
+      <div id="menu-grid" class="flex-1 overflow-y-auto px-5 py-4 menu-scroll"></div>
     </div>
 
-    <div class="border-t border-slate-200 pt-4">
-      <div class="flex justify-between items-center mb-3">
-        <h3 class="font-medium text-slate-700">รายการในบิล</h3>
-        <button onclick="addItem()" class="bg-sky-500 hover:bg-sky-600 text-white text-sm px-3 py-1.5 rounded-lg">+ เพิ่มรายการ</button>
+    <!-- RIGHT: Cart (1/3 width) -->
+    <div class="bg-white rounded-xl shadow-sm p-5 lg:sticky lg:top-24 lg:self-start">
+      <h3 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">
+        🛒 รายการในบิล
+        <span id="cart-count" class="text-xs bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full">0</span>
+      </h3>
+      <div id="cart-list" class="space-y-2 max-h-96 overflow-y-auto"></div>
+      <div class="mt-4 pt-4 border-t border-slate-200">
+        <div class="flex justify-between items-center mb-3">
+          <span class="text-slate-600 text-sm">ยอดรวม</span>
+          <span id="bill-total" class="text-2xl font-bold text-sky-600">฿0</span>
+        </div>
+        <button id="btn-save-bill" class="w-full bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium transition-colors">💾 บันทึกบิล</button>
+        <button onclick="clearCart()" class="w-full mt-2 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-lg text-sm">🗑 ล้างบิล</button>
       </div>
-
-      <div id="items-list" class="space-y-2"></div>
-
-      <div class="mt-4 bg-slate-50 rounded-lg p-4 flex justify-between items-center">
-        <span class="text-slate-600">ยอดรวม</span>
-        <span id="bill-total" class="text-2xl font-bold text-sky-600">฿0</span>
-      </div>
-
-      <button class="w-full mt-4 bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-lg font-medium">💾 บันทึกบิล</button>
     </div>
   </div>
 </section>
@@ -106,21 +220,34 @@
 <!-- ============ VIEW: DASHBOARD ============ -->
 <section id="view-dashboard" class="view fade-in">
   <!-- Filters -->
-  <div class="bg-white rounded-xl shadow-sm p-4 mb-4 flex flex-wrap gap-3 items-center">
-    <span class="text-sm text-slate-600">📅 เดือน:</span>
-    <select class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm">
-      <option>เมษายน 2026</option>
-      <option>มีนาคม 2026</option>
-      <option>กุมภาพันธ์ 2026</option>
-    </select>
-    <span class="text-sm text-slate-600 ml-2">🏷️ Channel:</span>
-    <select class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm">
-      <option>ทั้งหมด</option>
-      <option>Walk-In</option>
-      <option>By Boats</option>
-      <option>Korean Tour</option>
-      <option>Korean Speedboat</option>
-    </select>
+  <div class="bg-white rounded-xl shadow-sm p-3 mb-4 space-y-2.5">
+    <!-- Row 1: Month + Date range + Refresh -->
+    <div class="flex flex-wrap items-center gap-2">
+      <div class="flex items-center gap-1.5">
+        <span class="text-sm text-slate-600">📅</span>
+        <select id="dash-month" class="px-2.5 py-1.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-sky-400 focus:outline-none"></select>
+      </div>
+      <div class="hidden sm:block w-px h-6 bg-slate-200"></div>
+      <div class="flex items-center gap-1.5 flex-wrap">
+        <span class="text-xs text-slate-500 hidden md:inline">ช่วงวันที่</span>
+        <input type="date" id="dash-from" class="px-2 py-1.5 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-sky-400 focus:outline-none" title="ตั้งแต่วันที่">
+        <span class="text-xs text-slate-400">→</span>
+        <input type="date" id="dash-to" class="px-2 py-1.5 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-sky-400 focus:outline-none" title="ถึงวันที่">
+        <button id="dash-range-clear" class="hidden text-xs w-7 h-7 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg" title="ล้างช่วงวันที่">✕</button>
+      </div>
+      <button id="dash-refresh" class="ml-auto text-xs px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-700 rounded-lg font-medium whitespace-nowrap">🔄 รีเฟรช</button>
+    </div>
+    <!-- Row 2: Channel pills (own row, scroll horizontally on overflow) -->
+    <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+      <span class="text-xs text-slate-500 whitespace-nowrap hidden sm:inline">ช่องทาง</span>
+      <div class="flex gap-1.5 overflow-x-auto menu-scroll flex-1 -mx-1 px-1 pb-0.5">
+        <button data-dash-ch="all" class="dash-ch-btn px-3 py-1.5 rounded-lg text-xs font-semibold border-2 transition-all whitespace-nowrap flex-shrink-0">✨ ทั้งหมด</button>
+        <button data-dash-ch="Walk-In" class="dash-ch-btn px-3 py-1.5 rounded-lg text-xs font-semibold border-2 transition-all whitespace-nowrap flex-shrink-0">🚶 Walk-In</button>
+        <button data-dash-ch="By Boats" class="dash-ch-btn px-3 py-1.5 rounded-lg text-xs font-semibold border-2 transition-all whitespace-nowrap flex-shrink-0">🚤 By Boats</button>
+        <button data-dash-ch="Korean Tour" class="dash-ch-btn px-3 py-1.5 rounded-lg text-xs font-semibold border-2 transition-all whitespace-nowrap flex-shrink-0">🇰🇷 Korean Tour</button>
+        <button data-dash-ch="Korean Speedboat" class="dash-ch-btn px-3 py-1.5 rounded-lg text-xs font-semibold border-2 transition-all whitespace-nowrap flex-shrink-0">⚡ K. Speedboat</button>
+      </div>
+    </div>
   </div>
 
   <!-- Sub-tabs -->
@@ -133,18 +260,30 @@
   <!-- ========== SUB: OVERVIEW ========== -->
   <div id="sub-overview" class="sub-view">
 
+  <!-- TODAY SPLIT CARD -->
+  <div class="bg-white rounded-xl shadow-sm p-4 mb-4 border border-slate-100">
+    <div class="flex items-center justify-between mb-3">
+      <div class="flex items-center gap-2">
+        <span class="text-base">📆</span>
+        <h3 class="font-semibold text-slate-800 text-sm">วันนี้ <span id="today-label" class="text-xs text-slate-400 font-normal"></span></h3>
+      </div>
+      <div class="text-xs text-slate-500">รวม <span id="today-total" class="font-bold text-slate-800">฿0</span> · <span id="today-bills">0</span> บิล</div>
+    </div>
+    <div id="today-split" class="grid grid-cols-2 md:grid-cols-4 gap-2.5"></div>
+  </div>
+
   <!-- HERO SECTION -->
   <div class="bg-gradient-to-br from-slate-900 via-sky-900 to-sky-700 text-white rounded-2xl p-6 mb-4 shadow-lg relative overflow-hidden">
     <div class="absolute top-0 right-0 w-64 h-64 bg-sky-400 opacity-10 rounded-full -mr-20 -mt-20"></div>
     <div class="absolute bottom-0 right-20 w-40 h-40 bg-emerald-400 opacity-10 rounded-full"></div>
     <div class="relative grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
       <div class="lg:col-span-1">
-        <div class="text-xs text-sky-200 uppercase tracking-wider">ยอดขายเดือนนี้</div>
-        <div class="text-5xl font-bold mt-2">฿1.84M</div>
-        <div class="text-sm text-sky-100 mt-1">฿1,841,140</div>
+        <div class="text-xs text-sky-200 uppercase tracking-wider" id="hero-label">ยอดขายเดือนนี้</div>
+        <div class="text-5xl font-bold mt-2" id="hero-total-short">฿0</div>
+        <div class="text-sm text-sky-100 mt-1" id="hero-total-full">฿0</div>
         <div class="mt-4 flex items-center gap-2">
-          <span class="bg-emerald-400/20 text-emerald-300 text-xs px-2 py-1 rounded-full border border-emerald-400/30">▲ 12.4%</span>
-          <span class="text-xs text-sky-200">vs. เดือนที่แล้ว (฿1.64M)</span>
+          <span id="hero-delta" class="bg-emerald-400/20 text-emerald-300 text-xs px-2 py-1 rounded-full border border-emerald-400/30">—</span>
+          <span class="text-xs text-sky-200" id="hero-compare">vs. เดือนที่แล้ว</span>
         </div>
       </div>
       <div class="lg:col-span-2">
@@ -160,12 +299,11 @@
         <div class="text-xs text-slate-500 uppercase">จำนวนบิล</div>
         <span class="text-lg">🧾</span>
       </div>
-      <div class="text-2xl font-bold mt-2 text-slate-800">156</div>
+      <div class="text-2xl font-bold mt-2 text-slate-800" id="kpi-bills">0</div>
       <div class="flex items-center gap-1 mt-1">
-        <span class="text-xs text-emerald-600 font-medium">▲ 8.2%</span>
+        <span class="text-xs font-medium" id="kpi-bills-delta">—</span>
         <span class="text-xs text-slate-400">vs. เดือนก่อน</span>
       </div>
-      <div class="spark-wrap mt-2"><canvas data-spark="156,142,160,155,168,172,180" height="24"></canvas></div>
     </div>
 
     <div class="kpi-card bg-white rounded-xl p-4 shadow-sm border border-slate-100">
@@ -173,12 +311,11 @@
         <div class="text-xs text-slate-500 uppercase">เฉลี่ย/บิล</div>
         <span class="text-lg">💵</span>
       </div>
-      <div class="text-2xl font-bold mt-2 text-slate-800">฿11,802</div>
+      <div class="text-2xl font-bold mt-2 text-slate-800" id="kpi-avg">฿0</div>
       <div class="flex items-center gap-1 mt-1">
-        <span class="text-xs text-emerald-600 font-medium">▲ 4.1%</span>
+        <span class="text-xs font-medium" id="kpi-avg-delta">—</span>
         <span class="text-xs text-slate-400">vs. เดือนก่อน</span>
       </div>
-      <div class="spark-wrap mt-2"><canvas data-spark="10500,11200,10800,11500,11802,11650,11900" height="24"></canvas></div>
     </div>
 
     <div class="kpi-card bg-white rounded-xl p-4 shadow-sm border border-slate-100">
@@ -186,12 +323,11 @@
         <div class="text-xs text-slate-500 uppercase">วันที่ขายดีสุด</div>
         <span class="text-lg">🔥</span>
       </div>
-      <div class="text-2xl font-bold mt-2 text-slate-800">28 เม.ย.</div>
+      <div class="text-2xl font-bold mt-2 text-slate-800" id="kpi-best-day">—</div>
       <div class="flex items-center gap-1 mt-1">
-        <span class="text-xs text-slate-600 font-medium">฿95,000</span>
-        <span class="text-xs text-slate-400">· วันเสาร์</span>
+        <span class="text-xs text-slate-600 font-medium" id="kpi-best-total">฿0</span>
+        <span class="text-xs text-slate-400" id="kpi-best-weekday"></span>
       </div>
-      <div class="spark-wrap mt-2"><canvas data-spark="45,52,48,61,55,67,72,58,63,70,75,68,71,80,85,78,82,90,88,76,81,79,84,92,87,83,89,95,91,86" height="24"></canvas></div>
     </div>
 
     <div class="kpi-card bg-white rounded-xl p-4 shadow-sm border border-slate-100">
@@ -199,13 +335,13 @@
         <div class="text-xs text-slate-500 uppercase">เมนูขายดีสุด</div>
         <span class="text-lg">🏆</span>
       </div>
-      <div class="text-lg font-bold mt-2 text-slate-800 truncate">ตัมยำกุ้ง</div>
+      <div class="text-lg font-bold mt-2 text-slate-800 truncate" id="kpi-top-name">—</div>
       <div class="flex items-center gap-1 mt-1">
-        <span class="text-xs text-slate-600 font-medium">200 ถ้วย</span>
-        <span class="text-xs text-slate-400">· ฿56,000</span>
+        <span class="text-xs text-slate-600 font-medium" id="kpi-top-qty">0 ชิ้น</span>
+        <span class="text-xs text-slate-400" id="kpi-top-total">· ฿0</span>
       </div>
       <div class="mt-2 w-full bg-slate-100 rounded-full h-1.5">
-        <div class="bg-gradient-to-r from-amber-400 to-rose-500 h-1.5 rounded-full" style="width: 85%"></div>
+        <div id="kpi-top-bar" class="bg-gradient-to-r from-amber-400 to-rose-500 h-1.5 rounded-full" style="width: 0%"></div>
       </div>
     </div>
   </div>
@@ -216,55 +352,7 @@
       <h3 class="font-semibold text-slate-800">🏷️ ผลงานตามช่องทาง</h3>
       <span class="text-xs text-slate-400">เทียบกับเดือนที่แล้ว</span>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-      <div class="border border-rose-200 bg-rose-50/50 rounded-xl p-4">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm font-semibold text-rose-700">🚶 Walk-In</span>
-          <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">▲ 15%</span>
-        </div>
-        <div class="text-2xl font-bold text-slate-800">฿1.26M</div>
-        <div class="text-xs text-slate-500 mt-1">68% ของยอดรวม</div>
-        <div class="mt-3 w-full bg-rose-100 rounded-full h-2">
-          <div class="bg-rose-500 h-2 rounded-full" style="width: 68%"></div>
-        </div>
-      </div>
-
-      <div class="border border-emerald-200 bg-emerald-50/50 rounded-xl p-4">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm font-semibold text-emerald-700">🚤 By Boats</span>
-          <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">▲ 8%</span>
-        </div>
-        <div class="text-2xl font-bold text-slate-800">฿582k</div>
-        <div class="text-xs text-slate-500 mt-1">32% ของยอดรวม</div>
-        <div class="mt-3 w-full bg-emerald-100 rounded-full h-2">
-          <div class="bg-emerald-500 h-2 rounded-full" style="width: 32%"></div>
-        </div>
-      </div>
-
-      <div class="border border-purple-200 bg-purple-50/50 rounded-xl p-4">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm font-semibold text-purple-700">🇰🇷 Korean Tour</span>
-          <span class="text-xs bg-rose-100 text-rose-700 px-2 py-0.5 rounded">▼ 5%</span>
-        </div>
-        <div class="text-2xl font-bold text-slate-800">฿154k</div>
-        <div class="text-xs text-slate-500 mt-1">8% ของยอดรวม</div>
-        <div class="mt-3 w-full bg-purple-100 rounded-full h-2">
-          <div class="bg-purple-500 h-2 rounded-full" style="width: 8%"></div>
-        </div>
-      </div>
-
-      <div class="border border-amber-200 bg-amber-50/50 rounded-xl p-4">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-sm font-semibold text-amber-700">⚡ K. Speedboat</span>
-          <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">—</span>
-        </div>
-        <div class="text-2xl font-bold text-slate-800">฿960</div>
-        <div class="text-xs text-slate-500 mt-1">&lt; 1% ของยอดรวม</div>
-        <div class="mt-3 w-full bg-amber-100 rounded-full h-2">
-          <div class="bg-amber-500 h-2 rounded-full" style="width: 1%"></div>
-        </div>
-      </div>
-    </div>
+    <div id="channel-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3"></div>
   </div>
 
   <!-- DAILY TREND + DONUT -->
@@ -289,62 +377,7 @@
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
     <div class="bg-white rounded-xl shadow-sm p-5">
       <h3 class="font-semibold text-slate-800 mb-4">🍽️ ยอดตามหมวดสินค้า</h3>
-      <div class="space-y-3">
-        <div>
-          <div class="flex justify-between text-sm mb-1">
-            <span class="font-medium text-slate-700">🍜 Food</span>
-            <span class="text-slate-600">฿1,411,840 <span class="text-xs text-slate-400">(77%)</span></span>
-          </div>
-          <div class="w-full bg-slate-100 rounded-full h-2.5">
-            <div class="bg-rose-500 h-2.5 rounded-full" style="width: 77%"></div>
-          </div>
-        </div>
-        <div>
-          <div class="flex justify-between text-sm mb-1">
-            <span class="font-medium text-slate-700">🥤 Drinks</span>
-            <span class="text-slate-600">฿205,110 <span class="text-xs text-slate-400">(11%)</span></span>
-          </div>
-          <div class="w-full bg-slate-100 rounded-full h-2.5">
-            <div class="bg-blue-500 h-2.5 rounded-full" style="width: 11%"></div>
-          </div>
-        </div>
-        <div>
-          <div class="flex justify-between text-sm mb-1">
-            <span class="font-medium text-slate-700">🍹 Cocktails</span>
-            <span class="text-slate-600">฿132,930 <span class="text-xs text-slate-400">(7%)</span></span>
-          </div>
-          <div class="w-full bg-slate-100 rounded-full h-2.5">
-            <div class="bg-purple-500 h-2.5 rounded-full" style="width: 7%"></div>
-          </div>
-        </div>
-        <div>
-          <div class="flex justify-between text-sm mb-1">
-            <span class="font-medium text-slate-700">🏖️ Sunbeds</span>
-            <span class="text-slate-600">฿51,200 <span class="text-xs text-slate-400">(3%)</span></span>
-          </div>
-          <div class="w-full bg-slate-100 rounded-full h-2.5">
-            <div class="bg-emerald-500 h-2.5 rounded-full" style="width: 3%"></div>
-          </div>
-        </div>
-        <div>
-          <div class="flex justify-between text-sm mb-1">
-            <span class="font-medium text-slate-700">☕ Coffee</span>
-            <span class="text-slate-600">฿40,060 <span class="text-xs text-slate-400">(2%)</span></span>
-          </div>
-          <div class="w-full bg-slate-100 rounded-full h-2.5">
-            <div class="bg-amber-600 h-2.5 rounded-full" style="width: 2%"></div>
-          </div>
-        </div>
-        <div>
-          <div class="flex justify-between text-sm mb-1">
-            <span class="font-medium text-slate-700">🚤 Jet-Banana</span>
-            <span class="text-slate-600">฿26,550 <span class="text-xs text-slate-400">(1%)</span></span>
-          </div>
-          <div class="w-full bg-slate-100 rounded-full h-2.5">
-            <div class="bg-cyan-500 h-2.5 rounded-full" style="width: 1%"></div>
-          </div>
-        </div>
-      </div>
+      <div id="cat-breakdown" class="space-y-3"></div>
     </div>
 
     <div class="bg-white rounded-xl shadow-sm p-5">
@@ -352,203 +385,21 @@
         <h3 class="font-semibold text-slate-800">🏆 Top 10 เมนูขายดี</h3>
         <span class="text-xs text-slate-400">เดือนนี้</span>
       </div>
-      <div class="space-y-2.5">
-        <div class="flex items-center gap-3">
-          <span class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 text-sm font-bold flex items-center justify-center">1</span>
-          <div class="flex-1 min-w-0">
-            <div class="flex justify-between text-sm"><span class="font-medium truncate">ตัมยำกุ้ง</span><span class="text-slate-600">฿56,000</span></div>
-            <div class="w-full bg-slate-100 rounded-full h-1 mt-1"><div class="bg-amber-400 h-1 rounded-full" style="width:100%"></div></div>
-          </div>
-        </div>
-        <div class="flex items-center gap-3">
-          <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 text-sm font-bold flex items-center justify-center">2</span>
-          <div class="flex-1 min-w-0">
-            <div class="flex justify-between text-sm"><span class="font-medium truncate">Sunbed (วัน)</span><span class="text-slate-600">฿36,000</span></div>
-            <div class="w-full bg-slate-100 rounded-full h-1 mt-1"><div class="bg-slate-400 h-1 rounded-full" style="width:64%"></div></div>
-          </div>
-        </div>
-        <div class="flex items-center gap-3">
-          <span class="w-7 h-7 rounded-lg bg-orange-100 text-orange-700 text-sm font-bold flex items-center justify-center">3</span>
-          <div class="flex-1 min-w-0">
-            <div class="flex justify-between text-sm"><span class="font-medium truncate">ผัดไทยกุ้ง</span><span class="text-slate-600">฿21,250</span></div>
-            <div class="w-full bg-slate-100 rounded-full h-1 mt-1"><div class="bg-orange-400 h-1 rounded-full" style="width:38%"></div></div>
-          </div>
-        </div>
-        <div class="flex items-center gap-3">
-          <span class="w-7 h-7 rounded-lg bg-slate-50 text-slate-500 text-sm font-bold flex items-center justify-center">4</span>
-          <div class="flex-1 min-w-0">
-            <div class="flex justify-between text-sm"><span class="font-medium truncate">ลาเต้</span><span class="text-slate-600">฿15,000</span></div>
-            <div class="w-full bg-slate-100 rounded-full h-1 mt-1"><div class="bg-slate-300 h-1 rounded-full" style="width:27%"></div></div>
-          </div>
-        </div>
-        <div class="flex items-center gap-3">
-          <span class="w-7 h-7 rounded-lg bg-slate-50 text-slate-500 text-sm font-bold flex items-center justify-center">5</span>
-          <div class="flex-1 min-w-0">
-            <div class="flex justify-between text-sm"><span class="font-medium truncate">ข้าวผัดปู</span><span class="text-slate-600">฿12,400</span></div>
-            <div class="w-full bg-slate-100 rounded-full h-1 mt-1"><div class="bg-slate-300 h-1 rounded-full" style="width:22%"></div></div>
-          </div>
-        </div>
-        <div class="flex items-center gap-3">
-          <span class="w-7 h-7 rounded-lg bg-slate-50 text-slate-500 text-sm font-bold flex items-center justify-center">6</span>
-          <div class="flex-1 min-w-0">
-            <div class="flex justify-between text-sm"><span class="font-medium truncate">Mojito</span><span class="text-slate-600">฿9,800</span></div>
-            <div class="w-full bg-slate-100 rounded-full h-1 mt-1"><div class="bg-slate-300 h-1 rounded-full" style="width:17%"></div></div>
-          </div>
-        </div>
-        <div class="flex items-center gap-3">
-          <span class="w-7 h-7 rounded-lg bg-slate-50 text-slate-500 text-sm font-bold flex items-center justify-center">7</span>
-          <div class="flex-1 min-w-0">
-            <div class="flex justify-between text-sm"><span class="font-medium truncate">เบียร์สิงห์</span><span class="text-slate-600">฿5,880</span></div>
-            <div class="w-full bg-slate-100 rounded-full h-1 mt-1"><div class="bg-slate-300 h-1 rounded-full" style="width:10%"></div></div>
-          </div>
-        </div>
-      </div>
+      <div id="top-items" class="space-y-2.5"></div>
     </div>
   </div>
 
   <!-- INSIGHTS PANEL -->
   <div class="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 rounded-xl p-5 mb-4">
     <h3 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">💡 Insights อัตโนมัติ</h3>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-      <div class="bg-white rounded-lg p-3 border border-slate-100">
-        <div class="text-xs text-emerald-600 font-semibold mb-1">📈 แนวโน้มดี</div>
-        <div class="text-sm text-slate-700">ยอดขาย Walk-In เพิ่มขึ้น <span class="font-bold text-emerald-600">15%</span> จากเดือนที่แล้ว — เป็นช่องทางที่โตเร็วสุด</div>
-      </div>
-      <div class="bg-white rounded-lg p-3 border border-slate-100">
-        <div class="text-xs text-rose-600 font-semibold mb-1">⚠️ ควรระวัง</div>
-        <div class="text-sm text-slate-700">Korean Tour ลดลง <span class="font-bold text-rose-600">5%</span> — อาจต้องเช็คโปรโมชั่นหรือความถี่ทัวร์</div>
-      </div>
-      <div class="bg-white rounded-lg p-3 border border-slate-100">
-        <div class="text-xs text-sky-600 font-semibold mb-1">🎯 โอกาส</div>
-        <div class="text-sm text-slate-700">วันเสาร์ยอดขายสูงกว่าวันธรรมดา <span class="font-bold text-sky-600">2.3 เท่า</span> — พิจารณาเพิ่มสต็อก/ทีม</div>
-      </div>
-    </div>
+    <div id="insights" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
   </div>
 
   </div><!-- /sub-overview -->
 
   <!-- ========== SUB: MATRIX ========== -->
-  <div id="sub-matrix" class="sub-view hidden">
-    <!-- Regular Group -->
-    <div class="bg-white rounded-xl shadow-sm p-5 mb-4">
-      <h3 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">
-        <span class="w-2 h-6 bg-rose-500 rounded"></span> Regular (Walk-In + By Boats)
-      </h3>
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm border-collapse">
-          <thead>
-            <tr class="bg-rose-50">
-              <th class="text-left px-3 py-2 border border-rose-100">Channel</th>
-              <th class="text-right px-3 py-2 border border-rose-100">Food</th>
-              <th class="text-right px-3 py-2 border border-rose-100">Drinks</th>
-              <th class="text-right px-3 py-2 border border-rose-100">Cocktails</th>
-              <th class="text-right px-3 py-2 border border-rose-100">Coffee</th>
-              <th class="text-right px-3 py-2 border border-rose-100">Sunbed</th>
-              <th class="text-right px-3 py-2 border border-rose-100 bg-rose-100 font-bold">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="hover:bg-slate-50">
-              <td class="px-3 py-2 border border-slate-200 font-medium">Walk-In</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">1,011,740</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">117,220</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">72,050</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">26,190</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">31,600</td>
-              <td class="px-3 py-2 border border-slate-200 text-right font-semibold bg-rose-50">1,258,800</td>
-            </tr>
-            <tr class="hover:bg-slate-50">
-              <td class="px-3 py-2 border border-slate-200 font-medium">By Boats</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">400,100</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">87,890</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">60,880</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">13,870</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">19,600</td>
-              <td class="px-3 py-2 border border-slate-200 text-right font-semibold bg-rose-50">582,340</td>
-            </tr>
-            <tr class="bg-slate-100 font-bold">
-              <td class="px-3 py-2 border border-slate-200">Total</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">1,411,840</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">205,110</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">132,930</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">40,060</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">51,200</td>
-              <td class="px-3 py-2 border border-slate-200 text-right bg-rose-200">1,841,140</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="text-xs text-slate-400 mt-2">💡 คลิกตัวเลขเพื่อดูรายการเมนูในกลุ่มนั้น</p>
-    </div>
-
-    <!-- Korean Tour -->
-    <div class="bg-white rounded-xl shadow-sm p-5 mb-4">
-      <h3 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">
-        <span class="w-2 h-6 bg-purple-500 rounded"></span> Korean Tour
-      </h3>
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm border-collapse">
-          <thead>
-            <tr class="bg-purple-50">
-              <th class="text-left px-3 py-2 border border-purple-100">Channel</th>
-              <th class="text-right px-3 py-2 border border-purple-100">Sunbed</th>
-              <th class="text-right px-3 py-2 border border-purple-100">Waters</th>
-              <th class="text-right px-3 py-2 border border-purple-100">Services</th>
-              <th class="text-right px-3 py-2 border border-purple-100">Jet-Banana</th>
-              <th class="text-right px-3 py-2 border border-purple-100 bg-purple-100 font-bold">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="hover:bg-slate-50">
-              <td class="px-3 py-2 border border-slate-200 font-medium">Korean Tour</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">95,600</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">23,540</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">8,100</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">26,550</td>
-              <td class="px-3 py-2 border border-slate-200 text-right font-semibold bg-purple-50">153,790</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Korean Speedboat -->
-    <div class="bg-white rounded-xl shadow-sm p-5 mb-4">
-      <h3 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">
-        <span class="w-2 h-6 bg-amber-500 rounded"></span> Korean Speedboat
-      </h3>
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm border-collapse">
-          <thead>
-            <tr class="bg-amber-50">
-              <th class="text-left px-3 py-2 border border-amber-100">Channel</th>
-              <th class="text-right px-3 py-2 border border-amber-100">Sunbed</th>
-              <th class="text-right px-3 py-2 border border-amber-100">Drinks</th>
-              <th class="text-right px-3 py-2 border border-amber-100">Jet-Banana</th>
-              <th class="text-right px-3 py-2 border border-amber-100">Snorkling+LJ</th>
-              <th class="text-right px-3 py-2 border border-amber-100 bg-amber-100 font-bold">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="hover:bg-slate-50">
-              <td class="px-3 py-2 border border-slate-200 font-medium">Korean Speedboat</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">800</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">160</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">0</td>
-              <td class="px-3 py-2 border border-slate-200 text-right">0</td>
-              <td class="px-3 py-2 border border-slate-200 text-right font-semibold bg-amber-50">960</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Grand Total -->
-    <div class="bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-xl p-5 shadow flex justify-between items-center">
-      <span class="text-lg">🎯 ยอดรวมทั้งหมด</span>
-      <span class="text-3xl font-bold">฿1,995,890</span>
-    </div>
-  </div><!-- /sub-matrix -->
+  <!-- เนื้อหาทั้งหมดจะถูก render โดย refreshDashboard() → renderMatrixView() -->
+  <div id="sub-matrix" class="sub-view hidden"></div><!-- /sub-matrix -->
 
   <!-- ========== SUB: DAILY ========== -->
   <div id="sub-daily" class="sub-view hidden">
@@ -577,47 +428,314 @@
 
 <!-- ============ VIEW: MENU ============ -->
 <section id="view-menu" class="view hidden fade-in">
-  <div class="bg-white rounded-xl shadow-sm p-5">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-lg font-semibold text-slate-800">⚙️ จัดการเมนู</h2>
-      <button class="bg-sky-500 hover:bg-sky-600 text-white text-sm px-4 py-2 rounded-lg">+ เพิ่มเมนูใหม่</button>
+  <!-- Page header -->
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <div>
+      <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">⚙️ จัดการเมนู</h2>
+      <p class="text-xs text-slate-500 mt-0.5">เพิ่ม แก้ไข หรือปิดการใช้งานเมนูของร้าน</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="btn-export" class="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-sm px-3 py-2 rounded-lg flex items-center gap-1.5">
+        <span>📥</span> Export
+      </button>
+      <button id="btn-add-menu" class="bg-sky-500 hover:bg-sky-600 text-white text-sm px-4 py-2 rounded-lg font-medium shadow-sm flex items-center gap-1.5">
+        <span class="text-base leading-none">+</span> เพิ่มเมนูใหม่
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+    <div class="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
+      <div class="flex items-center justify-between">
+        <div class="text-xs text-slate-500 uppercase tracking-wider">เมนูทั้งหมด</div>
+        <span class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">📋</span>
+      </div>
+      <div class="text-2xl font-bold text-slate-800 mt-2" id="stat-total">—</div>
+      <div class="text-[11px] text-slate-400 mt-0.5" id="stat-groups">—</div>
+    </div>
+    <div class="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
+      <div class="flex items-center justify-between">
+        <div class="text-xs text-slate-500 uppercase tracking-wider">หมวด</div>
+        <span class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">🗂️</span>
+      </div>
+      <div class="text-2xl font-bold text-slate-800 mt-2" id="stat-cats">—</div>
+      <div class="text-[11px] text-slate-400 mt-0.5">หมวดสินค้า</div>
+    </div>
+    <div class="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
+      <div class="flex items-center justify-between">
+        <div class="text-xs text-slate-500 uppercase tracking-wider">ใช้งานอยู่</div>
+        <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">✓</span>
+      </div>
+      <div class="text-2xl font-bold text-slate-800 mt-2" id="stat-active">—</div>
+      <div class="text-[11px] text-slate-400 mt-0.5" id="stat-inactive">—</div>
+    </div>
+  </div>
+
+  <!-- Table card -->
+  <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+    <!-- Toolbar -->
+    <div class="p-4 border-b border-slate-100 flex flex-wrap gap-2 items-center">
+      <div class="relative flex-1 min-w-[200px]">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+        <input type="text" id="mm-search" placeholder="ค้นหาชื่อเมนู, ขนาด..." class="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400 focus:outline-none">
+      </div>
+      <select id="mm-cat" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-sky-400 focus:outline-none">
+        <option value="all">ทุกหมวด</option>
+      </select>
+      <select id="mm-status" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-sky-400 focus:outline-none">
+        <option value="all">ทุกสถานะ</option>
+        <option value="active">ใช้งาน</option>
+        <option value="inactive">ปิดใช้งาน</option>
+      </select>
+      <div id="mm-bulk-bar" class="hidden ml-auto flex items-center gap-2">
+        <span class="text-xs text-slate-500"><span id="mm-selected-count">0</span> รายการที่เลือก</span>
+        <button id="mm-bulk-enable" class="text-xs px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg font-medium">เปิดใช้งาน</button>
+        <button id="mm-bulk-disable" class="text-xs px-3 py-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg font-medium">ปิดใช้งาน</button>
+        <button id="mm-bulk-delete" class="text-xs px-3 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-100 rounded-lg font-medium">ลบ</button>
+      </div>
     </div>
 
-    <input type="text" placeholder="🔍 ค้นหาเมนู..." class="w-full mb-3 px-3 py-2 border border-slate-300 rounded-lg text-sm">
-
+    <!-- Table -->
     <div class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead class="bg-slate-50 text-slate-600">
-          <tr>
-            <th class="text-left px-3 py-2">ชื่อเมนู</th>
-            <th class="text-left px-3 py-2">หมวด</th>
-            <th class="text-right px-3 py-2">ราคา</th>
-            <th class="text-center px-3 py-2">สถานะ</th>
-            <th class="px-3 py-2"></th>
+      <table class="w-full text-sm" id="mm-table">
+        <thead class="bg-slate-50 text-slate-500">
+          <tr class="text-[11px] uppercase tracking-wider">
+            <th class="w-10 px-4 py-3 text-center"><input type="checkbox" id="mm-select-all" class="rounded border-slate-300"></th>
+            <th class="text-center px-3 py-3 cursor-pointer select-none" data-sort="name">ชื่อเมนู <span class="sort-ind"></span></th>
+            <th class="text-center px-3 py-3">ขนาด/ตัวเลือก</th>
+            <th class="text-center px-3 py-3 cursor-pointer select-none" data-sort="cat">หมวด <span class="sort-ind"></span></th>
+            <th class="text-center px-3 py-3 cursor-pointer select-none" data-sort="price">ราคา <span class="sort-ind"></span></th>
+            <th class="text-center px-3 py-3">สถานะ</th>
+            <th class="w-24 px-3 py-3 text-center">จัดการ</th>
           </tr>
         </thead>
-        <tbody id="menu-table" class="divide-y divide-slate-200"></tbody>
+        <tbody id="menu-table" class="divide-y divide-slate-100 align-middle"></tbody>
       </table>
+    </div>
+
+    <!-- Footer -->
+    <div class="p-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
+      <span id="mm-count">แสดง 0 จาก 0 รายการ</span>
+      <div class="flex items-center gap-2">
+        <span class="text-slate-400">ต่อหน้า:</span>
+        <select id="mm-page-size" class="px-2 py-1 border border-slate-200 rounded text-xs bg-white">
+          <option value="25">25</option>
+          <option value="50" selected>50</option>
+          <option value="100">100</option>
+          <option value="9999">ทั้งหมด</option>
+        </select>
+        <div id="mm-pagination" class="flex items-center gap-1 ml-2"></div>
+      </div>
+      <span class="flex items-center gap-3">
+        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> ใช้งาน</span>
+        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-300"></span> ปิดใช้งาน</span>
+      </span>
     </div>
   </div>
 </section>
 
+<!-- ============ MODAL: MENU FORM ============ -->
+<div id="menu-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+  <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" data-close></div>
+  <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+      <h3 class="font-bold text-slate-800" id="modal-title">เพิ่มเมนูใหม่</h3>
+      <button class="text-slate-400 hover:text-slate-600 text-xl leading-none" data-close>×</button>
+    </div>
+    <form id="menu-form" class="p-6 space-y-4">
+      <input type="hidden" id="f-id">
+      <div class="grid grid-cols-[80px_1fr] gap-3">
+        <div class="relative">
+          <label class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Emoji</label>
+          <button type="button" id="f-emoji-btn" class="mt-1 w-full h-[42px] px-2 py-2 border border-slate-200 rounded-lg text-2xl text-center bg-white hover:border-sky-400 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 focus:outline-none flex items-center justify-center transition-colors">
+            <span id="f-emoji-display" class="text-slate-300">+</span>
+          </button>
+          <input type="hidden" id="f-emoji">
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-slate-600 uppercase tracking-wider">ชื่อเมนู <span class="text-rose-500">*</span></label>
+          <input type="text" id="f-name" required class="mt-1 w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400 focus:outline-none" placeholder="เช่น ตัมยำกุ้ง">
+        </div>
+      </div>
+
+      <!-- Emoji picker popover -->
+      <div id="emoji-picker" class="hidden absolute z-[70] bg-white border border-slate-200 rounded-xl shadow-2xl p-3 w-[340px]" style="left: 24px; top: 150px;">
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-xs font-semibold text-slate-700">เลือก Emoji</div>
+          <button type="button" id="emoji-clear" class="text-[10px] text-slate-400 hover:text-rose-500">ล้าง</button>
+        </div>
+        <div class="relative mb-2">
+          <input type="text" id="emoji-custom" maxlength="4" placeholder="หรือพิมพ์ emoji เอง..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400 focus:outline-none">
+        </div>
+        <div id="emoji-grid" class="max-h-[260px] overflow-y-auto menu-scroll space-y-2"></div>
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-slate-600 uppercase tracking-wider">หมวด <span class="text-rose-500">*</span></label>
+        <select id="f-cat" required class="mt-1 w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-sky-400 focus:outline-none"></select>
+      </div>
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <label class="text-xs font-semibold text-slate-600 uppercase tracking-wider">ตัวเลือก / ราคา <span class="text-rose-500">*</span></label>
+          <button type="button" id="f-add-variant" class="text-xs px-2 py-0.5 bg-sky-50 hover:bg-sky-100 text-sky-700 rounded-md font-medium flex items-center gap-1">+ เพิ่มตัวเลือก</button>
+        </div>
+        <div id="f-variants" class="space-y-2"></div>
+        <p class="text-[11px] text-slate-400 mt-1.5">💡 ปล่อยช่อง "ตัวเลือก" ว่าง = ไม่มี variant · เพิ่มหลายแถว = ตัวเลือกหลายแบบ (เช่น ร้อน 80, เย็น 100)</p>
+      </div>
+      <div class="flex items-center gap-2 pt-2">
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" id="f-active" checked class="rounded border-slate-300">
+          <span class="text-sm text-slate-700">เปิดใช้งาน</span>
+        </label>
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button type="button" data-close class="flex-1 px-4 py-2 border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg text-sm font-medium">ยกเลิก</button>
+        <button type="submit" class="flex-1 px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-sm font-medium shadow-sm">บันทึก</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ MODAL: CONFIRM ============ -->
+<div id="confirm-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4">
+  <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" data-close></div>
+  <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
+    <div class="p-6 text-center">
+      <div id="confirm-icon-wrap" class="mx-auto w-14 h-14 rounded-full bg-rose-50 flex items-center justify-center text-3xl mb-4">
+        <span id="confirm-icon">🗑️</span>
+      </div>
+      <h3 id="confirm-title" class="text-lg font-bold text-slate-800 mb-2">ยืนยันการลบ</h3>
+      <p id="confirm-message" class="text-sm text-slate-500 leading-relaxed">คุณแน่ใจหรือไม่?</p>
+    </div>
+    <div class="px-6 pb-6 flex gap-2">
+      <button id="confirm-cancel" type="button" class="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg text-sm font-semibold transition-colors">ยกเลิก</button>
+      <button id="confirm-ok" type="button" class="flex-1 px-4 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-lg text-sm font-semibold shadow-sm transition-colors">ลบ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile bottom bar (แสดงเฉพาะ mobile/tablet เมื่อมีของในตะกร้า) -->
+<div id="mobile-bottom-bar" class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.1)] z-40 px-4 py-3 flex items-center gap-3">
+  <button id="mbb-view" class="flex-1 text-left">
+    <div class="text-[10px] text-slate-500 uppercase tracking-wider">รายการในบิล (<span id="mbb-count">0</span>)</div>
+    <div class="text-xl font-bold text-sky-600" id="mbb-total">฿0</div>
+  </button>
+  <button id="mbb-save" class="bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg text-sm flex items-center gap-1.5">
+    <span>💾</span> บันทึกบิล
+  </button>
+</div>
+
+<!-- ============ MODAL: LOADING ============ -->
+<div id="loading-modal" class="fixed inset-0 z-[80] hidden items-center justify-center p-4">
+  <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
+  <div class="relative bg-white rounded-2xl shadow-2xl px-10 py-8 flex flex-col items-center min-w-[240px]">
+    <div id="loading-spinner" class="w-14 h-14 border-4 border-sky-100 border-t-sky-500 rounded-full animate-spin mb-4"></div>
+    <div id="loading-icon" class="hidden w-14 h-14 rounded-full flex items-center justify-center text-3xl mb-4"></div>
+    <div id="loading-text" class="text-sm font-semibold text-slate-700 text-center">กำลังบันทึก...</div>
+    <div id="loading-sub" class="text-xs text-slate-400 mt-1 text-center"></div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-root" class="fixed bottom-6 right-6 z-[100] space-y-2"></div>
+
 </main>
 
 <script>
+// ============ API CONFIG ============
+// 2 โหมดการใช้งาน:
+// 1) Production: ไฟล์นี้ถูก serve จาก Apps Script เอง → ใช้ google.script.run อัตโนมัติ (ไม่ต้องตั้งค่า)
+// 2) Local dev: เปิดไฟล์ html ในเครื่อง → ต้องใส่ WEB_APP_URL และ fetch ไป Apps Script
+const WEB_APP_URL = ''; // เช่น 'https://script.google.com/macros/s/AKfycbx.../exec'
+const HAS_GAS = typeof google !== 'undefined' && google.script && google.script.run;
+const API_ENABLED = HAS_GAS || (WEB_APP_URL && WEB_APP_URL.startsWith('http'));
+
+function api(action, payload = {}) {
+  // โหมด 1: ใน Apps Script Web App → ใช้ google.script.run
+  if (HAS_GAS) {
+    return new Promise((resolve, reject) => {
+      google.script.run
+        .withSuccessHandler(result => {
+          if (result && result.ok) resolve(result.data);
+          else reject(new Error((result && result.error) || 'API error'));
+        })
+        .withFailureHandler(err => reject(new Error((err && err.message) || String(err))))
+        .apiCall(action, payload);
+    });
+  }
+  // โหมด 2: เปิดเป็น local file → ใช้ fetch
+  if (!WEB_APP_URL) return Promise.reject(new Error('API not configured'));
+  const body = JSON.stringify({ action, ...payload });
+  return fetch(WEB_APP_URL, {
+    method: 'POST',
+    body,
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+  }).then(r => r.json()).then(json => {
+    if (!json.ok) throw new Error(json.error || 'API error');
+    return json.data;
+  });
+}
+
 // ============ SAMPLE DATA ============
-const SAMPLE_MENU = [
-  { id: 'M001', name: 'ตัมยำกุ้ง', cat: 'Food', price: 280 },
-  { id: 'M002', name: 'ผัดไทยกุ้ง', cat: 'Food', price: 250 },
-  { id: 'M003', name: 'ข้าวผัดปู', cat: 'Food', price: 220 },
-  { id: 'M004', name: 'ลาเต้', cat: 'Coffees', price: 100 },
-  { id: 'M005', name: 'อเมริกาโน่', cat: 'Coffees', price: 80 },
-  { id: 'M006', name: 'น้ำส้ม', cat: 'Drinks', price: 60 },
-  { id: 'M007', name: 'เบียร์สิงห์', cat: 'Drinks', price: 60 },
-  { id: 'M008', name: 'Mojito', cat: 'Cocktails', price: 180 },
-  { id: 'M009', name: 'Sunbed (วัน)', cat: 'Sunbeds', price: 300 },
-  { id: 'M010', name: 'Jet Ski 30 นาที', cat: 'Jet-Banana', price: 1500 },
+// variant = null = no size variant (1 price per menu)
+// ใช้เป็นค่าเริ่มต้นตอน offline หรือก่อน bootstrap โหลดเสร็จ
+let SAMPLE_MENU = [
+  // Food
+  { id: 'M001', name: 'ตัมยำกุ้ง', cat: 'Food', variant: 'เล็ก',  price: 180 },
+  { id: 'M002', name: 'ตัมยำกุ้ง', cat: 'Food', variant: 'กลาง', price: 280 },
+  { id: 'M003', name: 'ตัมยำกุ้ง', cat: 'Food', variant: 'ใหญ่', price: 380 },
+  { id: 'M004', name: 'ผัดไทยกุ้ง', cat: 'Food', variant: null, price: 250 },
+  { id: 'M005', name: 'ข้าวผัดปู', cat: 'Food', variant: null, price: 220 },
+  { id: 'M006', name: 'ต้มข่าไก่', cat: 'Food', variant: 'เล็ก', price: 150 },
+  { id: 'M007', name: 'ต้มข่าไก่', cat: 'Food', variant: 'ใหญ่', price: 250 },
+  { id: 'M008', name: 'ส้มตำ', cat: 'Food', variant: null, price: 120 },
+  { id: 'M101', name: 'ผัดกะเพราหมูสับ', cat: 'Food', variant: null, price: 120 },
+  { id: 'M102', name: 'ผัดกะเพราไก่ไข่ดาว', cat: 'Food', variant: null, price: 130 },
+  { id: 'M103', name: 'ข้าวผัดหมู', cat: 'Food', variant: null, price: 120 },
+  { id: 'M104', name: 'ข้าวผัดกุ้ง', cat: 'Food', variant: null, price: 180 },
+  { id: 'M105', name: 'ข้าวผัดสับปะรด', cat: 'Food', variant: null, price: 200 },
+  { id: 'M106', name: 'ผัดซีอิ๊วหมู', cat: 'Food', variant: null, price: 130 },
+  { id: 'M107', name: 'ราดหน้าหมู', cat: 'Food', variant: null, price: 130 },
+  { id: 'M108', name: 'ก๋วยเตี๋ยวต้มยำ', cat: 'Food', variant: null, price: 140 },
+  { id: 'M109', name: 'แกงเขียวหวานไก่', cat: 'Food', variant: null, price: 180 },
+  { id: 'M110', name: 'แกงมัสมั่นเนื้อ', cat: 'Food', variant: null, price: 220 },
+  { id: 'M111', name: 'ปลาทอดน้ำปลา', cat: 'Food', variant: null, price: 280 },
+  { id: 'M112', name: 'ปลานึ่งมะนาว', cat: 'Food', variant: 'เล็ก', price: 350 },
+  { id: 'M113', name: 'ปลานึ่งมะนาว', cat: 'Food', variant: 'ใหญ่', price: 550 },
+  { id: 'M114', name: 'กุ้งเผา', cat: 'Food', variant: null, price: 450 },
+  { id: 'M115', name: 'หอยแมลงภู่อบ', cat: 'Food', variant: null, price: 220 },
+  { id: 'M116', name: 'ปูผัดผงกะหรี่', cat: 'Food', variant: null, price: 480 },
+  { id: 'M117', name: 'ยำวุ้นเส้นทะเล', cat: 'Food', variant: null, price: 200 },
+  { id: 'M118', name: 'ลาบหมู', cat: 'Food', variant: null, price: 150 },
+  { id: 'M119', name: 'น้ำตกหมู', cat: 'Food', variant: null, price: 150 },
+  { id: 'M120', name: 'ไก่ทอดกระเทียม', cat: 'Food', variant: null, price: 180 },
+  // Drinks
+  { id: 'M009', name: 'น้ำส้ม', cat: 'Drinks', variant: null, price: 60 },
+  { id: 'M010', name: 'น้ำมะนาว', cat: 'Drinks', variant: null, price: 60 },
+  { id: 'M011', name: 'เบียร์สิงห์', cat: 'Drinks', variant: null, price: 60 },
+  { id: 'M012', name: 'เบียร์ลีโอ', cat: 'Drinks', variant: null, price: 60 },
+  // Coffee
+  { id: 'M013', name: 'ลาเต้', cat: 'Coffees', variant: 'ร้อน', price: 80 },
+  { id: 'M014', name: 'ลาเต้', cat: 'Coffees', variant: 'เย็น', price: 100 },
+  { id: 'M015', name: 'อเมริกาโน่', cat: 'Coffees', variant: 'ร้อน', price: 60 },
+  { id: 'M016', name: 'อเมริกาโน่', cat: 'Coffees', variant: 'เย็น', price: 80 },
+  // Cocktails
+  { id: 'M017', name: 'Mojito', cat: 'Cocktails', variant: null, price: 180 },
+  { id: 'M018', name: 'Margarita', cat: 'Cocktails', variant: null, price: 200 },
+  // Sunbeds
+  { id: 'M019', name: 'Sunbed', cat: 'Sunbeds', variant: 'ครึ่งวัน', price: 200 },
+  { id: 'M020', name: 'Sunbed', cat: 'Sunbeds', variant: 'เต็มวัน', price: 300 },
+  // Jet-Banana
+  { id: 'M021', name: 'Jet Ski', cat: 'Jet-Banana', variant: '15 นาที', price: 800 },
+  { id: 'M022', name: 'Jet Ski', cat: 'Jet-Banana', variant: '30 นาที', price: 1500 },
+  { id: 'M023', name: 'Banana Boat', cat: 'Jet-Banana', variant: null, price: 500 },
 ];
+
+const CAT_ORDER = ['Food', 'Drinks', 'Coffees', 'Cocktails', 'Sunbeds', 'Jet-Banana', 'Waters', 'Services', 'Snorkling+LJ'];
+const CAT_ICONS = {
+  'Food': '🍽️', 'Drinks': '🥤', 'Coffees': '☕', 'Cocktails': '🍹',
+  'Sunbeds': '🏖️', 'Jet-Banana': '🚤', 'Waters': '💧', 'Services': '🛎️', 'Snorkling+LJ': '🤿'
+};
 
 const CAT_COLORS = {
   'Food': 'bg-rose-100 text-rose-700',
@@ -637,6 +755,13 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     const view = document.getElementById('view-' + btn.dataset.tab);
     view.classList.remove('hidden');
     view.classList.remove('fade-in'); void view.offsetWidth; view.classList.add('fade-in');
+    // Auto-focus search when entering entry tab (quick-add UX)
+    if (btn.dataset.tab === 'entry') {
+      setTimeout(() => {
+        const s = document.getElementById('menu-search');
+        if (s) s.focus();
+      }, 100);
+    }
   });
 });
 
@@ -651,78 +776,80 @@ document.querySelectorAll('.sub-btn').forEach(btn => {
 });
 
 // ============ DAILY TABLE DATA ============
-const DAILY_DATA = [
-  [1,276130,33075,22430,6410,9000,156660,28295,32510,5570,12100,0,0,0,0,0,0,0,0],
-  [2,34600,3595,2720,770,500,16460,4630,1540,100,1000,0,0,0,0,0,0,0,0],
-  [3,30810,4605,2130,1520,1000,22430,3475,1240,460,0,0,0,0,0,0,0,0,0],
-  [4,20130,3600,1500,800,2100,85800,10490,6570,770,1300,0,0,0,0,0,0,0,0],
-  [5,23560,3600,1500,500,600,15000,3900,1200,600,1300,0,0,0,0,0,0,0,0],
-  [6,23560,3600,1500,600,900,15000,3900,1100,600,1300,0,0,0,0,0,0,0,0],
-  [7,23560,3600,1500,300,800,15000,3900,1600,600,1300,0,0,0,0,0,0,0,0],
-  [8,23560,3600,1500,250,300,15000,3900,2100,600,1300,0,0,0,0,0,0,0,0],
-  [9,23560,3600,1500,400,700,15000,3900,2100,600,0,0,0,0,0,0,0,0,0],
-  [10,23560,3600,1500,620,1000,3060,17100,9420,0,0,0,0,0,0,0,0,0,0],
-  [11,23560,3600,1500,900,900,40690,4400,1500,2000,0,0,0,0,0,0,0,0,0],
-  [12,23560,3600,1500,1100,500,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [13,23560,3600,1500,1400,400,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [14,45030,5045,3270,1420,1700,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [15,45000,4800,3300,1500,1200,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [16,45000,4800,3300,1300,1700,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [17,45000,4800,3300,900,1100,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [18,45000,4800,1800,1200,1600,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [19,45000,4800,1800,1200,1600,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [20,45000,4800,1800,1200,1600,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [21,35000,3200,1500,900,900,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [22,43000,1400,1200,400,600,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [23,45000,1500,8500,600,900,0,0,0,0,0,0,0,0,0,0,0,0,0],
-];
-// Daily index map: [date, W-Food, W-Drinks, W-Cock, W-Coffee, W-Sunbed, B-Food, B-Drinks, B-Cock, B-Coffee, B-Sunbed, K-Sunbed, K-Waters, K-Serv, K-JetB, S-Sunbed, S-Drinks, S-JetB, S-Snork]
-const DAILY_VIEWS = {
-  summary: {
-    headers: ['Date', '🚶 Walk-In', '🚤 By Boats', '🇰🇷 Korean Tour', '⚡ Korean Speedboat'],
-    cols: [[1,2,3,4,5], [6,7,8,9,10], [11,12,13,14], [15,16,17,18]],
-  },
-  walkin: {
-    headers: ['Date', 'Food', 'Drinks', 'Cocktails', 'Coffee', 'Sunbed'],
-    cols: [[1],[2],[3],[4],[5]],
-  },
-  boats: {
-    headers: ['Date', 'Food', 'Drinks', 'Cocktails', 'Coffee', 'Sunbed'],
-    cols: [[6],[7],[8],[9],[10]],
-  },
-  ktour: {
-    headers: ['Date', 'Sunbed', 'Waters', 'Services', 'Jet-Banana'],
-    cols: [[11],[12],[13],[14]],
-  },
-  kspeed: {
-    headers: ['Date', 'Sunbed', 'Drinks', 'Jet-Banana', 'Snorkling+LJ'],
-    cols: [[15],[16],[17],[18]],
-  },
+// โครงสร้างใหม่ที่ flexible: { day: { channel: { _total, [cat]: amount } } }
+let DAILY_DATA = {};
+let DAILY_DAYS_IN_MONTH = 31;
+
+const VIEW_TO_CHANNEL = {
+  walkin: 'Walk-In',
+  boats: 'By Boats',
+  ktour: 'Korean Tour',
+  kspeed: 'Korean Speedboat',
+};
+const CHANNEL_LABEL_DAILY = {
+  'Walk-In': '🚶 Walk-In',
+  'By Boats': '🚤 By Boats',
+  'Korean Tour': '🇰🇷 Korean Tour',
+  'Korean Speedboat': '⚡ K. Speedboat',
 };
 
 const fmt = n => n === 0 ? '<span class="dash">—</span>' : n.toLocaleString();
 const MONTH_NAMES = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const DAY_NAMES = ['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
+const DAY_NAMES_FULL = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
 
 function renderDaily(view) {
-  const v = DAILY_VIEWS[view];
   const thead = document.getElementById('daily-thead');
   const tbody = document.getElementById('daily-tbody');
   const tfoot = document.getElementById('daily-tfoot');
 
-  thead.innerHTML = '<tr>' + v.headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+  let headers, getValue, colCount;
 
-  const totals = v.cols.map(() => 0);
-  const month = 3; // April (0-indexed)
-  const year = 2026;
+  if (view === 'summary') {
+    // Summary: คอลัมน์ = 4 channels (รวมทุก cat ของแต่ละ channel)
+    const channels = ['Walk-In', 'By Boats', 'Korean Tour', 'Korean Speedboat'];
+    headers = ['Date', ...channels.map(c => CHANNEL_LABEL_DAILY[c])];
+    colCount = channels.length;
+    getValue = (day, colIdx) => {
+      const ch = channels[colIdx];
+      return DAILY_DATA[day]?.[ch]?._total || 0;
+    };
+  } else {
+    // Per-channel: คอลัมน์ = cats ที่มีข้อมูลใน channel นี้ (dynamic)
+    const ch = VIEW_TO_CHANNEL[view];
+    const catSet = new Set();
+    Object.values(DAILY_DATA).forEach(dayData => {
+      const chData = dayData[ch];
+      if (!chData) return;
+      Object.keys(chData).forEach(k => {
+        if (k !== '_total' && chData[k] > 0) catSet.add(k);
+      });
+    });
+    const cats = CAT_ORDER.filter(c => catSet.has(c));
+    if (cats.length === 0) {
+      // ไม่มีข้อมูลเลย → แสดงคอลัมน์เปล่า 1 ช่อง
+      headers = ['Date', '— ไม่มีข้อมูล —'];
+      colCount = 1;
+      getValue = () => 0;
+    } else {
+      headers = ['Date', ...cats];
+      colCount = cats.length;
+      getValue = (day, colIdx) => {
+        const cat = cats[colIdx];
+        return DAILY_DATA[day]?.[ch]?.[cat] || 0;
+      };
+    }
+  }
 
-  tbody.innerHTML = Array.from({length: 31}, (_, i) => {
+  thead.innerHTML = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+
+  const totals = Array(colCount).fill(0);
+  tbody.innerHTML = Array.from({ length: DAILY_DAYS_IN_MONTH }, (_, i) => {
     const day = i + 1;
-    const row = DAILY_DATA.find(r => r[0] === day) || [day, ...Array(18).fill(0)];
-    const cells = v.cols.map((colGroup, ci) => {
-      const sum = colGroup.reduce((a, c) => a + (row[c] || 0), 0);
-      totals[ci] += sum;
-      return `<td>${fmt(sum)}</td>`;
+    const cells = Array.from({ length: colCount }, (_, ci) => {
+      const v = getValue(day, ci);
+      totals[ci] += v;
+      return `<td>${fmt(v)}</td>`;
     }).join('');
     return `<tr><td>${day}</td>${cells}</tr>`;
   }).join('');
@@ -748,136 +875,1803 @@ document.querySelectorAll('.daily-btn').forEach(btn => {
 document.getElementById('today').textContent = new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
 document.getElementById('bill-date').valueAsDate = new Date();
 
-// ============ ENTRY: ITEMS ============
-let items = [];
-function addItem() {
-  items.push({ menu: SAMPLE_MENU[0].id, qty: 1 });
-  renderItems();
+// ============ CHANNEL MODE SELECTOR ============
+const CHANNEL_MODE = {
+  'Walk-In':          { cls: 'ch-walkin',  mode: 'mode-walkin',  border: 'border-rose-500'    },
+  'By Boats':         { cls: 'ch-byboats', mode: 'mode-byboats', border: 'border-emerald-500' },
+  'Korean Tour':      { cls: 'ch-ktour',   mode: 'mode-ktour',   border: 'border-purple-500'  },
+  'Korean Speedboat': { cls: 'ch-kspeed',  mode: 'mode-kspeed',  border: 'border-amber-500'   },
+};
+
+function setChannel(channel) {
+  const meta = CHANNEL_MODE[channel];
+  if (!meta) return;
+  document.getElementById('bill-channel').value = channel;
+  // Update button states
+  document.querySelectorAll('.channel-btn').forEach(btn => {
+    btn.classList.remove('active', 'ch-walkin', 'ch-byboats', 'ch-ktour', 'ch-kspeed');
+    if (btn.dataset.channel === channel) {
+      btn.classList.add('active', meta.cls);
+    }
+  });
+  // Update left border color of the channel bar
+  const bar = document.getElementById('channel-bar');
+  bar.classList.remove('border-rose-500', 'border-emerald-500', 'border-purple-500', 'border-amber-500');
+  bar.classList.add(meta.border);
+  // Apply mode class to view-entry for theming save button + cart badge
+  const view = document.getElementById('view-entry');
+  view.classList.remove('mode-walkin', 'mode-byboats', 'mode-ktour', 'mode-kspeed');
+  view.classList.add(meta.mode);
 }
-function removeItem(i) { items.splice(i, 1); renderItems(); }
-function updateItem(i, field, val) {
-  items[i][field] = field === 'qty' ? parseInt(val) || 1 : val;
-  renderItems();
+
+document.querySelectorAll('.channel-btn').forEach(btn => {
+  btn.addEventListener('click', () => setChannel(btn.dataset.channel));
+});
+setChannel('Walk-In'); // Default
+
+// ============ ENTRY: MENU GRID + CART ============
+// ประกาศ BILLS_CACHE ตั้งแต่ต้นเพื่อกัน TDZ error
+// (renderCart → syncCartUI → renderFavorites อาจถูกเรียกก่อนที่ bootstrap block จะประกาศ)
+let BILLS_CACHE = { bills: [], items: [], loadedAt: null };
+let cart = [];
+
+let activeCat = 'all';
+let menuFilter = '';
+
+function renderCatChips() {
+  const chipsEl = document.getElementById('cat-chips');
+  const counts = {};
+  const activeMenu = SAMPLE_MENU.filter(m => m.active !== false);
+  activeMenu.forEach(m => { counts[m.cat] = (counts[m.cat] || 0) + 1; });
+  const cats = CAT_ORDER.filter(c => counts[c]);
+  const chip = (key, label, count, active) => `
+    <button data-cat="${key}" class="cat-chip px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${active
+      ? 'bg-sky-500 text-white border-sky-500 shadow-sm'
+      : 'bg-white text-slate-600 border-slate-200 hover:border-sky-300 hover:bg-sky-50'}">
+      ${label} <span class="${active ? 'text-sky-100' : 'text-slate-400'}">${count}</span>
+    </button>`;
+  chipsEl.innerHTML =
+    chip('all', '✨ ทั้งหมด', activeMenu.length, activeCat === 'all') +
+    cats.map(c => chip(c, `${CAT_ICONS[c] || '📦'} ${c}`, counts[c], activeCat === c)).join('');
+  chipsEl.querySelectorAll('.cat-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeCat = btn.dataset.cat;
+      renderCatChips();
+      renderMenuGrid();
+    });
+  });
 }
-function renderItems() {
-  const list = document.getElementById('items-list');
-  if (items.length === 0) {
-    list.innerHTML = '<div class="text-center text-slate-400 text-sm py-6 border-2 border-dashed border-slate-200 rounded-lg">ยังไม่มีรายการ · กด "เพิ่มรายการ"</div>';
-    document.getElementById('bill-total').textContent = '฿0';
+
+function groupVariants(items) {
+  const groups = new Map();
+  items.forEach(m => {
+    const key = m.cat + '|' + m.name;
+    if (!groups.has(key)) groups.set(key, { name: m.name, cat: m.cat, variants: [] });
+    groups.get(key).variants.push(m);
+  });
+  return [...groups.values()];
+}
+
+function priceLabel(variants) {
+  const prices = variants.map(v => v.price);
+  const min = Math.min(...prices), max = Math.max(...prices);
+  return min === max ? `฿${min}` : `฿${min}–${max}`;
+}
+
+function cartQtyById(id) {
+  return cart.find(c => c.id === id)?.qty || 0;
+}
+
+function menuEmoji(m) {
+  return m.emoji || CAT_ICONS[m.cat] || '🍽️';
+}
+
+function cardHTML(group) {
+  const single = group.variants.length === 1;
+  if (single) {
+    const m = group.variants[0];
+    const qty = cartQtyById(m.id);
+    const badge = qty > 0 ? `<span class="cart-badge">${qty}</span>` : '';
+    return `
+      <button data-menu-id="${m.id}" onclick="addToCart('${m.id}')" class="menu-card group relative bg-white border border-slate-200 hover:border-sky-400 rounded-xl overflow-hidden transition-all flex flex-col h-full">
+        ${badge}
+        <div class="flex items-center justify-center h-14 bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
+          <span class="text-4xl leading-none select-none">${menuEmoji(m)}</span>
+        </div>
+        <div class="px-3 py-2.5 flex flex-col flex-1 text-center">
+          <div class="text-[13px] font-semibold text-slate-800 leading-snug truncate" title="${m.name}">${m.name}</div>
+          <div class="text-[10px] text-slate-400 leading-tight truncate min-h-[14px]">${m.variant || '\u00A0'}</div>
+          <div class="mt-auto pt-1.5 text-sky-600 font-bold text-base tabular-nums">฿${m.price.toLocaleString()}</div>
+        </div>
+      </button>`;
+  }
+  const first = group.variants[0];
+  const totalQty = group.variants.reduce((s, v) => s + cartQtyById(v.id), 0);
+  const badge = totalQty > 0 ? `<span class="cart-badge">${totalQty}</span>` : '';
+  return `
+    <div class="menu-card group relative bg-white border border-slate-200 hover:border-sky-400 rounded-xl overflow-hidden transition-all flex flex-col h-full">
+      ${badge}
+      <div class="flex items-center justify-center h-14 bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
+        <span class="text-4xl leading-none select-none">${menuEmoji(first)}</span>
+      </div>
+      <div class="px-3 py-2.5 flex flex-col flex-1 text-center">
+        <div class="text-[13px] font-semibold text-slate-800 leading-snug truncate" title="${group.name}">${group.name}</div>
+        <div class="text-sky-600 font-bold text-base tabular-nums leading-tight mt-0.5">${priceLabel(group.variants)}</div>
+        <div class="flex flex-wrap justify-center gap-1 mt-2 pt-2 border-t border-slate-100">
+          ${group.variants.map(v => {
+            const vq = cartQtyById(v.id);
+            return `
+            <button data-menu-id="${v.id}" onclick="addToCart('${v.id}')" class="variant-pill relative px-2 py-0.5 text-[10px] font-semibold ${vq > 0 ? 'bg-sky-500 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-sky-50 hover:text-sky-700'} rounded-md transition-colors">
+              ${v.variant}${vq > 0 ? ` · ${vq}` : ''}
+            </button>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderMenuGrid() {
+  const grid = document.getElementById('menu-grid');
+  const totalEl = document.getElementById('menu-total');
+  const f = menuFilter.trim().toLowerCase();
+  const filtered = SAMPLE_MENU.filter(m => {
+    if (m.active === false) return false;
+    if (activeCat !== 'all' && m.cat !== activeCat) return false;
+    if (f && !(m.name.toLowerCase().includes(f) || (m.variant || '').toLowerCase().includes(f))) return false;
+    return true;
+  });
+  totalEl.textContent = filtered.length ? `· ${filtered.length} รายการ` : '';
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="text-center text-slate-400 text-sm py-12">🔍 ไม่พบเมนูที่ค้นหา</div>';
     return;
   }
-  let total = 0;
-  list.innerHTML = items.map((it, i) => {
-    const menu = SAMPLE_MENU.find(m => m.id === it.menu);
-    const subtotal = menu.price * it.qty;
-    total += subtotal;
+
+  const byCategory = {};
+  filtered.forEach(m => (byCategory[m.cat] ||= []).push(m));
+  const cats = CAT_ORDER.filter(c => byCategory[c]);
+  const showHeader = activeCat === 'all' && cats.length > 1;
+  const gridCls = 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3';
+
+  if (!showHeader) {
+    const groups = groupVariants(filtered);
+    grid.innerHTML = `<div class="${gridCls}">${groups.map(cardHTML).join('')}</div>`;
+    return;
+  }
+
+  grid.innerHTML = cats.map(cat => {
+    const groups = groupVariants(byCategory[cat]);
     return `
-      <div class="flex gap-2 items-center bg-slate-50 rounded-lg p-2">
-        <select onchange="updateItem(${i}, 'menu', this.value)" class="flex-1 px-2 py-1.5 border border-slate-300 rounded text-sm bg-white">
-          ${SAMPLE_MENU.map(m => `<option value="${m.id}" ${m.id===it.menu?'selected':''}>${m.name} · ฿${m.price}</option>`).join('')}
-        </select>
-        <input type="number" value="${it.qty}" min="1" onchange="updateItem(${i}, 'qty', this.value)" class="w-16 px-2 py-1.5 border border-slate-300 rounded text-sm text-center">
-        <span class="w-20 text-right text-sm font-medium text-slate-700">฿${subtotal.toLocaleString()}</span>
-        <button onclick="removeItem(${i})" class="text-red-500 hover:bg-red-50 w-8 h-8 rounded">✕</button>
+      <div class="mb-5">
+        <div class="sticky -top-4 bg-white/95 backdrop-blur py-1.5 -mx-1 px-1 mb-2 z-[1] flex items-center gap-2">
+          <span class="text-base">${CAT_ICONS[cat] || '📦'}</span>
+          <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">${cat}</span>
+          <span class="text-[10px] text-slate-400 font-normal">${groups.length} รายการ</span>
+          <div class="flex-1 h-px bg-slate-100 ml-1"></div>
+        </div>
+        <div class="${gridCls}">${groups.map(cardHTML).join('')}</div>
       </div>`;
   }).join('');
-  document.getElementById('bill-total').textContent = '฿' + total.toLocaleString();
 }
-renderItems();
 
-// ============ MENU TABLE ============
-document.getElementById('menu-table').innerHTML = SAMPLE_MENU.map(m => `
-  <tr class="hover:bg-slate-50">
-    <td class="px-3 py-2">${m.name}</td>
-    <td class="px-3 py-2"><span class="px-2 py-0.5 rounded text-xs ${CAT_COLORS[m.cat] || 'bg-slate-100'}">${m.cat}</span></td>
-    <td class="px-3 py-2 text-right font-medium">฿${m.price}</td>
-    <td class="px-3 py-2 text-center"><span class="text-emerald-600 text-xs">● ใช้งาน</span></td>
-    <td class="px-3 py-2 text-right">
-      <button class="text-sky-600 hover:underline text-xs">แก้ไข</button>
-      <button class="text-red-500 hover:underline text-xs ml-2">ลบ</button>
-    </td>
-  </tr>
-`).join('');
+function addToCart(id) {
+  const existing = cart.find(c => c.id === id);
+  if (existing) existing.qty++;
+  else cart.push({ id, qty: 1 });
+  renderCart();
+  setTimeout(() => flashCard(id), 0);
+}
 
-// ============ CHARTS ============
-// Hero chart
-const heroData = [45000, 52000, 48000, 61000, 55000, 67000, 72000, 58000, 63000, 70000, 75000, 68000, 71000, 80000, 85000, 78000, 82000, 90000, 88000, 76000, 81000, 79000, 84000, 92000, 87000, 83000, 89000, 95000, 91000, 86000];
-new Chart(document.getElementById('chart-hero'), {
-  type: 'line',
-  data: {
-    labels: heroData.map((_, i) => i+1),
-    datasets: [{
-      data: heroData,
-      borderColor: '#ffffff',
-      backgroundColor: 'rgba(255,255,255,0.15)',
-      fill: true,
-      tension: 0.4,
-      pointRadius: 0,
-      borderWidth: 2,
-    }]
-  },
-  options: {
-    plugins: { legend: { display: false }, tooltip: { enabled: false } },
-    scales: { x: { display: false }, y: { display: false } },
-    maintainAspectRatio: false,
+function flashCard(id) {
+  const els = document.querySelectorAll(`[data-menu-id="${id}"]`);
+  els.forEach(el => {
+    el.classList.remove('flash');
+    void el.offsetWidth; // restart animation
+    el.classList.add('flash');
+    setTimeout(() => el.classList.remove('flash'), 600);
+  });
+}
+
+function computeFavorites() {
+  const items = (BILLS_CACHE && BILLS_CACHE.items) || [];
+  const bills = (BILLS_CACHE && BILLS_CACHE.bills) || [];
+  if (!items.length) return [];
+  const billMap = new Map(bills.map(b => [b.billId, b]));
+  const thirtyDaysAgo = Date.now() - 30 * 86400000;
+  const counts = new Map();
+  items.forEach(it => {
+    const b = billMap.get(it.billId);
+    if (!b) return;
+    const d = new Date(b.date).getTime();
+    if (isNaN(d) || d < thirtyDaysAgo) return;
+    const id = it.menuId;
+    if (!id) return;
+    counts.set(id, (counts.get(id) || 0) + Number(it.qty || 0));
+  });
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+    .map(([id, qty]) => {
+      const menu = SAMPLE_MENU.find(m => m.id === id && m.active !== false);
+      return menu ? { ...menu, salesCount: qty } : null;
+    })
+    .filter(Boolean);
+}
+
+function renderFavorites() {
+  const el = document.getElementById('favorites-strip');
+  if (!el) return;
+  const favs = computeFavorites();
+  if (favs.length === 0) { el.innerHTML = ''; return; }
+  el.innerHTML = `
+    <div class="bg-white rounded-xl shadow-sm p-4 mb-4">
+      <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+        <span class="text-base">⭐</span>
+        <span>ขายดีตอนนี้</span>
+        <span class="text-slate-300">·</span>
+        <span class="text-[10px] text-slate-400 normal-case font-normal">30 วันล่าสุด</span>
+      </div>
+      <div class="flex gap-2 overflow-x-auto menu-scroll pb-1">
+        ${favs.map(m => {
+          const qty = cartQtyById(m.id);
+          const badge = qty > 0 ? `<span class="cart-badge">${qty}</span>` : '';
+          return `
+            <button data-menu-id="${m.id}" onclick="addToCart('${m.id}')" class="fav-card menu-card relative flex-shrink-0 w-36 text-left bg-white border border-amber-200 rounded-xl overflow-hidden">
+              ${badge}
+              <div class="flex items-center justify-center h-12 bg-gradient-to-br from-amber-50 to-white border-b border-amber-100">
+                <span class="text-3xl leading-none select-none">${menuEmoji(m)}</span>
+              </div>
+              <div class="px-2.5 py-2">
+                <div class="text-[12px] font-semibold text-slate-800 leading-tight truncate" title="${m.name}">${m.name}</div>
+                <div class="text-[9px] text-slate-400 leading-tight truncate min-h-[12px]">${m.variant || '\u00A0'}</div>
+                <div class="flex items-center justify-between mt-1">
+                  <div class="text-sky-600 font-bold text-xs tabular-nums">฿${m.price}</div>
+                  <div class="text-[9px] text-amber-600 font-semibold whitespace-nowrap">🔥 ${m.salesCount}</div>
+                </div>
+              </div>
+            </button>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+function changeQty(id, delta) {
+  const item = cart.find(c => c.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) cart = cart.filter(c => c.id !== id);
+  renderCart();
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(c => c.id !== id);
+  renderCart();
+}
+
+function clearCart() { cart = []; renderCart(); }
+
+function renderCart() {
+  const list = document.getElementById('cart-list');
+  const countEl = document.getElementById('cart-count');
+  const totalEl = document.getElementById('bill-total');
+  const totalQty = cart.reduce((s, c) => s + c.qty, 0);
+  countEl.textContent = totalQty;
+
+  if (cart.length === 0) {
+    list.innerHTML = '<div class="text-center text-slate-400 text-xs py-8 border-2 border-dashed border-slate-200 rounded-lg">ยังไม่มีรายการ<br>กดเมนูทางซ้ายเพื่อเพิ่ม</div>';
+    totalEl.textContent = '฿0';
+    syncCartUI(0, 0); // refresh badges + hide mobile bar
+    return;
+  }
+
+  let total = 0;
+  list.innerHTML = cart.map(c => {
+    const m = SAMPLE_MENU.find(x => x.id === c.id);
+    const sub = m.price * c.qty;
+    total += sub;
+    return `
+      <div class="bg-slate-50 rounded-lg p-2">
+        <div class="flex items-start justify-between gap-2 mb-1">
+          <div class="flex-1 min-w-0 flex items-start gap-1.5">
+            <span class="text-lg leading-none flex-shrink-0">${menuEmoji(m)}</span>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-medium text-slate-800 truncate">${m.name}${m.variant ? ` <span class="text-xs text-slate-500">(${m.variant})</span>` : ''}</div>
+              <div class="text-[10px] text-slate-500">฿${m.price} · ${m.cat}</div>
+            </div>
+          </div>
+          <button onclick="removeFromCart('${c.id}')" class="text-red-400 hover:text-red-600 text-xs">✕</button>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1">
+            <button onclick="changeQty('${c.id}', -1)" class="w-6 h-6 rounded bg-white border border-slate-300 hover:bg-slate-100 text-slate-600 text-sm">−</button>
+            <span class="w-8 text-center text-sm font-semibold">${c.qty}</span>
+            <button onclick="changeQty('${c.id}', 1)" class="w-6 h-6 rounded bg-white border border-slate-300 hover:bg-slate-100 text-slate-600 text-sm">+</button>
+          </div>
+          <span class="text-sm font-bold text-sky-600">฿${sub.toLocaleString()}</span>
+        </div>
+      </div>`;
+  }).join('');
+  totalEl.textContent = '฿' + total.toLocaleString();
+
+  // Sync grid badges + favorites + mobile bottom bar
+  syncCartUI(totalQty, total);
+}
+
+function syncCartUI(totalQty, total) {
+  // Re-render menu grid to update badges (keep scroll)
+  const grid = document.getElementById('menu-grid');
+  if (grid && typeof renderMenuGrid === 'function') {
+    const scroll = grid.scrollTop;
+    renderMenuGrid();
+    grid.scrollTop = scroll;
+  }
+  // Re-render favorites (update badges)
+  if (typeof renderFavorites === 'function') renderFavorites();
+
+  // Mobile bottom bar
+  const bar = document.getElementById('mobile-bottom-bar');
+  if (bar) {
+    const countEl = document.getElementById('mbb-count');
+    const totalBarEl = document.getElementById('mbb-total');
+    if (countEl) countEl.textContent = totalQty;
+    if (totalBarEl) totalBarEl.textContent = '฿' + total.toLocaleString();
+    if (totalQty > 0) {
+      bar.classList.add('show');
+      document.querySelector('main').classList.add('has-mobile-bar');
+    } else {
+      bar.classList.remove('show');
+      document.querySelector('main').classList.remove('has-mobile-bar');
+    }
+  }
+}
+
+document.getElementById('menu-search').addEventListener('input', e => {
+  menuFilter = e.target.value;
+  renderMenuGrid();
+});
+// Quick-add: กด Enter ใน search box → เพิ่มรายการแรกที่ match เข้าตะกร้า
+document.getElementById('menu-search').addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  e.preventDefault();
+  const f = menuFilter.trim().toLowerCase();
+  if (!f) return;
+  const match = SAMPLE_MENU.find(m => {
+    if (m.active === false) return false;
+    if (activeCat !== 'all' && m.cat !== activeCat) return false;
+    return m.name.toLowerCase().includes(f) || (m.variant || '').toLowerCase().includes(f);
+  });
+  if (match) {
+    addToCart(match.id);
+    toast(`+ ${match.name}${match.variant ? ' (' + match.variant + ')' : ''}`);
+    e.target.value = '';
+    menuFilter = '';
+    renderMenuGrid();
+  } else {
+    toast('ไม่พบเมนู "' + f + '"', 'error');
+  }
+});
+renderCatChips();
+renderMenuGrid();
+renderCart();
+
+// Mobile bottom bar: click save button
+document.getElementById('mbb-save').addEventListener('click', () => {
+  document.getElementById('btn-save-bill').click();
+});
+// Mobile bottom bar: click left area → scroll to cart
+document.getElementById('mbb-view').addEventListener('click', () => {
+  document.getElementById('cart-list').scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+
+// ============ SAVE BILL ============
+document.getElementById('btn-save-bill').addEventListener('click', async () => {
+  if (cart.length === 0) {
+    toast('บิลว่าง กรุณาเลือกเมนูก่อน', 'error');
+    return;
+  }
+  const btn = document.getElementById('btn-save-bill');
+  const date = document.getElementById('bill-date').value;
+  const channel = document.getElementById('bill-channel').value;
+  const items = cart.map(c => {
+    const m = SAMPLE_MENU.find(x => x.id === c.id);
+    return { menuId: m.id, name: m.name, variant: m.variant, cat: m.cat, price: m.price, qty: c.qty };
+  });
+  const total = items.reduce((s, it) => s + it.price * it.qty, 0);
+  const itemCount = items.reduce((s, it) => s + it.qty, 0);
+
+  btn.disabled = true;
+  btn.textContent = 'กำลังบันทึก...';
+  showLoadingModal('กำลังบันทึกบิล...', `${itemCount} รายการ · ฿${total.toLocaleString()}`);
+  const minDelay = Promise.resolve();
+  try {
+    let billLabel = '';
+    if (API_ENABLED) {
+      const [res] = await Promise.all([
+        api('saveBill', { bill: { date, channel, items } }),
+        minDelay,
+      ]);
+      billLabel = `${res.billId} · ฿${res.total.toLocaleString()}`;
+      loadBills(); // refresh dashboard
+    } else {
+      await minDelay;
+      billLabel = `(offline) ฿${total.toLocaleString()}`;
+    }
+    showLoadingSuccess('บันทึกสำเร็จ', billLabel);
+    await new Promise(r => setTimeout(r, 400));
+    hideLoadingModal();
+    clearCart();
+  } catch (err) {
+    await minDelay;
+    showLoadingError('บันทึกไม่สำเร็จ', err.message);
+    await new Promise(r => setTimeout(r, 1500));
+    hideLoadingModal();
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '💾 บันทึกบิล';
   }
 });
 
-// Sparklines
-document.querySelectorAll('[data-spark]').forEach(canvas => {
-  const data = canvas.dataset.spark.split(',').map(Number);
-  new Chart(canvas, {
-    type: 'line',
-    data: {
-      labels: data.map((_, i) => i),
-      datasets: [{ data, borderColor: '#0ea5e9', backgroundColor: 'rgba(14,165,233,0.15)', fill: true, tension: 0.4, pointRadius: 0, borderWidth: 1.5 }]
-    },
-    options: { plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false } }, maintainAspectRatio: false }
+// ============ MENU MANAGEMENT ============
+// Ensure all items have active flag
+SAMPLE_MENU.forEach(m => { if (m.active === undefined) m.active = true; });
+
+const mmState = {
+  search: '',
+  cat: 'all',
+  status: 'all',
+  sortKey: 'cat',
+  sortDir: 'asc',
+  selected: new Set(),
+  page: 1,
+  pageSize: 50,
+};
+
+function customConfirm({ title = 'ยืนยันการลบ', message = '', confirmText = 'ลบ', cancelText = 'ยกเลิก', icon = '🗑️', danger = true } = {}) {
+  return new Promise(resolve => {
+    const modal = document.getElementById('confirm-modal');
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-message').innerHTML = message;
+    document.getElementById('confirm-icon').textContent = icon;
+    const iconWrap = document.getElementById('confirm-icon-wrap');
+    iconWrap.className = 'mx-auto w-14 h-14 rounded-full flex items-center justify-center text-3xl mb-4 ' + (danger ? 'bg-rose-50' : 'bg-sky-50');
+    const btnOk = document.getElementById('confirm-ok');
+    const btnCancel = document.getElementById('confirm-cancel');
+    btnOk.textContent = confirmText;
+    btnCancel.textContent = cancelText;
+    btnOk.className = 'flex-1 px-4 py-2.5 text-white rounded-lg text-sm font-semibold shadow-sm transition-colors ' + (danger ? 'bg-rose-500 hover:bg-rose-600' : 'bg-sky-500 hover:bg-sky-600');
+    modal.classList.add('show');
+    modal.classList.remove('hidden');
+    setTimeout(() => btnCancel.focus(), 50);
+    const cleanup = result => {
+      modal.classList.remove('show');
+      modal.classList.add('hidden');
+      btnOk.onclick = null;
+      btnCancel.onclick = null;
+      modal.querySelectorAll('[data-close]').forEach(el => el.onclick = null);
+      document.removeEventListener('keydown', onKey);
+      resolve(result);
+    };
+    const onKey = e => {
+      if (e.key === 'Escape') cleanup(false);
+      if (e.key === 'Enter') cleanup(true);
+    };
+    btnOk.onclick = () => cleanup(true);
+    btnCancel.onclick = () => cleanup(false);
+    modal.querySelectorAll('[data-close]').forEach(el => el.onclick = () => cleanup(false));
+    document.addEventListener('keydown', onKey);
+  });
+}
+
+// ============ LOADING MODAL ============
+function showLoadingModal(text = 'กำลังบันทึก...', sub = '') {
+  const m = document.getElementById('loading-modal');
+  document.getElementById('loading-text').textContent = text;
+  document.getElementById('loading-sub').textContent = sub;
+  document.getElementById('loading-spinner').classList.remove('hidden');
+  document.getElementById('loading-icon').classList.add('hidden');
+  m.classList.remove('hidden');
+  m.classList.add('show');
+}
+function showLoadingSuccess(text = 'บันทึกสำเร็จ', sub = '') {
+  document.getElementById('loading-text').textContent = text;
+  document.getElementById('loading-sub').textContent = sub;
+  document.getElementById('loading-spinner').classList.add('hidden');
+  const icon = document.getElementById('loading-icon');
+  icon.classList.remove('hidden');
+  icon.className = 'w-14 h-14 rounded-full flex items-center justify-center text-3xl mb-4 bg-emerald-50 text-emerald-600';
+  icon.textContent = '✓';
+}
+function showLoadingError(text = 'เกิดข้อผิดพลาด', sub = '') {
+  document.getElementById('loading-text').textContent = text;
+  document.getElementById('loading-sub').textContent = sub;
+  document.getElementById('loading-spinner').classList.add('hidden');
+  const icon = document.getElementById('loading-icon');
+  icon.classList.remove('hidden');
+  icon.className = 'w-14 h-14 rounded-full flex items-center justify-center text-3xl mb-4 bg-rose-50 text-rose-600';
+  icon.textContent = '✕';
+}
+function hideLoadingModal() {
+  const m = document.getElementById('loading-modal');
+  m.classList.remove('show');
+  m.classList.add('hidden');
+}
+
+function toast(msg, type = 'success') {
+  const root = document.getElementById('toast-root');
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
+  el.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+  root.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(20px)'; el.style.transition = '0.25s'; }, 2400);
+  setTimeout(() => el.remove(), 2700);
+}
+
+// Populate category selects
+function populateMMCatSelects() {
+  const cats = CAT_ORDER;
+  const mmCat = document.getElementById('mm-cat');
+  mmCat.innerHTML = '<option value="all">ทุกหมวด</option>' + cats.map(c => `<option value="${c}">${CAT_ICONS[c] || ''} ${c}</option>`).join('');
+  const fCat = document.getElementById('f-cat');
+  fCat.innerHTML = cats.map(c => `<option value="${c}">${CAT_ICONS[c] || ''} ${c}</option>`).join('');
+}
+populateMMCatSelects();
+
+function updateMMStats() {
+  const total = SAMPLE_MENU.length;
+  const groups = new Set(SAMPLE_MENU.map(m => m.cat + '|' + m.name)).size;
+  const cats = new Set(SAMPLE_MENU.map(m => m.cat)).size;
+  const active = SAMPLE_MENU.filter(m => m.active).length;
+  const inactive = total - active;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-groups').textContent = `${groups} รายการ (รวม variant)`;
+  document.getElementById('stat-cats').textContent = cats;
+  document.getElementById('stat-active').textContent = active;
+  document.getElementById('stat-inactive').textContent = `${inactive} ปิดใช้งาน`;
+}
+
+function getFilteredMenus() {
+  const f = mmState.search.trim().toLowerCase();
+  let list = SAMPLE_MENU.filter(m => {
+    if (mmState.cat !== 'all' && m.cat !== mmState.cat) return false;
+    if (mmState.status === 'active' && !m.active) return false;
+    if (mmState.status === 'inactive' && m.active) return false;
+    if (f && !(m.name.toLowerCase().includes(f) || (m.variant || '').toLowerCase().includes(f))) return false;
+    return true;
+  });
+  const dir = mmState.sortDir === 'asc' ? 1 : -1;
+  list.sort((a, b) => {
+    const key = mmState.sortKey;
+    if (key === 'price') return (a.price - b.price) * dir;
+    if (key === 'cat') {
+      const ca = CAT_ORDER.indexOf(a.cat), cb = CAT_ORDER.indexOf(b.cat);
+      if (ca !== cb) return (ca - cb) * dir;
+      return a.name.localeCompare(b.name, 'th') * dir;
+    }
+    return a.name.localeCompare(b.name, 'th') * dir;
+  });
+  return list;
+}
+
+function renderMM() {
+  const fullList = getFilteredMenus();
+  const tbody = document.getElementById('menu-table');
+  const count = document.getElementById('mm-count');
+
+  // Pagination
+  const totalPages = Math.max(1, Math.ceil(fullList.length / mmState.pageSize));
+  if (mmState.page > totalPages) mmState.page = totalPages;
+  const start = (mmState.page - 1) * mmState.pageSize;
+  const end = start + mmState.pageSize;
+  const list = fullList.slice(start, end);
+
+  if (fullList.length === 0) {
+    count.textContent = `แสดง 0 จาก ${SAMPLE_MENU.length} รายการ`;
+  } else {
+    count.textContent = `แสดง ${start + 1}–${Math.min(end, fullList.length)} จาก ${fullList.length} รายการ`;
+  }
+
+  // Sort indicators
+  document.querySelectorAll('#mm-table th[data-sort]').forEach(th => {
+    th.classList.remove('sort-asc', 'sort-desc');
+    if (th.dataset.sort === mmState.sortKey) th.classList.add('sort-' + mmState.sortDir);
+  });
+
+  if (fullList.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" class="px-3 py-12 text-center text-slate-400 text-sm">
+      🔍 ไม่พบเมนูที่ตรงกับเงื่อนไข
+    </td></tr>`;
+    renderPagination(0, 1);
+    updateBulkBar();
+    return;
+  }
+
+  renderPagination(fullList.length, totalPages);
+
+  tbody.innerHTML = list.map(m => {
+    const sel = mmState.selected.has(m.id);
+    const catColor = CAT_COLORS[m.cat] || 'bg-slate-100 text-slate-700';
+    return `
+    <tr class="mm-row ${sel ? 'selected' : ''}" data-id="${m.id}">
+      <td class="px-4 py-3 text-center align-middle">
+        <input type="checkbox" class="mm-check rounded border-slate-300" data-id="${m.id}" ${sel ? 'checked' : ''}>
+      </td>
+      <td class="px-3 py-3 text-center align-middle">
+        <div class="font-medium text-slate-800 flex items-center justify-center gap-1.5">
+          <span class="text-lg">${menuEmoji(m)}</span>
+          <span>${m.name}</span>
+        </div>
+      </td>
+      <td class="px-3 py-3 text-center align-middle">
+        ${m.variant
+          ? `<span class="inline-block px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs">${m.variant}</span>`
+          : '<span class="text-slate-300 text-xs">—</span>'}
+      </td>
+      <td class="px-3 py-3 text-center align-middle">
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium ${catColor}">
+          ${CAT_ICONS[m.cat] || ''} ${m.cat}
+        </span>
+      </td>
+      <td class="px-3 py-3 text-center align-middle font-semibold text-slate-800 tabular-nums">฿${m.price.toLocaleString()}</td>
+      <td class="px-3 py-3 text-center align-middle">
+        <label class="toggle">
+          <input type="checkbox" class="mm-toggle" data-id="${m.id}" ${m.active ? 'checked' : ''}>
+          <span class="toggle-slider"></span>
+        </label>
+      </td>
+      <td class="px-3 py-3 text-center align-middle whitespace-nowrap">
+        <button class="mm-edit text-slate-400 hover:text-sky-600 p-1.5 rounded hover:bg-sky-50" data-id="${m.id}" title="แก้ไข">✏️</button>
+        <button class="mm-del text-slate-400 hover:text-rose-600 p-1.5 rounded hover:bg-rose-50" data-id="${m.id}" title="ลบ">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Wire row events
+  tbody.querySelectorAll('.mm-check').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const id = cb.dataset.id;
+      if (cb.checked) mmState.selected.add(id);
+      else mmState.selected.delete(id);
+      renderMM();
+    });
+  });
+  tbody.querySelectorAll('.mm-toggle').forEach(cb => {
+    cb.addEventListener('change', async () => {
+      const id = cb.dataset.id;
+      const m = SAMPLE_MENU.find(x => x.id === id);
+      if (!m) return;
+      const newActive = cb.checked;
+      try {
+        if (API_ENABLED) await api('toggleMenu', { id, active: newActive });
+        m.active = newActive;
+        toast(`${m.name}${m.variant ? ' (' + m.variant + ')' : ''} — ${newActive ? 'เปิดใช้งาน' : 'ปิดใช้งาน'}`);
+        updateMMStats();
+        renderCatChips(); renderMenuGrid();
+      } catch (err) {
+        cb.checked = !newActive; // revert
+        toast('ไม่สำเร็จ: ' + err.message, 'error');
+      }
+    });
+  });
+  tbody.querySelectorAll('.mm-edit').forEach(btn => btn.addEventListener('click', () => openMenuModal(btn.dataset.id)));
+  tbody.querySelectorAll('.mm-del').forEach(btn => btn.addEventListener('click', () => deleteMenu(btn.dataset.id)));
+
+  updateBulkBar();
+}
+
+function renderPagination(totalItems, totalPages) {
+  const el = document.getElementById('mm-pagination');
+  if (!el) return;
+  if (totalPages <= 1) { el.innerHTML = ''; return; }
+
+  const cur = mmState.page;
+  const btn = (label, page, opts = {}) => {
+    const { active = false, disabled = false } = opts;
+    const cls = active
+      ? 'bg-sky-500 text-white border-sky-500'
+      : disabled
+        ? 'bg-slate-50 text-slate-300 border-slate-200 cursor-not-allowed'
+        : 'bg-white text-slate-600 border-slate-200 hover:border-sky-300 hover:bg-sky-50';
+    return `<button data-page="${page}" ${disabled ? 'disabled' : ''} class="mm-page-btn min-w-[28px] h-7 px-2 border rounded text-xs font-medium ${cls}">${label}</button>`;
+  };
+
+  // Smart page list: 1 ... cur-1 cur cur+1 ... last
+  const pages = new Set([1, totalPages, cur, cur - 1, cur + 1]);
+  const sorted = [...pages].filter(p => p >= 1 && p <= totalPages).sort((a, b) => a - b);
+  let html = btn('‹', cur - 1, { disabled: cur === 1 });
+  let prev = 0;
+  sorted.forEach(p => {
+    if (p - prev > 1) html += `<span class="px-1 text-slate-400">…</span>`;
+    html += btn(String(p), p, { active: p === cur });
+    prev = p;
+  });
+  html += btn('›', cur + 1, { disabled: cur === totalPages });
+  el.innerHTML = html;
+
+  el.querySelectorAll('.mm-page-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      const p = Number(b.dataset.page);
+      if (p >= 1 && p <= totalPages && p !== cur) {
+        mmState.page = p;
+        renderMM();
+      }
+    });
+  });
+}
+
+function updateBulkBar() {
+  const bar = document.getElementById('mm-bulk-bar');
+  const count = mmState.selected.size;
+  if (count > 0) {
+    bar.classList.remove('hidden');
+    bar.classList.add('flex');
+    document.getElementById('mm-selected-count').textContent = count;
+  } else {
+    bar.classList.add('hidden');
+    bar.classList.remove('flex');
+  }
+  // sync select-all
+  const visible = getFilteredMenus();
+  const allSelected = visible.length > 0 && visible.every(m => mmState.selected.has(m.id));
+  document.getElementById('mm-select-all').checked = allSelected;
+}
+
+// Toolbar events
+document.getElementById('mm-search').addEventListener('input', e => { mmState.search = e.target.value; mmState.page = 1; renderMM(); });
+document.getElementById('mm-cat').addEventListener('change', e => { mmState.cat = e.target.value; mmState.page = 1; renderMM(); });
+document.getElementById('mm-status').addEventListener('change', e => { mmState.status = e.target.value; mmState.page = 1; renderMM(); });
+document.getElementById('mm-page-size').addEventListener('change', e => { mmState.pageSize = Number(e.target.value); mmState.page = 1; renderMM(); });
+document.getElementById('mm-select-all').addEventListener('change', e => {
+  const visible = getFilteredMenus();
+  if (e.target.checked) visible.forEach(m => mmState.selected.add(m.id));
+  else visible.forEach(m => mmState.selected.delete(m.id));
+  renderMM();
+});
+document.querySelectorAll('#mm-table th[data-sort]').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.sort;
+    if (mmState.sortKey === key) mmState.sortDir = mmState.sortDir === 'asc' ? 'desc' : 'asc';
+    else { mmState.sortKey = key; mmState.sortDir = 'asc'; }
+    mmState.page = 1;
+    renderMM();
   });
 });
 
-// Daily comparison
-new Chart(document.getElementById('chart-daily'), {
-  type: 'line',
-  data: {
-    labels: Array.from({length: 30}, (_, i) => i+1),
-    datasets: [
-      {
-        label: 'เดือนก่อน',
-        data: [40000, 45000, 42000, 55000, 48000, 60000, 65000, 52000, 58000, 63000, 68000, 61000, 64000, 72000, 76000, 70000, 73000, 80000, 78000, 68000, 72000, 70000, 75000, 82000, 78000, 74000, 79000, 84000, 80000, 76000],
-        borderColor: '#cbd5e1',
-        backgroundColor: 'transparent',
-        tension: 0.3,
-        borderDash: [4, 4],
-        pointRadius: 0,
-      },
-      {
-        label: 'เดือนนี้',
-        data: heroData,
-        borderColor: '#0ea5e9',
-        backgroundColor: 'rgba(14,165,233,0.1)',
-        fill: true,
-        tension: 0.3,
-        pointRadius: 0,
-        borderWidth: 2.5,
+// Bulk actions
+async function bulkToggle(active) {
+  const ids = [...mmState.selected];
+  if (!ids.length) return;
+  showLoadingModal(`กำลัง${active ? 'เปิด' : 'ปิด'}ใช้งาน...`, `${ids.length} รายการ`);
+  const minDelay = Promise.resolve();
+  try {
+    if (API_ENABLED) await Promise.all([api('bulkToggleMenu', { ids, active }), minDelay]);
+    else await minDelay;
+    SAMPLE_MENU.forEach(m => { if (mmState.selected.has(m.id)) m.active = active; });
+    showLoadingSuccess(`${active ? 'เปิด' : 'ปิด'}ใช้งานเรียบร้อย`, `${ids.length} รายการ`);
+    mmState.selected.clear();
+    updateMMStats(); renderMM(); renderCatChips(); renderMenuGrid();
+    await new Promise(r => setTimeout(r, 400));
+    hideLoadingModal();
+  } catch (err) {
+    await minDelay;
+    showLoadingError('ไม่สำเร็จ', err.message);
+    await new Promise(r => setTimeout(r, 1500));
+    hideLoadingModal();
+  }
+}
+document.getElementById('mm-bulk-enable').addEventListener('click', () => bulkToggle(true));
+document.getElementById('mm-bulk-disable').addEventListener('click', () => bulkToggle(false));
+document.getElementById('mm-bulk-delete').addEventListener('click', async () => {
+  const n = mmState.selected.size;
+  if (!n) return;
+  const ok = await customConfirm({
+    title: `ลบเมนู ${n} รายการ?`,
+    message: `รายการที่เลือกจะถูกลบถาวรและไม่สามารถกู้คืนได้`,
+    confirmText: `ลบทั้งหมด (${n})`,
+  });
+  if (!ok) return;
+  const ids = [...mmState.selected];
+  showLoadingModal('กำลังลบเมนู...', `${n} รายการ`);
+  const minDelay = Promise.resolve();
+  try {
+    if (API_ENABLED) await Promise.all([api('deleteMenus', { ids }), minDelay]);
+    else await minDelay;
+    SAMPLE_MENU = SAMPLE_MENU.filter(m => !mmState.selected.has(m.id));
+    mmState.selected.clear();
+    showLoadingSuccess('ลบเมนูเรียบร้อย', `${n} รายการ`);
+    updateMMStats(); renderMM(); renderCatChips(); renderMenuGrid();
+    await new Promise(r => setTimeout(r, 400));
+    hideLoadingModal();
+  } catch (err) {
+    await minDelay;
+    showLoadingError('ลบไม่สำเร็จ', err.message);
+    await new Promise(r => setTimeout(r, 1500));
+    hideLoadingModal();
+  }
+});
+
+// Delete single
+async function deleteMenu(id) {
+  const m = SAMPLE_MENU.find(x => x.id === id);
+  if (!m) return;
+  const label = `<span class="font-semibold text-slate-800">${m.name}</span>${m.variant ? ` <span class="text-slate-500">(${m.variant})</span>` : ''}`;
+  const ok = await customConfirm({
+    title: 'ลบเมนูนี้?',
+    message: `เมนู ${label} จะถูกลบถาวร<br>การกระทำนี้ไม่สามารถย้อนกลับได้`,
+    confirmText: 'ลบเมนู',
+  });
+  if (!ok) return;
+  const menuLabel = `${m.name}${m.variant ? ' (' + m.variant + ')' : ''}`;
+  showLoadingModal('กำลังลบเมนู...', menuLabel);
+  const minDelay = Promise.resolve();
+  try {
+    if (API_ENABLED) await Promise.all([api('deleteMenu', { id }), minDelay]);
+    else await minDelay;
+    SAMPLE_MENU = SAMPLE_MENU.filter(x => x.id !== id);
+    mmState.selected.delete(id);
+    showLoadingSuccess('ลบเมนูเรียบร้อย', menuLabel);
+    updateMMStats(); renderMM(); renderCatChips(); renderMenuGrid();
+    await new Promise(r => setTimeout(r, 400));
+    hideLoadingModal();
+  } catch (err) {
+    await minDelay;
+    showLoadingError('ลบไม่สำเร็จ', err.message);
+    await new Promise(r => setTimeout(r, 1500));
+    hideLoadingModal();
+  }
+}
+
+// ============ EMOJI PICKER ============
+const EMOJI_CATEGORIES = [
+  { label: '🦐 อาหารทะเล', emojis: ['🦐','🦑','🦀','🐟','🐠','🐡','🐙','🦞','🦪','🍤','🍣','🍥'] },
+  { label: '🍜 อาหารไทย/เอเชีย', emojis: ['🍜','🍲','🍛','🍚','🍙','🍘','🍢','🍡','🥟','🥘','🌶️','🥗'] },
+  { label: '🍗 เนื้อสัตว์', emojis: ['🍗','🍖','🥩','🍳','🐔','🐷','🐄','🥓','🌭','🍔'] },
+  { label: '🥗 ผัก/ผลไม้', emojis: ['🥗','🥬','🥦','🥒','🍅','🌽','🥕','🍆','🥔','🍍','🍋','🍊','🍌','🍎','🍉','🍇','🍓','🥭','🍑'] },
+  { label: '🍝 เส้น/ข้าว', emojis: ['🍝','🍜','🍲','🍚','🍱','🍳','🥞','🧇','🥖','🥐','🍞'] },
+  { label: '🥤 เครื่องดื่ม', emojis: ['🥤','🧃','🧉','🍺','🍻','🍷','🍾','🥂','🍸','🍹','🧋','☕','🍵','🥛','🫖'] },
+  { label: '🍰 ของหวาน', emojis: ['🍰','🎂','🧁','🍮','🍯','🍩','🍪','🍫','🍬','🍭','🍦','🍨','🍧'] },
+  { label: '🏖️ กิจกรรม', emojis: ['🏖️','🏝️','⛱️','🌊','🏊','🤿','🏄','🚤','⛵','🛥️','🏍️','🛵','🍌','🎫','🛎️','💧','🔥','⚡','🎯','💰'] },
+];
+const ALL_EMOJIS = EMOJI_CATEGORIES.flatMap(c => c.emojis);
+
+const emojiPicker = document.getElementById('emoji-picker');
+const emojiBtn = document.getElementById('f-emoji-btn');
+const emojiDisplay = document.getElementById('f-emoji-display');
+const emojiInput = document.getElementById('f-emoji');
+const emojiCustom = document.getElementById('emoji-custom');
+const emojiGrid = document.getElementById('emoji-grid');
+
+function renderEmojiGrid() {
+  emojiGrid.innerHTML = EMOJI_CATEGORIES.map(cat => `
+    <div>
+      <div class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">${cat.label}</div>
+      <div class="grid grid-cols-8 gap-1">
+        ${cat.emojis.map(e => `
+          <button type="button" data-emoji="${e}" class="emoji-item w-9 h-9 flex items-center justify-center text-xl rounded-lg hover:bg-sky-100 transition-colors">${e}</button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  emojiGrid.querySelectorAll('.emoji-item').forEach(btn => {
+    btn.addEventListener('click', () => selectEmoji(btn.dataset.emoji));
+  });
+}
+renderEmojiGrid();
+
+function setEmojiValue(value) {
+  emojiInput.value = value;
+  if (value) {
+    emojiDisplay.textContent = value;
+    emojiDisplay.classList.remove('text-slate-300');
+    emojiDisplay.classList.add('text-2xl');
+  } else {
+    emojiDisplay.textContent = '+';
+    emojiDisplay.classList.add('text-slate-300');
+    emojiDisplay.classList.remove('text-2xl');
+  }
+}
+
+function selectEmoji(e) {
+  setEmojiValue(e);
+  closeEmojiPicker();
+}
+
+function openEmojiPicker() {
+  // Position picker below the button
+  const rect = emojiBtn.getBoundingClientRect();
+  const modalRect = document.querySelector('#menu-modal > div:last-child').getBoundingClientRect();
+  emojiPicker.style.left = (rect.left - modalRect.left) + 'px';
+  emojiPicker.style.top = (rect.bottom - modalRect.top + 6) + 'px';
+  emojiPicker.classList.remove('hidden');
+  emojiCustom.value = '';
+  setTimeout(() => emojiCustom.focus(), 50);
+}
+
+function closeEmojiPicker() {
+  emojiPicker.classList.add('hidden');
+}
+
+emojiBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  if (emojiPicker.classList.contains('hidden')) openEmojiPicker();
+  else closeEmojiPicker();
+});
+
+// Custom emoji input: พิมพ์เองแล้วกด Enter หรือ blur
+emojiCustom.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const v = emojiCustom.value.trim();
+    if (v) selectEmoji(v);
+  }
+});
+emojiCustom.addEventListener('input', e => {
+  // Auto-apply เมื่อผู้ใช้พิมพ์ emoji เดียว
+  const v = e.target.value.trim();
+  if (v && v.length <= 4 && /\p{Emoji}/u.test(v)) {
+    // ยังไม่ปิดทันที ให้กดเลือกเองหรือ Enter
+  }
+});
+
+document.getElementById('emoji-clear').addEventListener('click', () => {
+  setEmojiValue('');
+  closeEmojiPicker();
+});
+
+// ปิด picker เมื่อคลิกนอก
+document.addEventListener('click', e => {
+  if (emojiPicker.classList.contains('hidden')) return;
+  if (emojiPicker.contains(e.target) || emojiBtn.contains(e.target)) return;
+  closeEmojiPicker();
+});
+
+// ============ VARIANT ROWS (multi-variant form) ============
+function variantRowHTML(name = '', price = '', canRemove = true) {
+  return `
+    <div class="variant-row flex gap-2 items-center">
+      <input type="text" class="v-name flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400 focus:outline-none" placeholder="ตัวเลือก (เช่น ร้อน, เล็ก) — เว้นว่างได้" value="${String(name).replace(/"/g, '&quot;')}">
+      <div class="relative">
+        <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">฿</span>
+        <input type="number" min="0" required class="v-price w-24 pl-6 pr-2 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400 focus:outline-none tabular-nums" placeholder="0" value="${price}">
+      </div>
+      <button type="button" class="v-remove w-8 h-8 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors ${canRemove ? '' : 'invisible'}" title="ลบตัวเลือก">✕</button>
+    </div>`;
+}
+function getVariantsContainer() { return document.getElementById('f-variants'); }
+function refreshVariantRemoveBtns() {
+  const rows = getVariantsContainer().querySelectorAll('.variant-row');
+  rows.forEach(r => {
+    const btn = r.querySelector('.v-remove');
+    if (rows.length <= 1) btn.classList.add('invisible');
+    else btn.classList.remove('invisible');
+  });
+}
+function addVariantRow(name = '', price = '') {
+  const container = getVariantsContainer();
+  container.insertAdjacentHTML('beforeend', variantRowHTML(name, price));
+  const row = container.lastElementChild;
+  row.querySelector('.v-remove').addEventListener('click', () => {
+    row.remove();
+    refreshVariantRemoveBtns();
+  });
+  refreshVariantRemoveBtns();
+}
+function resetVariantRows(rows = [{}]) {
+  getVariantsContainer().innerHTML = '';
+  rows.forEach(r => addVariantRow(r.variant || '', r.price ?? ''));
+}
+document.getElementById('f-add-variant').addEventListener('click', () => addVariantRow());
+
+// Modal
+const menuModal = document.getElementById('menu-modal');
+function openMenuModal(id = null) {
+  const form = document.getElementById('menu-form');
+  form.reset();
+  document.getElementById('f-id').value = '';
+  document.getElementById('f-active').checked = true;
+  setEmojiValue(''); // reset emoji
+  closeEmojiPicker();
+  if (id) {
+    const m = SAMPLE_MENU.find(x => x.id === id);
+    if (!m) return;
+    document.getElementById('modal-title').textContent = 'แก้ไขเมนู';
+    document.getElementById('f-id').value = m.id;
+    document.getElementById('f-name').value = m.name;
+    document.getElementById('f-cat').value = m.cat;
+    setEmojiValue(m.emoji || '');
+    document.getElementById('f-active').checked = m.active;
+    // Edit mode = single variant row (one menu item)
+    resetVariantRows([{ variant: m.variant || '', price: m.price }]);
+    document.getElementById('f-add-variant').classList.add('hidden');
+  } else {
+    document.getElementById('modal-title').textContent = 'เพิ่มเมนูใหม่';
+    resetVariantRows([{}]); // 1 empty row
+    document.getElementById('f-add-variant').classList.remove('hidden');
+  }
+  menuModal.classList.add('show');
+  menuModal.classList.remove('hidden');
+  setTimeout(() => document.getElementById('f-name').focus(), 50);
+}
+function closeMenuModal() {
+  menuModal.classList.remove('show');
+  menuModal.classList.add('hidden');
+}
+menuModal.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeMenuModal));
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menuModal.classList.contains('hidden')) closeMenuModal(); });
+document.getElementById('btn-add-menu').addEventListener('click', () => openMenuModal());
+
+document.getElementById('menu-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const id = document.getElementById('f-id').value;
+  const isEdit = !!id;
+  const baseName = document.getElementById('f-name').value.trim();
+  const baseCat = document.getElementById('f-cat').value;
+  const baseEmoji = document.getElementById('f-emoji').value.trim() || '';
+  const baseActive = document.getElementById('f-active').checked;
+
+  // Collect variant rows
+  const rows = [...getVariantsContainer().querySelectorAll('.variant-row')].map(r => ({
+    variant: r.querySelector('.v-name').value.trim() || null,
+    price: Number(r.querySelector('.v-price').value),
+  }));
+
+  // Validate
+  if (!baseName) { toast('กรุณาใส่ชื่อเมนู', 'error'); return; }
+  if (rows.some(r => isNaN(r.price) || r.price < 0)) { toast('กรุณาใส่ราคาให้ครบทุกตัวเลือก', 'error'); return; }
+  if (rows.length === 0) { toast('ต้องมีอย่างน้อย 1 ตัวเลือก', 'error'); return; }
+  // Check duplicate variant names
+  const variantNames = rows.map(r => r.variant || '');
+  if (new Set(variantNames).size !== variantNames.length) { toast('ตัวเลือกซ้ำกัน', 'error'); return; }
+
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  submitBtn.disabled = true; submitBtn.textContent = 'กำลังบันทึก...';
+  closeMenuModal();
+  const subLabel = rows.length === 1
+    ? `${baseName}${rows[0].variant ? ' (' + rows[0].variant + ')' : ''}`
+    : `${baseName} · ${rows.length} ตัวเลือก`;
+  showLoadingModal(isEdit ? 'กำลังบันทึกการแก้ไข...' : 'กำลังเพิ่มเมนูใหม่...', subLabel);
+  const minDelay = Promise.resolve();
+  try {
+    if (isEdit) {
+      // Edit mode: single row only (UI hides + button)
+      const data = { name: baseName, cat: baseCat, emoji: baseEmoji, active: baseActive, variant: rows[0].variant, price: rows[0].price };
+      if (API_ENABLED) {
+        await Promise.all([api('updateMenu', { menu: { id, ...data } }), minDelay]);
+      } else {
+        await minDelay;
       }
-    ]
-  },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => '฿' + (v/1000) + 'k' } } } }
+      const m = SAMPLE_MENU.find(x => x.id === id);
+      if (m) Object.assign(m, data);
+    } else {
+      // Add mode: 1 batch call (saveMenus) — เร็วกว่า + ไม่มี race
+      const dataList = rows.map(row => ({ name: baseName, cat: baseCat, emoji: baseEmoji, active: baseActive, variant: row.variant, price: row.price }));
+      if (API_ENABLED) {
+        const [res] = await Promise.all([api('saveMenus', { menus: dataList }), minDelay]);
+        res.ids.forEach((newId, i) => SAMPLE_MENU.push({ id: newId, ...dataList[i] }));
+      } else {
+        await minDelay;
+        let nextNum = Math.max(0, ...SAMPLE_MENU.map(m => parseInt(m.id.replace(/\D/g, ''), 10) || 0)) + 1;
+        dataList.forEach(data => {
+          SAMPLE_MENU.push({ id: 'M' + String(nextNum++).padStart(3, '0'), ...data });
+        });
+      }
+    }
+    showLoadingSuccess(isEdit ? 'บันทึกการแก้ไขเรียบร้อย' : 'เพิ่มเมนูใหม่เรียบร้อย', subLabel);
+    updateMMStats(); renderMM(); renderCatChips(); renderMenuGrid();
+    await new Promise(r => setTimeout(r, 400));
+    hideLoadingModal();
+  } catch (err) {
+    await minDelay;
+    showLoadingError('บันทึกไม่สำเร็จ', err.message);
+    await new Promise(r => setTimeout(r, 1500));
+    hideLoadingModal();
+  } finally {
+    submitBtn.disabled = false; submitBtn.textContent = 'บันทึก';
+  }
 });
 
-new Chart(document.getElementById('chart-channel'), {
-  type: 'doughnut',
-  data: {
-    labels: ['Walk-In', 'By Boats', 'Korean Tour', 'Korean Speedboat'],
-    datasets: [{
-      data: [1258800, 582340, 153790, 960],
-      backgroundColor: ['#0ea5e9', '#10b981', '#f59e0b', '#a855f7'],
-    }]
-  },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } }
+// Export CSV
+document.getElementById('btn-export').addEventListener('click', async () => {
+  const ok = await customConfirm({
+    title: 'ดาวน์โหลดไฟล์ CSV?',
+    message: `จะดาวน์โหลดเมนูทั้งหมด <span class="font-semibold text-slate-800">${SAMPLE_MENU.length} รายการ</span> เป็นไฟล์ <span class="font-semibold text-slate-800">menus.csv</span>`,
+    confirmText: '📥 ดาวน์โหลด',
+    cancelText: 'ยกเลิก',
+    icon: '📥',
+    danger: false,
+  });
+  if (!ok) return;
+  const header = 'ID,ชื่อเมนู,หมวด,ขนาด,ราคา,สถานะ\n';
+  const rows = SAMPLE_MENU.map(m => [m.id, m.name, m.cat, m.variant || '', m.price, m.active ? 'ใช้งาน' : 'ปิดใช้งาน'].map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + header + rows], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'menus.csv'; a.click();
+  URL.revokeObjectURL(url);
+  toast('Export CSV เรียบร้อย');
 });
 
+// Initial render
+updateMMStats();
+renderMM();
+
+// ============ BOOTSTRAP FROM API ============
+// โหลดข้อมูลจริงจาก Google Sheets ถ้า API ถูก config
+// (BILLS_CACHE ถูกประกาศไว้ด้านบนของสคริปต์แล้วเพื่อกัน TDZ)
+
+const CACHE_KEY = 'sbd_cache_v1';
+
+function applyMenusFromAPI(menus) {
+  SAMPLE_MENU = (menus || []).map(m => ({
+    id: m.id,
+    name: m.name,
+    cat: m.cat,
+    variant: m.variant || null,
+    price: Number(m.price) || 0,
+    active: m.active !== false,
+    emoji: m.emoji || '',
+  }));
+  renderCatChips();
+  renderMenuGrid();
+  renderFavorites();
+  renderCart();
+  updateMMStats();
+  renderMM();
+}
+
+function loadCache() {
+  try {
+    const raw = sessionStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (_) { return null; }
+}
+
+function saveCache(menus, bills, items) {
+  try {
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ menus, bills, items, ts: Date.now() }));
+  } catch (_) {}
+}
+
+async function bootstrapFromAPI() {
+  if (!API_ENABLED) {
+    console.info('API not configured — using offline mock data');
+    return;
+  }
+
+  // 1) Instant render from cache (if available) — no spinner, no wait
+  const cached = loadCache();
+  if (cached) {
+    applyMenusFromAPI(cached.menus);
+    BILLS_CACHE = { bills: cached.bills || [], items: cached.items || [], loadedAt: cached.ts };
+    if (typeof refreshDashboard === 'function') refreshDashboard();
+  }
+
+  // 2) Fetch fresh data in background (parallel calls)
+  try {
+    const [bootstrapData, billsData] = await Promise.all([
+      api('bootstrap'),
+      api('getBills', {}),
+    ]);
+    applyMenusFromAPI(bootstrapData.menus || []);
+    BILLS_CACHE = { bills: billsData.bills || [], items: billsData.items || [], loadedAt: Date.now() };
+    if (typeof refreshDashboard === 'function') refreshDashboard();
+    if (typeof renderFavorites === 'function') renderFavorites();
+    saveCache(bootstrapData.menus || [], billsData.bills || [], billsData.items || []);
+  } catch (err) {
+    console.error('Bootstrap failed:', err);
+    if (!cached) toast('โหลดข้อมูลไม่สำเร็จ: ' + err.message, 'error');
+  }
+}
+
+async function loadBills(month) {
+  if (!API_ENABLED) return;
+  try {
+    const data = await api('getBills', month ? { month } : {});
+    BILLS_CACHE = { bills: data.bills || [], items: data.items || [], loadedAt: Date.now() };
+    if (typeof refreshDashboard === 'function') refreshDashboard();
+    if (typeof renderFavorites === 'function') renderFavorites();
+    if (!month) saveCache(SAMPLE_MENU, data.bills || [], data.items || []);
+  } catch (err) {
+    console.warn('loadBills failed:', err);
+  }
+}
+
+// ============ DASHBOARD COMPUTATION ============
+const CHANNEL_META = {
+  'Walk-In':         { icon: '🚶', color: 'rose',    bar: 'bg-rose-500',    light: 'bg-rose-100',    border: 'border-rose-200',    bg: 'bg-rose-50/50',    text: 'text-rose-700' },
+  'By Boats':        { icon: '🚤', color: 'emerald', bar: 'bg-emerald-500', light: 'bg-emerald-100', border: 'border-emerald-200', bg: 'bg-emerald-50/50', text: 'text-emerald-700' },
+  'Korean Tour':     { icon: '🇰🇷', color: 'purple',  bar: 'bg-purple-500',  light: 'bg-purple-100',  border: 'border-purple-200',  bg: 'bg-purple-50/50',  text: 'text-purple-700' },
+  'Korean Speedboat':{ icon: '⚡', color: 'amber',   bar: 'bg-amber-500',   light: 'bg-amber-100',   border: 'border-amber-200',   bg: 'bg-amber-50/50',   text: 'text-amber-700' },
+};
+const CHANNEL_LIST = Object.keys(CHANNEL_META);
+const CAT_BAR_COLORS = {
+  'Food': 'bg-rose-500', 'Drinks': 'bg-blue-500', 'Coffees': 'bg-amber-600',
+  'Cocktails': 'bg-purple-500', 'Sunbeds': 'bg-emerald-500', 'Jet-Banana': 'bg-cyan-500',
+  'Waters': 'bg-sky-500', 'Services': 'bg-slate-500', 'Snorkling+LJ': 'bg-orange-500',
+};
+const fmtMoney = n => '฿' + Math.round(n).toLocaleString();
+const fmtMoneyShort = n => {
+  if (n >= 1e6) return '฿' + (n/1e6).toFixed(2) + 'M';
+  if (n >= 1e3) return '฿' + (n/1e3).toFixed(0) + 'k';
+  return '฿' + Math.round(n).toLocaleString();
+};
+
+let dashState = { year: null, month: null, channel: 'all', from: null, to: null };
+let heroChart = null, dailyChart = null, channelChart = null;
+
+function availableMonths() {
+  const set = new Set();
+  BILLS_CACHE.bills.forEach(b => {
+    const d = new Date(b.date);
+    if (!isNaN(d)) set.add(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'));
+  });
+  const now = new Date();
+  set.add(now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0'));
+  return [...set].sort().reverse();
+}
+
+function monthLabel(ym) {
+  const [y, m] = ym.split('-').map(Number);
+  return MONTH_NAMES_FULL[m - 1] + ' ' + (y + 543);
+}
+const MONTH_NAMES_FULL = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+
+function computeDashboard(year, month) {
+  const allBills = BILLS_CACHE.bills || [];
+  const items = BILLS_CACHE.items || [];
+  // Filter bills by selected channel (if any)
+  const bills = dashState.channel === 'all' ? allBills : allBills.filter(b => b.channel === dashState.channel);
+  const inMonth = (d, y, m) => { const dt = new Date(d); return dt.getFullYear() === y && dt.getMonth() === m; };
+
+  let thisBills = bills.filter(b => inMonth(b.date, year, month));
+
+  // Optional date-range filter (overrides month-only when set)
+  const fromD = dashState.from ? new Date(dashState.from + 'T00:00:00') : null;
+  const toD = dashState.to ? new Date(dashState.to + 'T23:59:59') : null;
+  if (fromD || toD) {
+    thisBills = thisBills.filter(b => {
+      const d = new Date(b.date);
+      if (fromD && d < fromD) return false;
+      if (toD && d > toD) return false;
+      return true;
+    });
+  }
+
+  const thisIds = new Set(thisBills.map(b => b.billId));
+  const thisItems = items.filter(it => thisIds.has(it.billId));
+
+  // Previous period: if range mode → shift by same length; else previous month
+  let prevBills;
+  if (fromD && toD) {
+    const lenMs = toD - fromD;
+    const prevFrom = new Date(fromD.getTime() - lenMs - 86400000);
+    const prevTo = new Date(fromD.getTime() - 1);
+    prevBills = bills.filter(b => {
+      const d = new Date(b.date);
+      return d >= prevFrom && d <= prevTo;
+    });
+  } else {
+    const prevDate = new Date(year, month - 1, 1);
+    prevBills = bills.filter(b => inMonth(b.date, prevDate.getFullYear(), prevDate.getMonth()));
+  }
+  const prevDate = new Date(year, month - 1, 1);
+  const prevIds = new Set(prevBills.map(b => b.billId));
+
+  // Totals
+  const total = thisBills.reduce((s, b) => s + Number(b.total || 0), 0);
+  const prevTotal = prevBills.reduce((s, b) => s + Number(b.total || 0), 0);
+  const billCount = thisBills.length;
+  const prevBillCount = prevBills.length;
+  const avg = billCount ? total / billCount : 0;
+  const prevAvg = prevBillCount ? prevTotal / prevBillCount : 0;
+
+  // Daily totals (for hero/chart/best day)
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const dailyTotals = Array(daysInMonth).fill(0);
+  thisBills.forEach(b => {
+    const d = new Date(b.date);
+    dailyTotals[d.getDate() - 1] += Number(b.total || 0);
+  });
+  // Previous month daily for compare chart
+  const prevDays = new Date(prevDate.getFullYear(), prevDate.getMonth() + 1, 0).getDate();
+  const prevDaily = Array(prevDays).fill(0);
+  prevBills.forEach(b => {
+    const d = new Date(b.date);
+    prevDaily[d.getDate() - 1] += Number(b.total || 0);
+  });
+
+  // Best day
+  let bestDay = 0, bestDayTotal = 0;
+  dailyTotals.forEach((t, i) => { if (t > bestDayTotal) { bestDayTotal = t; bestDay = i + 1; } });
+
+  // Channel totals
+  const channelTotals = {};
+  CHANNEL_LIST.forEach(c => channelTotals[c] = 0);
+  const prevChannelTotals = {};
+  CHANNEL_LIST.forEach(c => prevChannelTotals[c] = 0);
+  thisBills.forEach(b => { if (channelTotals[b.channel] !== undefined) channelTotals[b.channel] += Number(b.total || 0); });
+  prevBills.forEach(b => { if (prevChannelTotals[b.channel] !== undefined) prevChannelTotals[b.channel] += Number(b.total || 0); });
+
+  // Category totals
+  const catTotals = {};
+  thisItems.forEach(it => {
+    const sub = Number(it.subtotal || (it.price * it.qty) || 0);
+    catTotals[it.cat] = (catTotals[it.cat] || 0) + sub;
+  });
+
+  // Top items (group by menuId+variant)
+  const itemMap = new Map();
+  thisItems.forEach(it => {
+    const key = (it.menuId || '') + '|' + (it.variant || '');
+    if (!itemMap.has(key)) itemMap.set(key, { name: it.name, variant: it.variant, qty: 0, total: 0 });
+    const rec = itemMap.get(key);
+    rec.qty += Number(it.qty || 0);
+    rec.total += Number(it.subtotal || (it.price * it.qty) || 0);
+  });
+  const topItems = [...itemMap.values()].sort((a, b) => b.total - a.total).slice(0, 10);
+
+  // Channel x Category matrix
+  const matrix = {};
+  CHANNEL_LIST.forEach(c => matrix[c] = {});
+  const billChannel = new Map(thisBills.map(b => [b.billId, b.channel]));
+  thisItems.forEach(it => {
+    const ch = billChannel.get(it.billId);
+    if (!ch) return;
+    const sub = Number(it.subtotal || (it.price * it.qty) || 0);
+    if (!matrix[ch]) matrix[ch] = {};
+    matrix[ch][it.cat] = (matrix[ch][it.cat] || 0) + sub;
+  });
+
+  // Daily channel x category (for รายวัน sub-view) — flexible structure
+  // dailyMatrix = { day: { channel: { _total, [cat]: amount } } }
+  const dailyMatrix = {};
+  for (let day = 1; day <= daysInMonth; day++) dailyMatrix[day] = {};
+  thisItems.forEach(it => {
+    const ch = billChannel.get(it.billId);
+    if (!ch) return;
+    const bill = thisBills.find(b => b.billId === it.billId);
+    if (!bill) return;
+    const day = new Date(bill.date).getDate();
+    if (!dailyMatrix[day][ch]) dailyMatrix[day][ch] = { _total: 0 };
+    const sub = Number(it.subtotal || (it.price * it.qty) || 0);
+    dailyMatrix[day][ch][it.cat] = (dailyMatrix[day][ch][it.cat] || 0) + sub;
+    dailyMatrix[day][ch]._total += sub;
+  });
+
+  return {
+    year, month,
+    total, prevTotal,
+    billCount, prevBillCount,
+    avg, prevAvg,
+    dailyTotals, prevDaily,
+    bestDay, bestDayTotal,
+    channelTotals, prevChannelTotals,
+    catTotals,
+    topItems,
+    matrix,
+    dailyMatrix,
+  };
+}
+
+function pct(cur, prev) {
+  if (!prev) return null;
+  return ((cur - prev) / prev) * 100;
+}
+function deltaBadge(p) {
+  if (p === null) return `<span class="text-slate-400">—</span>`;
+  const up = p >= 0;
+  const cls = up ? 'text-emerald-600' : 'text-rose-600';
+  const arrow = up ? '▲' : '▼';
+  return `<span class="${cls}">${arrow} ${Math.abs(p).toFixed(1)}%</span>`;
+}
+function heroDeltaBadge(p) {
+  if (p === null) return `<span class="bg-slate-400/20 text-slate-200 text-xs px-2 py-1 rounded-full border border-slate-400/30">—</span>`;
+  const up = p >= 0;
+  const cls = up ? 'bg-emerald-400/20 text-emerald-300 border-emerald-400/30' : 'bg-rose-400/20 text-rose-300 border-rose-400/30';
+  return `<span class="${cls} text-xs px-2 py-1 rounded-full border">${up ? '▲' : '▼'} ${Math.abs(p).toFixed(1)}%</span>`;
+}
+
+function refreshDashboard() {
+  if (!dashState.year) {
+    const now = new Date();
+    dashState.year = now.getFullYear();
+    dashState.month = now.getMonth();
+  }
+  // Populate month dropdown if empty
+  const monthSel = document.getElementById('dash-month');
+  const months = availableMonths();
+  const currentYM = dashState.year + '-' + String(dashState.month + 1).padStart(2, '0');
+  monthSel.innerHTML = months.map(m => `<option value="${m}" ${m === currentYM ? 'selected' : ''}>${monthLabel(m)}</option>`).join('');
+
+  const d = computeDashboard(dashState.year, dashState.month);
+
+  // ===== Today split =====
+  renderTodaySplit();
+
+  // ===== Hero =====
+  document.getElementById('hero-total-short').textContent = fmtMoneyShort(d.total);
+  document.getElementById('hero-total-full').textContent = fmtMoney(d.total);
+  const heroDelta = pct(d.total, d.prevTotal);
+  const heroDeltaEl = document.getElementById('hero-delta');
+  if (heroDelta === null) {
+    heroDeltaEl.className = 'bg-slate-400/20 text-slate-200 text-xs px-2 py-1 rounded-full border border-slate-400/30';
+    heroDeltaEl.textContent = '—';
+  } else {
+    const up = heroDelta >= 0;
+    heroDeltaEl.className = `text-xs px-2 py-1 rounded-full border ${up ? 'bg-emerald-400/20 text-emerald-300 border-emerald-400/30' : 'bg-rose-400/20 text-rose-300 border-rose-400/30'}`;
+    heroDeltaEl.textContent = `${up ? '▲' : '▼'} ${Math.abs(heroDelta).toFixed(1)}%`;
+  }
+  document.getElementById('hero-compare').textContent = `vs. เดือนที่แล้ว (${fmtMoneyShort(d.prevTotal)})`;
+
+  // ===== KPI =====
+  document.getElementById('kpi-bills').textContent = d.billCount.toLocaleString();
+  document.getElementById('kpi-bills-delta').innerHTML = deltaBadge(pct(d.billCount, d.prevBillCount));
+  document.getElementById('kpi-avg').textContent = fmtMoney(d.avg);
+  document.getElementById('kpi-avg-delta').innerHTML = deltaBadge(pct(d.avg, d.prevAvg));
+
+  if (d.bestDay) {
+    const bd = new Date(d.year, d.month, d.bestDay);
+    document.getElementById('kpi-best-day').textContent = d.bestDay + ' ' + MONTH_NAMES[d.month];
+    document.getElementById('kpi-best-total').textContent = fmtMoney(d.bestDayTotal);
+    document.getElementById('kpi-best-weekday').textContent = '· วัน' + DAY_NAMES_FULL[bd.getDay()];
+  } else {
+    document.getElementById('kpi-best-day').textContent = '—';
+    document.getElementById('kpi-best-total').textContent = '฿0';
+    document.getElementById('kpi-best-weekday').textContent = '';
+  }
+
+  const topItem = d.topItems[0];
+  if (topItem) {
+    document.getElementById('kpi-top-name').textContent = topItem.name + (topItem.variant ? ' (' + topItem.variant + ')' : '');
+    document.getElementById('kpi-top-qty').textContent = topItem.qty.toLocaleString() + ' ชิ้น';
+    document.getElementById('kpi-top-total').textContent = '· ' + fmtMoney(topItem.total);
+    document.getElementById('kpi-top-bar').style.width = '100%';
+  } else {
+    document.getElementById('kpi-top-name').textContent = '—';
+    document.getElementById('kpi-top-qty').textContent = '0 ชิ้น';
+    document.getElementById('kpi-top-total').textContent = '· ฿0';
+    document.getElementById('kpi-top-bar').style.width = '0%';
+  }
+
+  // ===== Channel cards =====
+  const totalAll = d.total || 1;
+  document.getElementById('channel-cards').innerHTML = CHANNEL_LIST.map(ch => {
+    const meta = CHANNEL_META[ch];
+    const amt = d.channelTotals[ch] || 0;
+    const prev = d.prevChannelTotals[ch] || 0;
+    const pctShare = (amt / totalAll) * 100;
+    const delta = pct(amt, prev);
+    const deltaHtml = delta === null
+      ? '<span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">—</span>'
+      : `<span class="text-xs ${delta >= 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'} px-2 py-0.5 rounded">${delta >= 0 ? '▲' : '▼'} ${Math.abs(delta).toFixed(0)}%</span>`;
+    return `
+      <div class="border ${meta.border} ${meta.bg} rounded-xl p-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-semibold ${meta.text}">${meta.icon} ${ch}</span>
+          ${deltaHtml}
+        </div>
+        <div class="text-2xl font-bold text-slate-800">${fmtMoneyShort(amt)}</div>
+        <div class="text-xs text-slate-500 mt-1">${pctShare < 1 && amt > 0 ? '< 1' : pctShare.toFixed(0)}% ของยอดรวม</div>
+        <div class="mt-3 w-full ${meta.light} rounded-full h-2">
+          <div class="${meta.bar} h-2 rounded-full" style="width: ${Math.min(100, Math.max(0, pctShare))}%"></div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // ===== Category breakdown =====
+  const catEntries = Object.entries(d.catTotals).sort((a, b) => b[1] - a[1]);
+  const catTotalSum = catEntries.reduce((s, [, v]) => s + v, 0) || 1;
+  document.getElementById('cat-breakdown').innerHTML = catEntries.length === 0
+    ? '<div class="text-center text-slate-400 text-sm py-8">ยังไม่มีข้อมูล</div>'
+    : catEntries.map(([cat, amt]) => {
+        const p = (amt / catTotalSum) * 100;
+        return `
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="font-medium text-slate-700">${CAT_ICONS[cat] || '📦'} ${cat}</span>
+              <span class="text-slate-600">${fmtMoney(amt)} <span class="text-xs text-slate-400">(${p.toFixed(0)}%)</span></span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2.5">
+              <div class="${CAT_BAR_COLORS[cat] || 'bg-slate-400'} h-2.5 rounded-full" style="width: ${p}%"></div>
+            </div>
+          </div>`;
+      }).join('');
+
+  // ===== Top items =====
+  const maxTop = d.topItems[0]?.total || 1;
+  document.getElementById('top-items').innerHTML = d.topItems.length === 0
+    ? '<div class="text-center text-slate-400 text-sm py-8">ยังไม่มีข้อมูล</div>'
+    : d.topItems.map((it, i) => {
+        const medal = i === 0 ? 'bg-amber-100 text-amber-700' : i === 1 ? 'bg-slate-100 text-slate-600' : i === 2 ? 'bg-orange-100 text-orange-700' : 'bg-slate-50 text-slate-500';
+        const bar = i === 0 ? 'bg-amber-400' : i === 1 ? 'bg-slate-400' : i === 2 ? 'bg-orange-400' : 'bg-slate-300';
+        const w = (it.total / maxTop) * 100;
+        return `
+          <div class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-lg ${medal} text-sm font-bold flex items-center justify-center">${i + 1}</span>
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between text-sm"><span class="font-medium truncate">${it.name}${it.variant ? ' (' + it.variant + ')' : ''}</span><span class="text-slate-600">${fmtMoney(it.total)}</span></div>
+              <div class="w-full bg-slate-100 rounded-full h-1 mt-1"><div class="${bar} h-1 rounded-full" style="width:${w}%"></div></div>
+            </div>
+          </div>`;
+      }).join('');
+
+  // ===== Insights =====
+  const insights = generateInsights(d);
+  document.getElementById('insights').innerHTML = insights.map(ins => `
+    <div class="bg-white rounded-lg p-3 border border-slate-100">
+      <div class="text-xs ${ins.color} font-semibold mb-1">${ins.label}</div>
+      <div class="text-sm text-slate-700">${ins.text}</div>
+    </div>`).join('');
+
+  // ===== Matrix sub-view =====
+  renderMatrixView(d);
+
+  // ===== Daily sub-view =====
+  // Overwrite global DAILY_DATA used by renderDaily
+  DAILY_DATA = d.dailyMatrix;
+  DAILY_DAYS_IN_MONTH = new Date(d.year, d.month + 1, 0).getDate();
+  const activeDaily = document.querySelector('.daily-btn.daily-active')?.dataset.daily || 'summary';
+  renderDaily(activeDaily);
+
+  // ===== Charts =====
+  renderHeroChart(d.dailyTotals);
+  renderDailyChart(d.dailyTotals, d.prevDaily);
+  renderChannelChart(d.channelTotals);
+}
+
+function renderTodaySplit() {
+  const bills = BILLS_CACHE.bills || [];
+  const today = new Date();
+  const y = today.getFullYear(), mo = today.getMonth(), da = today.getDate();
+  const todayBills = bills.filter(b => {
+    const d = new Date(b.date);
+    return d.getFullYear() === y && d.getMonth() === mo && d.getDate() === da;
+  });
+
+  // Today total + count
+  const total = todayBills.reduce((s, b) => s + Number(b.total || 0), 0);
+  const count = todayBills.length;
+  document.getElementById('today-label').textContent = '· ' + today.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
+  document.getElementById('today-total').textContent = '฿' + total.toLocaleString();
+  document.getElementById('today-bills').textContent = count;
+
+  // Per-channel split
+  const byChannel = {};
+  CHANNEL_LIST.forEach(c => byChannel[c] = { total: 0, count: 0 });
+  todayBills.forEach(b => {
+    if (byChannel[b.channel]) {
+      byChannel[b.channel].total += Number(b.total || 0);
+      byChannel[b.channel].count += 1;
+    }
+  });
+
+  document.getElementById('today-split').innerHTML = CHANNEL_LIST.map(ch => {
+    const meta = CHANNEL_META[ch];
+    const c = byChannel[ch];
+    const isEmpty = c.count === 0;
+    return `
+      <div class="border ${meta.border} ${meta.bg} rounded-xl p-3 ${isEmpty ? 'opacity-60' : ''}">
+        <div class="flex items-center gap-1.5 mb-1.5">
+          <span class="text-base">${meta.icon}</span>
+          <span class="text-xs font-semibold ${meta.text} truncate">${ch}</span>
+        </div>
+        <div class="text-xl font-bold text-slate-800 tabular-nums leading-tight">${fmtMoneyShort(c.total)}</div>
+        <div class="text-[10px] text-slate-500 mt-0.5">${c.count} บิล</div>
+      </div>`;
+  }).join('');
+}
+
+function generateInsights(d) {
+  const out = [];
+  // Best growing channel
+  let bestCh = null, bestPct = -Infinity;
+  CHANNEL_LIST.forEach(ch => {
+    const p = pct(d.channelTotals[ch], d.prevChannelTotals[ch]);
+    if (p !== null && p > bestPct) { bestPct = p; bestCh = ch; }
+  });
+  if (bestCh && bestPct > 0) {
+    out.push({ label: '📈 แนวโน้มดี', color: 'text-emerald-600', text: `ยอดขาย ${CHANNEL_META[bestCh].icon} ${bestCh} เพิ่มขึ้น <span class="font-bold text-emerald-600">${bestPct.toFixed(0)}%</span> จากเดือนที่แล้ว` });
+  }
+  // Worst channel
+  let worstCh = null, worstPct = Infinity;
+  CHANNEL_LIST.forEach(ch => {
+    const p = pct(d.channelTotals[ch], d.prevChannelTotals[ch]);
+    if (p !== null && p < worstPct) { worstPct = p; worstCh = ch; }
+  });
+  if (worstCh && worstPct < 0) {
+    out.push({ label: '⚠️ ควรระวัง', color: 'text-rose-600', text: `${CHANNEL_META[worstCh].icon} ${worstCh} ลดลง <span class="font-bold text-rose-600">${Math.abs(worstPct).toFixed(0)}%</span> — อาจต้องเช็คกลยุทธ์` });
+  }
+  // Top item
+  if (d.topItems[0]) {
+    out.push({ label: '🏆 เมนูทำเงิน', color: 'text-sky-600', text: `<span class="font-bold text-sky-600">${d.topItems[0].name}</span> ทำยอดขายสูงสุด ${fmtMoney(d.topItems[0].total)} (${d.topItems[0].qty} ชิ้น)` });
+  }
+  if (out.length === 0) out.push({ label: '💡 เริ่มต้น', color: 'text-slate-600', text: 'ยังไม่มีข้อมูล — เริ่มบันทึกบิลเพื่อดู Insights' });
+  return out.slice(0, 3);
+}
+
+function renderMatrixView(d) {
+  const groups = [
+    { title: 'Regular (Walk-In + By Boats)', color: 'rose', channels: ['Walk-In', 'By Boats'] },
+    { title: 'Korean Tour', color: 'purple', channels: ['Korean Tour'] },
+    { title: 'Korean Speedboat', color: 'amber', channels: ['Korean Speedboat'] },
+  ];
+  // หา cat ที่มีข้อมูลจริงในแต่ละกลุ่ม (เรียงตาม CAT_ORDER)
+  groups.forEach(g => {
+    const set = new Set();
+    g.channels.forEach(ch => {
+      const m = d.matrix[ch] || {};
+      Object.entries(m).forEach(([cat, val]) => { if (val > 0) set.add(cat); });
+    });
+    g.cats = CAT_ORDER.filter(c => set.has(c));
+    if (g.cats.length === 0) g.cats = ['—']; // placeholder ถ้าไม่มีข้อมูล
+  });
+  const grandTotal = CHANNEL_LIST.reduce((s, ch) => s + (d.channelTotals[ch] || 0), 0);
+  const html = groups.map(g => {
+    const rows = g.channels.map(ch => {
+      const cells = g.cats.map(cat => `<td class="px-3 py-2 border border-slate-200 text-right">${(d.matrix[ch]?.[cat] || 0).toLocaleString()}</td>`).join('');
+      // rowTotal = ยอดรวมจริงของ channel (จาก bill totals) — ไม่ใช่ sum cells ที่อาจไม่ครบ
+      const rowTotal = d.channelTotals[ch] || 0;
+      return `<tr class="hover:bg-slate-50">
+        <td class="px-3 py-2 border border-slate-200 font-medium">${ch}</td>
+        ${cells}
+        <td class="px-3 py-2 border border-slate-200 text-right font-semibold bg-${g.color}-50">${rowTotal.toLocaleString()}</td>
+      </tr>`;
+    }).join('');
+    const footCells = g.cats.map(cat => {
+      const sum = g.channels.reduce((s, ch) => s + (d.matrix[ch]?.[cat] || 0), 0);
+      return `<td class="px-3 py-2 border border-slate-200 text-right">${sum.toLocaleString()}</td>`;
+    }).join('');
+    // groupTotal ใช้ channelTotals จริง
+    const groupTotal = g.channels.reduce((s, ch) => s + (d.channelTotals[ch] || 0), 0);
+    const showFooter = g.channels.length > 1;
+    return `
+      <div class="bg-white rounded-xl shadow-sm p-5 mb-4">
+        <h3 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">
+          <span class="w-2 h-6 bg-${g.color}-500 rounded"></span> ${g.title}
+        </h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border-collapse">
+            <thead>
+              <tr class="bg-${g.color}-50">
+                <th class="text-left px-3 py-2 border border-${g.color}-100">Channel</th>
+                ${g.cats.map(c => `<th class="text-right px-3 py-2 border border-${g.color}-100">${c}</th>`).join('')}
+                <th class="text-right px-3 py-2 border border-${g.color}-100 bg-${g.color}-100 font-bold">Total</th>
+              </tr>
+            </thead>
+            <tbody>${rows}
+              ${showFooter ? `<tr class="bg-slate-100 font-bold">
+                <td class="px-3 py-2 border border-slate-200">Total</td>
+                ${footCells}
+                <td class="px-3 py-2 border border-slate-200 text-right bg-${g.color}-200">${groupTotal.toLocaleString()}</td>
+              </tr>` : ''}
+            </tbody>
+          </table>
+        </div>
+      </div>`;
+  }).join('');
+  const grand = `<div class="bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-xl p-5 shadow flex justify-between items-center">
+    <span class="text-lg">🎯 ยอดรวมทั้งหมด</span>
+    <span class="text-3xl font-bold">${fmtMoney(grandTotal)}</span>
+  </div>`;
+  document.getElementById('sub-matrix').innerHTML = html + grand;
+}
+
+function renderHeroChart(daily) {
+  if (heroChart) heroChart.destroy();
+  heroChart = new Chart(document.getElementById('chart-hero'), {
+    type: 'line',
+    data: {
+      labels: daily.map((_, i) => i + 1),
+      datasets: [{ data: daily, borderColor: '#ffffff', backgroundColor: 'rgba(255,255,255,0.15)', fill: true, tension: 0.4, pointRadius: 0, borderWidth: 2 }]
+    },
+    options: { plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false } }, maintainAspectRatio: false }
+  });
+}
+
+function renderDailyChart(thisDaily, prevDaily) {
+  if (dailyChart) dailyChart.destroy();
+  const len = Math.max(thisDaily.length, prevDaily.length);
+  dailyChart = new Chart(document.getElementById('chart-daily'), {
+    type: 'line',
+    data: {
+      labels: Array.from({ length: len }, (_, i) => i + 1),
+      datasets: [
+        { label: 'เดือนก่อน', data: prevDaily, borderColor: '#cbd5e1', backgroundColor: 'transparent', tension: 0.3, borderDash: [4, 4], pointRadius: 0 },
+        { label: 'เดือนนี้', data: thisDaily, borderColor: '#0ea5e9', backgroundColor: 'rgba(14,165,233,0.1)', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 2.5 }
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => '฿' + (v / 1000) + 'k' } } } }
+  });
+}
+
+function renderChannelChart(channelTotals) {
+  if (channelChart) channelChart.destroy();
+  channelChart = new Chart(document.getElementById('chart-channel'), {
+    type: 'doughnut',
+    data: {
+      labels: CHANNEL_LIST,
+      datasets: [{
+        data: CHANNEL_LIST.map(ch => channelTotals[ch] || 0),
+        backgroundColor: ['#0ea5e9', '#10b981', '#a855f7', '#f59e0b'],
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } }
+  });
+}
+
+// Dashboard filter events
+document.getElementById('dash-month').addEventListener('change', e => {
+  const [y, m] = e.target.value.split('-').map(Number);
+  dashState.year = y; dashState.month = m - 1;
+  // เปลี่ยนเดือน → ล้าง range เพื่อไม่ให้ขัดกัน
+  dashState.from = null; dashState.to = null;
+  document.getElementById('dash-from').value = '';
+  document.getElementById('dash-to').value = '';
+  document.getElementById('dash-range-clear').classList.add('hidden');
+  refreshDashboard();
+});
+
+function updateRangeClearBtn() {
+  const btn = document.getElementById('dash-range-clear');
+  if (dashState.from || dashState.to) btn.classList.remove('hidden');
+  else btn.classList.add('hidden');
+}
+document.getElementById('dash-from').addEventListener('change', e => {
+  dashState.from = e.target.value || null;
+  updateRangeClearBtn();
+  refreshDashboard();
+});
+document.getElementById('dash-to').addEventListener('change', e => {
+  dashState.to = e.target.value || null;
+  updateRangeClearBtn();
+  refreshDashboard();
+});
+document.getElementById('dash-range-clear').addEventListener('click', () => {
+  dashState.from = null; dashState.to = null;
+  document.getElementById('dash-from').value = '';
+  document.getElementById('dash-to').value = '';
+  updateRangeClearBtn();
+  refreshDashboard();
+});
+
+// Dashboard channel pills
+const DASH_CH_CLASS = {
+  'all': 'ch-all',
+  'Walk-In': 'ch-walkin',
+  'By Boats': 'ch-byboats',
+  'Korean Tour': 'ch-ktour',
+  'Korean Speedboat': 'ch-kspeed',
+};
+function setDashChannel(ch) {
+  dashState.channel = ch;
+  document.querySelectorAll('.dash-ch-btn').forEach(btn => {
+    btn.classList.remove('active', 'ch-all', 'ch-walkin', 'ch-byboats', 'ch-ktour', 'ch-kspeed');
+    if (btn.dataset.dashCh === ch) {
+      btn.classList.add('active', DASH_CH_CLASS[ch]);
+    }
+  });
+  refreshDashboard();
+}
+document.querySelectorAll('.dash-ch-btn').forEach(btn => {
+  btn.addEventListener('click', () => setDashChannel(btn.dataset.dashCh));
+});
+setDashChannel('all'); // Default active
+document.getElementById('dash-refresh').addEventListener('click', async () => {
+  const btn = document.getElementById('dash-refresh');
+  btn.disabled = true; btn.textContent = '⏳ กำลังโหลด...';
+  try { await loadBills(); toast('รีเฟรช Dashboard เรียบร้อย'); }
+  catch (err) { toast('โหลดไม่สำเร็จ: ' + err.message, 'error'); }
+  finally { btn.disabled = false; btn.innerHTML = '🔄 รีเฟรช'; }
+});
+
+// Initial dashboard render (even without bills, shows empty state nicely)
+refreshDashboard();
+
+// เริ่มโหลดจาก API เมื่อ DOM พร้อม
+bootstrapFromAPI();
+
+// Charts จะถูกสร้างใน refreshDashboard()
 </script>
 </body>
 </html>
