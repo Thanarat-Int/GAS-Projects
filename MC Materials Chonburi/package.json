@@ -1,0 +1,17 @@
+{
+  "name": "medical-center-materials",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node local/server.mjs",
+    "build:gas-admin": "node tools/build-gas-admin.mjs",
+    "build:gas-user": "node tools/build-gas-user.mjs",
+    "test": "node tests/database-setup.test.mjs && node tests/gas-admin.test.mjs && node tests/gas-user.test.mjs && node tests/dates.test.mjs && node tests/local-api.test.mjs && node tests/requisition.test.mjs && node tests/requisition-ui.test.mjs && node tests/requisition-report.test.mjs && node tests/ink.test.mjs && node tests/ink-store.test.mjs && node tests/images-pagination.test.mjs && node tests/dashboard.test.mjs && node tests/fiscal-report.test.mjs && node tests/user-portal.test.mjs && node tests/ui-copy.test.mjs",
+    "test:database": "node tests/database-setup.test.mjs",
+    "test:local": "node tests/local-api.test.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.10"
+  }
+}

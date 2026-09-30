@@ -1,0 +1,13 @@
+node_modules/
+local-data/*
+!local-data/user-access.example.json
+output/
+tmp/
+.engineering-sessions/
+.principal-software-sessions/
+__pycache__/
+*.pyc
+*.log
+.env
+.env.*
+!.env.example

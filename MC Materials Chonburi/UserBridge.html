@@ -1,0 +1,161 @@
+<script>
+(function () {
+  'use strict';
+  var tokenKey = 'material-user-gas-session';
+  var activityKey = 'material-user-gas-last-activity';
+  var idleTimeoutMs = 60 * 60 * 1000;
+  var touchIntervalMs = 5 * 60 * 1000;
+  var idleTimer = null;
+  var lastTouchAt = 0;
+  var activityBound = false;
+  var nativeFetch = window.fetch.bind(window);
+  window.materialUserWaitForAccess = true;
+  window.materialUserUnlocked = false;
+
+  function response(result) {
+    return {
+      ok: Boolean(result && result.ok),
+      status: Number(result && result.status || (result && result.ok ? 200 : 500)),
+      json: function () { return Promise.resolve(result || { ok: false, message: 'ไม่ได้รับผลลัพธ์จากเซิร์ฟเวอร์' }); },
+      text: function () { return Promise.resolve(JSON.stringify(result || {})); }
+    };
+  }
+
+  function currentToken() {
+    try { return sessionStorage.getItem(tokenKey) || ''; } catch (error) { return ''; }
+  }
+
+  function currentActivity() {
+    try { return Number(sessionStorage.getItem(activityKey) || 0); } catch (error) { return 0; }
+  }
+
+  function setPanel(name) {
+    var loading = document.getElementById('gasUserAuthLoading');
+    var access = document.getElementById('gasUserAccess');
+    var portal = document.getElementById('gasUserPortal');
+    if (loading) loading.hidden = name !== 'loading';
+    if (access) access.hidden = name !== 'access';
+    if (portal) portal.hidden = name !== 'portal';
+    document.body.className = name === 'portal' ? 'user-portal' : 'user-access-page';
+  }
+
+  function setToken(value) {
+    try { sessionStorage.setItem(tokenKey, value); } catch (error) { /* The current page still works until reloaded. */ }
+    window.materialUserToken = value;
+  }
+
+  function clearSession() {
+    try {
+      sessionStorage.removeItem(tokenKey);
+      sessionStorage.removeItem(activityKey);
+    } catch (error) {}
+    window.materialUserToken = '';
+    if (idleTimer) clearTimeout(idleTimer);
+    idleTimer = null;
+  }
+
+  function saveActivity(value) {
+    try { sessionStorage.setItem(activityKey, String(value)); } catch (error) {}
+  }
+
+  function sessionExpired() {
+    var lastActivity = currentActivity();
+    return !lastActivity || Date.now() - lastActivity >= idleTimeoutMs;
+  }
+
+  function armIdleTimer() {
+    if (idleTimer) clearTimeout(idleTimer);
+    var remaining = Math.max(0, idleTimeoutMs - (Date.now() - currentActivity()));
+    idleTimer = setTimeout(function () {
+      window.materialUserExit('หมดเวลาใช้งาน กรุณากรอกรหัสอีกครั้ง');
+    }, remaining);
+  }
+
+  function touchServer() {
+    var now = Date.now();
+    if (now - lastTouchAt < touchIntervalMs) return;
+    lastTouchAt = now;
+    window.fetch('/api/public/session/touch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{}'
+    }).then(function (result) {
+      if (!result.ok) window.materialUserExit('หมดเวลาใช้งาน กรุณากรอกรหัสอีกครั้ง');
+    }).catch(function () { /* A later API request will verify the session. */ });
+  }
+
+  function recordActivity() {
+    if (!window.materialUserUnlocked) return;
+    saveActivity(Date.now());
+    armIdleTimer();
+    touchServer();
+  }
+
+  function bindActivity() {
+    if (activityBound) return;
+    activityBound = true;
+    ['pointerdown', 'keydown', 'input', 'change', 'touchstart', 'wheel'].forEach(function (name) {
+      document.addEventListener(name, recordActivity, { passive: true, capture: true });
+    });
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState !== 'visible' || !window.materialUserUnlocked) return;
+      if (sessionExpired()) window.materialUserExit('หมดเวลาใช้งาน กรุณากรอกรหัสอีกครั้ง');
+      else recordActivity();
+    });
+  }
+
+  window.materialUserEnter = function () {
+    if (window.materialUserUnlocked) return;
+    window.materialUserUnlocked = true;
+    saveActivity(Date.now());
+    bindActivity();
+    armIdleTimer();
+    setPanel('portal');
+    window.dispatchEvent(new Event('material-user-unlocked'));
+    if (window.materialUserInitialized && typeof window.materialUserRefreshData === 'function') window.materialUserRefreshData();
+  };
+
+  window.materialUserExit = function (reason) {
+    clearSession();
+    window.materialUserUnlocked = false;
+    setPanel('access');
+    var code = document.getElementById('accessCode');
+    var message = document.getElementById('accessError');
+    if (code) { code.value = ''; code.focus(); }
+    if (message) {
+      message.textContent = reason || '';
+      message.hidden = !reason;
+    }
+  };
+
+  window.fetch = function (input, options) {
+    var path = typeof input === 'string' ? input : String(input && input.url || '');
+    if (path.indexOf('/api/public/') !== 0) return nativeFetch(input, options);
+    var request = {
+      method: String(options && options.method || 'GET').toUpperCase(),
+      path: path,
+      body: options && options.body ? options.body : '',
+      token: window.materialUserToken || currentToken()
+    };
+    return new Promise(function (resolve, reject) {
+      google.script.run
+        .withSuccessHandler(function (result) {
+          if (path === '/api/public/access' && result && result.ok && result.data && result.data.token) setToken(result.data.token);
+          resolve(response(result));
+        })
+        .withFailureHandler(function (error) { reject(new Error(error && error.message || 'เชื่อมต่อระบบไม่สำเร็จ')); })
+        .userApi(request);
+    });
+  };
+
+  var saved = currentToken();
+  if (saved && !sessionExpired()) {
+    window.materialUserToken = saved;
+    google.script.run.withSuccessHandler(function (result) {
+      if (result && result.ok) window.materialUserEnter();
+      else window.materialUserExit();
+    }).withFailureHandler(function () { window.materialUserExit(); })
+      .userApi({ method: 'GET', path: '/api/public/state', token: saved });
+  } else window.materialUserExit(saved ? 'หมดเวลาใช้งาน กรุณากรอกรหัสอีกครั้ง' : '');
+}());
+</script>

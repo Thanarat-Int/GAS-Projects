@@ -1,0 +1,17 @@
+<svg width="1400" height="420" viewBox="0 0 1400 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="50" y1="20" x2="1350" y2="400" gradientUnits="userSpaceOnUse"><stop stop-color="#071D2A"/><stop offset=".55" stop-color="#083D46"/><stop offset="1" stop-color="#0F766E"/></linearGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="55"/></filter>
+  </defs>
+  <rect width="1400" height="420" rx="30" fill="url(#bg)"/>
+  <circle cx="1200" cy="85" r="170" fill="#2563EB" fill-opacity=".22" filter="url(#blur)"/>
+  <circle cx="1100" cy="390" r="190" fill="#2DD4BF" fill-opacity=".22" filter="url(#blur)"/>
+  <g opacity=".12" stroke="#E2E8F0"><path d="M0 84H1400M0 168H1400M0 252H1400M0 336H1400M175 0V420M350 0V420M525 0V420M700 0V420M875 0V420M1050 0V420M1225 0V420"/></g>
+  <rect x="92" y="77" width="70" height="70" rx="19" fill="#FFFFFF" fill-opacity=".1" stroke="#FFFFFF" stroke-opacity=".24"/>
+  <path d="M112 101C112 97.7 114.7 95 118 95H136C139.3 95 142 97.7 142 101V123C142 126.3 139.3 129 136 129H118C114.7 129 112 126.3 112 123V101Z" stroke="#F8FAFC" stroke-width="3"/><path d="M119 106H135M119 113H135M119 120H129" stroke="#5EEAD4" stroke-width="3" stroke-linecap="round"/>
+  <text x="92" y="222" fill="#F8FAFC" font-family="Segoe UI,Arial,sans-serif" font-size="76" font-weight="700" letter-spacing="-2">GAS Projects</text>
+  <text x="96" y="273" fill="#99F6E4" font-family="Segoe UI,Arial,sans-serif" font-size="25" font-weight="600" letter-spacing="3">GOOGLE WORKSPACE · SYSTEMS · AUTOMATION</text>
+  <text x="96" y="320" fill="#CBD5E1" font-family="Segoe UI,Arial,sans-serif" font-size="22">Practical applications built for real operational work.</text>
+  <g transform="translate(1030 108)"><rect width="270" height="205" rx="25" fill="#FFFFFF" fill-opacity=".09" stroke="#FFFFFF" stroke-opacity=".2"/><circle cx="48" cy="52" r="14" fill="#60A5FA"/><rect x="76" y="42" width="140" height="10" rx="5" fill="#E2E8F0" fill-opacity=".8"/><rect x="76" y="62" width="95" height="8" rx="4" fill="#94A3B8" fill-opacity=".55"/><rect x="30" y="100" width="210" height="13" rx="6" fill="#2DD4BF" fill-opacity=".75"/><rect x="30" y="128" width="174" height="10" rx="5" fill="#E2E8F0" fill-opacity=".28"/><rect x="30" y="152" width="198" height="10" rx="5" fill="#E2E8F0" fill-opacity=".2"/><rect x="30" y="176" width="124" height="10" rx="5" fill="#60A5FA" fill-opacity=".55"/></g>
+  <text x="1300" y="382" text-anchor="end" fill="#CCFBF1" fill-opacity=".72" font-family="Segoe UI,Arial,sans-serif" font-size="18">by Shěn</text>
+</svg>

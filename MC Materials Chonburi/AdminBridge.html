@@ -1,0 +1,31 @@
+<script>
+(function () {
+  'use strict';
+  var nativeFetch = window.fetch.bind(window);
+
+  function response(result) {
+    return {
+      ok: Boolean(result && result.ok),
+      status: Number(result && result.status || (result && result.ok ? 200 : 500)),
+      json: function () { return Promise.resolve(result || { ok: false, message: 'ไม่ได้รับผลลัพธ์จากเซิร์ฟเวอร์' }); },
+      text: function () { return Promise.resolve(JSON.stringify(result || {})); }
+    };
+  }
+
+  window.fetch = function (input, options) {
+    var path = typeof input === 'string' ? input : String(input && input.url || '');
+    if (path.indexOf('/api/') !== 0) return nativeFetch(input, options);
+    var request = {
+      method: String(options && options.method || 'GET').toUpperCase(),
+      path: path,
+      body: options && options.body ? options.body : ''
+    };
+    return new Promise(function (resolve, reject) {
+      google.script.run
+        .withSuccessHandler(function (result) { resolve(response(result)); })
+        .withFailureHandler(function (error) { reject(new Error(error && error.message || 'เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ')); })
+        .adminApi(request);
+    });
+  };
+}());
+</script>

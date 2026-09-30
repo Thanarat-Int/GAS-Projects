@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>ขอเบิกวัสดุ | ศูนย์แพทย์</title>
+  <?!= includeUser_('UserStyles'); ?>
+</head>
+<body class="user-access-page">
+<div id="gasUserAuthLoading" class="access-layout" role="status" aria-live="polite">
+  <section class="access-card user-auth-card">
+    <img class="access-logo" src="" data-user-logo width="471" height="450" alt="ตราศูนย์แพทยศาสตรศึกษาชั้นคลินิก โรงพยาบาลชลบุรี">
+    <span class="user-auth-spinner" aria-hidden="true"></span>
+    <strong>กำลังตรวจสอบสิทธิ์เข้าใช้งาน</strong>
+  </section>
+</div>
+<div id="gasUserAccess" hidden>
+
+  <main class="access-layout">
+    <section class="access-card" aria-labelledby="accessTitle">
+      <img class="access-logo" src="" data-user-logo width="471" height="450" alt="ตราศูนย์แพทยศาสตรศึกษาชั้นคลินิก โรงพยาบาลชลบุรี">
+      <p class="access-eyebrow">ศูนย์แพทยศาสตรศึกษาชั้นคลินิก โรงพยาบาลชลบุรี</p>
+      <h1 id="accessTitle">เข้าสู่ระบบขอเบิกวัสดุ</h1>
+      <p class="access-description">กรอกรหัสสำหรับเข้าใช้งานก่อนเลือกวัสดุและส่งคำขอเบิก</p>
+      <form id="accessForm" novalidate>
+        <label for="accessCode">รหัสเข้าใช้งาน</label>
+        <input id="accessCode" name="code" type="password" inputmode="numeric" autocomplete="off" maxlength="32" placeholder="กรอกรหัสเข้าใช้งาน" required autofocus>
+        <p id="accessError" class="access-error" role="alert" hidden></p>
+        <button id="accessSubmit" class="primary-button" type="submit">เข้าสู่หน้าขอเบิก</button>
+      </form>
+    </section>
+  </main>
+</div>
+<div id="gasUserPortal" hidden>
+  <header class="user-header">
+    <a class="user-brand" href="#" aria-label="หน้าหลักระบบขอเบิกวัสดุ" data-i18n-aria-label="brandHome">
+      <img src="" data-user-logo width="471" height="450" alt="ตราศูนย์แพทยศาสตรศึกษาชั้นคลินิก โรงพยาบาลชลบุรี">
+      <span><strong data-i18n="brandTitle">ระบบขอเบิกวัสดุ</strong><small data-i18n="organization">ศูนย์แพทยศาสตรศึกษาชั้นคลินิก โรงพยาบาลชลบุรี</small></span>
+    </a>
+    <div class="user-header-actions">
+      <button id="userRefreshButton" class="icon-button refresh-button" type="button" aria-label="รีเฟรชข้อมูล" title="รีเฟรชข้อมูล"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.4 6.7M20 4v7h-7" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span id="userRefreshStatus" class="sr-only" aria-live="polite"></span>
+      <div id="userLanguageSwitch" class="user-language-switch" role="group" aria-label="เลือกภาษา">
+        <button type="button" data-language="th" aria-pressed="true">TH</button>
+        <button type="button" data-language="en" aria-pressed="false">EN</button>
+      </div>
+      <span id="userFiscalYear" class="user-fiscal-year"></span>
+      <button id="userThemeButton" class="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="โหมดมืด">
+        <span class="theme-thumb" aria-hidden="true"></span>
+        <svg class="theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>
+        <svg class="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.7 14.2A9 9 0 0 1 9.8 3.3 9 9 0 1 0 20.7 14.2Z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="user-main">
+    <section class="user-intro" aria-labelledby="userIntroTitle">
+      <div class="user-intro-copy">
+        <p class="eyebrow" data-i18n="onlineService">บริการเบิกวัสดุออนไลน์</p>
+        <h1 id="userIntroTitle" data-i18n="introTitle">เลือกวัสดุ แล้วส่งคำขอได้ในหน้าเดียว</h1>
+        <p data-i18n="introDescription">ค้นหาจากชื่อหรือรหัส ตรวจสอบจำนวนที่พร้อมเบิก และระบุจำนวนตามหน่วยนับของวัสดุได้ทันที</p>
+      </div>
+      <ol class="user-steps" aria-label="ขั้นตอนการขอเบิก">
+        <li><span>1</span><strong data-i18n="stepSelect">เลือกวัสดุ</strong><small data-i18n="stepSelectDescription">ค้นหาจากรายการทั้งหมด</small></li>
+        <li><span>2</span><strong data-i18n="stepQuantity">ระบุจำนวน</strong><small data-i18n="stepQuantityDescription">ระบบแสดงหน่วยนับอัตโนมัติ</small></li>
+        <li><span>3</span><strong data-i18n="stepSubmit">ส่งคำขอ</strong><small data-i18n="stepSubmitDescription">รอเจ้าหน้าที่ตรวจสอบ</small></li>
+      </ol>
+    </section>
+
+    <div class="user-workspace">
+      <section class="user-catalog" aria-labelledby="materialCatalogTitle">
+        <div class="user-section-heading">
+          <div><p class="eyebrow" data-i18n="catalogEyebrow">รายการวัสดุ</p><h2 id="materialCatalogTitle" data-i18n="catalogTitle">เลือกวัสดุที่ต้องการเบิก</h2></div>
+          <span id="userMaterialCount" class="result-count"></span>
+        </div>
+        <div class="user-filters">
+          <label class="user-search"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="5.5"/><path d="m13 13 4 4"/></svg><input id="userMaterialSearch" type="search" autocomplete="off" placeholder="ค้นหาชื่อหรือรหัสวัสดุ" aria-label="ค้นหาวัสดุ" data-i18n-placeholder="searchPlaceholder" data-i18n-aria-label="searchLabel"></label>
+          <select id="userMaterialCategory" aria-label="ประเภทวัสดุ"><option value="">ทุกประเภท</option></select>
+        </div>
+        <div id="userMaterialGrid" class="user-material-grid" aria-live="polite"></div>
+        <nav id="userPagination" class="user-pagination" aria-label="หน้ารายการวัสดุ" hidden>
+          <span id="userPageSummary" class="user-page-summary"></span>
+          <div id="userPageControls" class="user-page-controls"></div>
+        </nav>
+      </section>
+
+      <aside class="user-request-card" aria-labelledby="requestCardTitle">
+        <div class="user-request-head">
+          <div><p class="eyebrow" data-i18n="requestEyebrow">คำขอของคุณ</p><h2 id="requestCardTitle" data-i18n="requestTitle">รายการขอเบิก</h2></div>
+          <span id="userCartCount" class="user-cart-count">0</span>
+        </div>
+        <form id="userRequestForm" novalidate>
+          <div class="user-request-fields">
+            <div class="user-date-field"><label for="userRequestDateDisplay" data-i18n="requestDate">วันที่ขอเบิก</label><div class="date-control"><input id="userRequestDateDisplay" type="text" data-date-display="userRequestDate" data-date-language="th" placeholder="วัน เดือน ปี พ.ศ." autocomplete="off" maxlength="32" required><button type="button" class="date-picker-button" data-date-picker="userRequestDate" aria-label="เลือกวันที่ขอเบิก"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></button><input id="userRequestDate" name="requestDate" type="date" class="date-native" tabindex="-1" aria-hidden="true"></div></div>
+            <label><span data-i18n="requesterName">ชื่อผู้ขอเบิก</span><input name="requesterName" type="text" maxlength="160" autocomplete="name" placeholder="ชื่อและนามสกุล" data-i18n-placeholder="requesterPlaceholder" required></label>
+            <label><span data-i18n="department">ฝ่ายที่ขอเบิก</span><select id="userDepartment" name="department" required><option value="">เลือกฝ่าย</option></select></label>
+          </div>
+          <div id="userCartEmpty" class="user-cart-empty">
+            <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M14 14h20v25H14zM19 10h10v8H19M19 24h10M19 30h7"/></svg>
+            <strong data-i18n="emptyCart">ยังไม่ได้เลือกวัสดุ</strong>
+            <span data-i18n="emptyCartDescription">กดปุ่มเพิ่มในคำขอจากรายการด้านซ้าย</span>
+          </div>
+          <div id="userCartItems" class="user-cart-items"></div>
+          <nav id="userCartPagination" class="user-cart-pagination" aria-label="หน้ารายการขอเบิก" hidden>
+            <button id="userCartPrevious" type="button" class="user-cart-page-button" aria-label="หน้าก่อนหน้า"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12.5 4.5-5 5.5 5 5.5"/></svg></button>
+            <span id="userCartPageSummary"></span>
+            <button id="userCartNext" type="button" class="user-cart-page-button" aria-label="หน้าถัดไป"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5 5.5-5 5.5"/></svg></button>
+          </nav>
+          <label class="user-note"><span><span data-i18n="purpose">วัตถุประสงค์การเบิก</span> <small data-i18n="optional">ไม่บังคับ</small></span><textarea name="note" maxlength="500" rows="3" placeholder="ระบุวัตถุประสงค์หรือรายละเอียดการใช้งาน" data-i18n-placeholder="purposePlaceholder"></textarea></label>
+          <p id="userRequestError" class="user-request-error" role="alert" hidden></p>
+          <button id="userSubmitRequest" class="primary-button user-submit" type="submit" disabled>
+            <span data-i18n="submitRequest">ส่งคำขอเบิก</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 11-6-3 12-3-4-5-2Z"/></svg>
+          </button>
+          <small class="user-privacy-note" data-i18n="privacyNote">หลังส่งคำขอ เจ้าหน้าที่จะตรวจสอบและดำเนินการตามลำดับค่ะ</small>
+        </form>
+      </aside>
+    </div>
+  </main>
+
+  <dialog id="userSuccessDialog" class="dialog user-success-dialog" aria-labelledby="userSuccessTitle">
+    <div class="user-success-content">
+      <span class="user-success-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 12 4 4 8-9"/></svg></span>
+      <p class="eyebrow" data-i18n="successEyebrow">ส่งคำขอสำเร็จ</p>
+      <h2 id="userSuccessTitle" data-i18n="successTitle">เจ้าหน้าที่ได้รับคำขอแล้ว</h2>
+      <p><span data-i18n="requestNumber">เลขที่คำขอ</span> <strong id="userSuccessNumber"></strong></p>
+      <button id="userSuccessClose" class="primary-button" type="button" data-i18n="newRequest">สร้างคำขอใหม่</button>
+    </div>
+  </dialog>
+
+  <div id="userLoading" class="loading"><span></span></div>
+  </div>
+  <?!= includeUser_('UserLogo'); ?>
+  <?!= includeUser_('UserBridge'); ?>
+  <?!= includeUser_('UserAccessScripts'); ?>
+  <?!= includeUser_('UserScripts'); ?>
+</body>
+</html>

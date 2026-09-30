@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>MC Materials Chonburi</title>
+  <link rel="icon" type="image/png" href="/assets/medical-center-logo.png?v=1">
+  <link rel="apple-touch-icon" href="/assets/medical-center-logo.png?v=1">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/theme.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <img class="brand-logo" src="/assets/medical-center-logo.png" width="471" height="450" alt="ตราศูนย์แพทยศาสตรศึกษาชั้นคลินิก โรงพยาบาลชลบุรี">
+        <span><strong data-i18n="brand">วัสดุศูนย์แพทย์</strong></span>
+      </div>
+      <nav class="nav" aria-label="Main navigation">
+        <button class="nav-item active" data-view="overview"><span class="nav-icon">⌂</span><span data-i18n="overview">ภาพรวม</span></button>
+        <button class="nav-item" data-view="materials"><span class="nav-icon">▦</span><span data-i18n="materials">ทะเบียนวัสดุ</span></button>
+        <button class="nav-item" data-view="fiscal"><span class="nav-icon">▤</span><span data-i18n="fiscalYears">ปีงบประมาณ</span></button>
+        <button class="nav-item" data-view="ink"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3S5 11 5 15a7 7 0 0 0 14 0c0-4-7-12-7-12Z"/><path d="M8 15a4 4 0 0 0 4 4"/></svg></span><span>หมึก</span></button>
+        <button class="nav-item" data-view="requisitions"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8M9 2h6v4H9z"/><path d="M6 4H5a2 2 0 0 0-2 2v14h18V6a2 2 0 0 0-2-2h-1"/><path d="M7 11h10M7 15h7"/></svg></span><span data-i18n="requisitions">ขอเบิกวัสดุ</span><span id="navRequisitions" class="nav-count">0</span></button>
+        <button class="nav-item" data-view="movements"><span class="nav-icon">⇄</span><span data-i18n="movements">การเคลื่อนไหว</span></button>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="pageTitle">ภาพรวม</h1>
+        </div>
+        <div class="top-actions">
+          <select id="fiscalYearSelect" class="fiscal-select" aria-label="Fiscal year"></select>
+          <button id="refreshButton" class="icon-button refresh-button" type="button" aria-label="รีเฟรชข้อมูล" title="รีเฟรชข้อมูล"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.4 6.7M20 4v7h-7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button id="languageButton" class="icon-button" type="button" aria-label="Change language">EN</button>
+          <button id="themeButton" class="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Dark mode">
+            <span class="theme-thumb" aria-hidden="true"></span>
+            <svg class="theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>
+            <svg class="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.7 14.2A9 9 0 0 1 9.8 3.3 9 9 0 1 0 20.7 14.2Z"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <section id="view-overview" class="view">
+        <div class="dashboard-toolbar">
+          <div class="dashboard-tabs" role="group" aria-label="เลือกรายงานภาพรวม">
+            <button type="button" class="active" data-dashboard-tab="materials" aria-pressed="true">ภาพรวมวัสดุ</button>
+            <button type="button" data-dashboard-tab="ink" aria-pressed="false">รายงานหมึก</button>
+          </div>
+          <select id="inkDashboardYearSelect" class="fiscal-select" aria-label="ปีงบประมาณรายงานหมึก" hidden></select>
+        </div>
+        <div id="dashboardContent"></div>
+      </section>
+
+      <section id="view-materials" class="view" hidden>
+        <div class="section-actions">
+          <div class="filters">
+            <label class="search"><span>⌕</span><input id="materialSearch" data-placeholder="searchRegistry" placeholder="ค้นหารหัสหรือชื่อวัสดุ"></label>
+            <select id="materialCategory" aria-label="Category"></select>
+          </div>
+          <button id="addMaterialButton" class="primary-button" type="button"><svg class="button-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg><span data-i18n="addMaterial">เพิ่มวัสดุ</span></button>
+        </div>
+        <article class="panel table-panel">
+          <div class="panel-head"><div><h2 data-i18n="materialRegistry">ทะเบียนวัสดุ</h2></div><span id="materialCount" class="result-count"></span></div>
+          <div class="table-wrap"><table><thead id="materialHead"></thead><tbody id="materialBody"></tbody></table></div>
+          <div id="materialPagination" class="pagination"></div>
+        </article>
+      </section>
+
+      <section id="view-fiscal" class="view" hidden>
+        <article class="panel fiscal-hero">
+          <div class="fiscal-heading">
+            <div><h2 id="fiscalTitle"></h2><p id="fiscalRange" class="muted-line"></p></div>
+            <div class="fiscal-heading-actions"><span id="fiscalStatus" class="badge"></span><button id="closeFiscalButton" class="primary-button" type="button"></button></div>
+          </div>
+          <div id="fiscalMetrics" class="fiscal-metrics"></div>
+          <div id="fiscalReadiness" class="fiscal-readiness"></div>
+        </article>
+        <article class="panel table-panel fiscal-table-panel">
+          <div class="panel-head responsive-head">
+            <div><h2 id="fiscalCategoryTitle">ประเภท วัสดุสำนักงาน</h2></div>
+            <div class="filters fiscal-table-actions">
+              <button id="addAnnualButton" class="primary-button" type="button"><svg class="button-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg><span data-i18n="addMaterial">เพิ่มวัสดุ</span></button>
+              <select id="fiscalCategory" aria-label="Category"></select><span id="fiscalMaterialCount" class="result-count"></span>
+            </div>
+          </div>
+          <div class="fiscal-report-toolbar">
+            <div class="fiscal-report-period">
+              <label for="fiscalReportPeriod" id="fiscalReportPeriodLabel">ช่วงรายงาน</label>
+              <select id="fiscalReportPeriod" aria-labelledby="fiscalReportPeriodLabel"><option value="year">ทั้งปีงบประมาณ</option><option value="month">รายเดือน</option></select>
+              <label for="fiscalReportMonth" id="fiscalReportMonthLabel" hidden>เลือกเดือน</label>
+              <select id="fiscalReportMonth" aria-labelledby="fiscalReportMonthLabel" hidden></select>
+            </div>
+            <div class="fiscal-report-actions">
+              <button id="fiscalPrintAllButton" class="primary-button" type="button"><svg class="button-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M6 7V3h8v4M5 14H3V8h14v6h-2M6 12h8v5H6z"/></svg><span id="fiscalPrintAllButtonText">พิมพ์รวมทุกประเภท</span></button>
+              <button id="fiscalPrintButton" class="secondary-button" type="button"><svg class="button-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M6 7V3h8v4M5 14H3V8h14v6h-2M6 12h8v5H6z"/></svg><span id="fiscalPrintButtonText">พิมพ์ประเภทนี้</span></button>
+            </div>
+            <p id="fiscalReportHint" class="fiscal-report-hint"></p>
+          </div>
+          <div class="table-wrap"><table><thead id="fiscalHead"></thead><tbody id="fiscalBody"></tbody></table></div>
+          <div id="fiscalPagination" class="pagination"></div>
+        </article>
+      </section>
+
+      <section id="view-ink" class="view" hidden>
+        <div class="ink-toolbar">
+          <div class="ink-tabs" role="group" aria-label="ข้อมูลหมึก">
+            <button type="button" class="active" data-ink-tab="purchases" aria-pressed="true">รายการซื้อ</button>
+            <button type="button" data-ink-tab="withdrawals" aria-pressed="false">รายการเบิกหมึก</button>
+            <button type="button" data-ink-tab="stock" aria-pressed="false">คงเหลือ</button>
+          </div>
+          <div class="filters">
+            <label class="search"><span aria-hidden="true">⌕</span><input id="inkSearch" aria-label="ค้นหารายการหมึก" placeholder="ค้นหารายการหมึก"></label>
+            <label id="inkYearLabel"><select id="inkYear" aria-label="ปีงบประมาณหมึก"></select></label>
+            <label id="inkDepartmentLabel" hidden><select id="inkDepartment" aria-label="ฝ่าย"></select></label>
+          </div>
+        </div>
+        <div class="ink-entry-actions">
+          <button id="inkAddPurchase" class="primary-button" type="button"><svg class="button-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg><span>บันทึกซื้อเข้า</span></button>
+          <button id="inkAddWithdrawal" class="primary-button" type="button" hidden><svg class="button-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg><span>บันทึกเบิกหมึก</span></button>
+        </div>
+        <p id="inkFeedback" role="status" class="ink-feedback" hidden></p>
+        <div id="inkContent"></div>
+      </section>
+
+      <section id="view-requisitions" class="view" hidden>
+        <div class="summary-strip requisition-summary">
+          <div><span>รออนุมัติ</span><strong id="requisitionPendingSummary">0</strong></div>
+          <div><span>รอจ่าย</span><strong id="requisitionApprovedSummary">0</strong></div>
+          <div><span>จ่ายแล้ว</span><strong id="requisitionIssuedSummary">0</strong></div>
+        </div>
+        <div class="section-actions">
+          <div class="filters">
+            <label class="search"><span>⌕</span><input id="requisitionSearch" placeholder="ค้นหาเลขที่ ผู้ขอ ฝ่าย หรือวัสดุ"></label>
+            <select id="requisitionStatus" aria-label="สถานะคำขอเบิก"></select>
+          </div>
+          <button id="addRequisitionButton" class="primary-button" type="button"><svg class="button-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg><span>สร้างคำขอเบิก</span></button>
+        </div>
+        <article class="panel table-panel requisition-panel">
+          <div class="panel-head"><div><h2>รายการขอเบิก</h2></div><span id="requisitionCount" class="result-count"></span></div>
+          <div class="table-wrap"><table><thead id="requisitionHead"></thead><tbody id="requisitionBody"></tbody></table></div>
+          <div id="requisitionPagination" class="pagination"></div>
+        </article>
+      </section>
+
+      <section id="view-movements" class="view" hidden>
+        <article class="panel table-panel">
+          <div class="panel-head responsive-head">
+            <div><h2 data-i18n="stockMovements">รายการเคลื่อนไหว</h2></div>
+            <label class="search"><span>⌕</span><input id="movementSearch" data-placeholder="searchMovement" placeholder="ค้นหาวัสดุหรือประเภทวัสดุ"></label>
+          </div>
+          <div class="table-wrap"><table><thead id="movementHead"></thead><tbody id="movementBody"></tbody></table></div>
+          <div id="movementPagination" class="pagination"></div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="actionDialog" class="dialog">
+    <form id="actionForm" method="dialog">
+      <div class="dialog-head"><div><p id="dialogEyebrow" class="eyebrow"></p><h2 id="dialogTitle"></h2></div><button class="close-button" type="button" data-close-dialog aria-label="ปิด"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg></button></div>
+      <div id="dialogBody" class="dialog-body"></div>
+      <div class="dialog-actions"><button class="secondary-button" type="button" data-close-dialog data-i18n="cancel">ยกเลิก</button><button id="dialogSubmit" class="primary-button" value="default" type="submit"></button></div>
+    </form>
+  </dialog>
+
+  <dialog id="inkEntryDialog" class="dialog ink-entry-dialog" aria-labelledby="inkEntryTitle">
+    <form id="inkEntryForm">
+      <div class="dialog-head"><h2 id="inkEntryTitle"></h2><button type="button" id="inkEntryClose" class="close-button" aria-label="ปิด"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg></button></div>
+      <div class="dialog-body" id="inkEntryBody"></div>
+      <p id="inkEntryError" role="alert" class="ink-entry-error" hidden></p>
+      <div class="dialog-actions"><button id="inkEntryCancel" class="secondary-button" type="button">ยกเลิก</button><button id="inkEntrySubmit" class="primary-button" type="submit">บันทึก</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="inkNotesDialog" class="dialog ink-notes-dialog" aria-labelledby="inkNotesTitle">
+    <form id="inkNotesForm">
+      <div class="dialog-head"><h2 id="inkNotesTitle">จัดการเหตุผลที่ปริมาณซื้อหมึกเพิ่ม</h2><button type="button" id="inkNotesClose" class="close-button" aria-label="ปิด"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg></button></div>
+      <div class="dialog-body">
+        <div id="inkNotesSections"></div>
+        <button class="secondary-button" id="inkNotesAdd" type="button"><svg class="button-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg><span>เพิ่มหัวข้อ</span></button>
+      </div>
+      <p id="inkNotesError" role="alert" class="ink-entry-error" hidden></p>
+      <div class="dialog-actions"><button id="inkNotesCancel" class="secondary-button" type="button">ยกเลิก</button><button id="inkNotesSubmit" class="primary-button" type="submit">บันทึก</button></div>
+    </form>
+  </dialog>
+  <div id="toastRegion" class="toast-region" aria-live="polite"></div>
+  <div id="loading" class="loading"><span></span></div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

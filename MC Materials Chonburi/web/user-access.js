@@ -1,0 +1,36 @@
+const form = document.querySelector('#accessForm');
+const code = document.querySelector('#accessCode');
+const error = document.querySelector('#accessError');
+const submit = document.querySelector('#accessSubmit');
+document.documentElement.dataset.theme = localStorage.getItem('material-theme') || 'light';
+
+form.addEventListener('submit', async event => {
+  event.preventDefault();
+  error.hidden = true;
+  if (!code.value.trim()) {
+    error.textContent = 'กรุณากรอกรหัสเข้าใช้งาน';
+    error.hidden = false;
+    code.focus();
+    return;
+  }
+  submit.disabled = true;
+  submit.textContent = 'กำลังตรวจสอบ';
+  try {
+    const response = await fetch('/api/public/access', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: code.value }),
+    });
+    const result = await response.json();
+    if (!response.ok || !result.ok) throw new Error(result.message || 'ไม่สามารถเข้าใช้งานได้');
+    if (typeof window.materialUserEnter === 'function') window.materialUserEnter();
+    else location.assign('/user');
+  } catch (cause) {
+    error.textContent = cause.message;
+    error.hidden = false;
+    code.select();
+  } finally {
+    submit.disabled = false;
+    submit.textContent = 'เข้าสู่หน้าขอเบิก';
+  }
+});

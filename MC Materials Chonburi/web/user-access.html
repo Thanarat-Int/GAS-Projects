@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>เข้าสู่ระบบขอเบิกวัสดุ | ศูนย์แพทย์</title>
+  <link rel="icon" type="image/png" href="/assets/medical-center-logo.png">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/theme.css">
+  <link rel="stylesheet" href="/user-access.css">
+</head>
+<body class="user-access-page">
+  <main class="access-layout">
+    <section class="access-card" aria-labelledby="accessTitle">
+      <img class="access-logo" src="/assets/medical-center-logo.png" width="471" height="450" alt="ตราศูนย์แพทยศาสตรศึกษาชั้นคลินิก โรงพยาบาลชลบุรี">
+      <p class="access-eyebrow">ศูนย์แพทยศาสตรศึกษาชั้นคลินิก โรงพยาบาลชลบุรี</p>
+      <h1 id="accessTitle">เข้าสู่ระบบขอเบิกวัสดุ</h1>
+      <p class="access-description">กรอกรหัสสำหรับเข้าใช้งานก่อนเลือกวัสดุและส่งคำขอเบิก</p>
+      <form id="accessForm" novalidate>
+        <label for="accessCode">รหัสเข้าใช้งาน</label>
+        <input id="accessCode" name="code" type="password" inputmode="numeric" autocomplete="off" maxlength="32" placeholder="กรอกรหัสเข้าใช้งาน" required autofocus>
+        <p id="accessError" class="access-error" role="alert" hidden></p>
+        <button id="accessSubmit" class="primary-button" type="submit">เข้าสู่หน้าขอเบิก</button>
+      </form>
+    </section>
+  </main>
+  <script type="module" src="/user-access.js"></script>
+</body>
+</html>
